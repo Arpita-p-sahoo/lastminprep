@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TagOptionsService } from '../../../core/services/tag-options.service';
 
 @Component({
   selector: 'app-signup',
@@ -13,6 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class SignupComponent {
   auth = inject(AuthService);
+  tagOptions = inject(TagOptionsService);
   @ViewChild('techWrap') techWrap?: ElementRef<HTMLElement>;
   form = {
     name: '',
@@ -30,7 +32,6 @@ export class SignupComponent {
   };
 
   error = '';
-  techOptions = ['Angular', 'React', 'Vue', 'Svelte', 'TypeScript', 'JavaScript', 'Node.js', 'NestJS', 'Express', 'Next.js', 'React Native', 'Flutter', 'Python', 'Django', 'FastAPI', 'Go', 'Java', 'Spring Boot', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'GraphQL', 'Docker', 'Kubernetes', 'AWS', 'GCP', 'Azure'];
   techQuery = '';
   techOpen = false;
 
@@ -47,8 +48,10 @@ export class SignupComponent {
   }
 
   filteredTech(): string[] {
+    this.tagOptions.ensureLoaded();
     const q = this.techQuery.toLowerCase().trim();
-    const base = q ? this.techOptions.filter(t => t.toLowerCase().includes(q)) : this.techOptions.slice(0, 12);
+    const options = this.tagOptions.tags();
+    const base = q ? options.filter(t => t.toLowerCase().includes(q)) : options.slice(0, 12);
     return base.filter(t => !this.form.techStack.includes(t));
   }
   handleDocClick(event: Event): void {

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Question } from '../../core/models';
 import { QuestionService } from '../../core/services/question.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-question-card',
@@ -15,6 +16,7 @@ import { QuestionService } from '../../core/services/question.service';
 export class QuestionCardComponent {
   question = input.required<Question>();
   qs = inject(QuestionService);
+  auth = inject(AuthService);
   showComments = false;
   newComment = '';
   toggleComments(): void { this.showComments = !this.showComments; }
@@ -38,5 +40,16 @@ export class QuestionCardComponent {
   get authorRoute(): any[] | null {
     const id = this.question()?.author.id;
     return id ? ['/user', id] : null;
+  }
+
+  get canDelete(): boolean {
+    const currentId = this.auth.currentUser()?.id;
+    const authorId = this.question()?.author.id;
+    return !!currentId && !!authorId && String(currentId) === String(authorId);
+  }
+
+  deleteQuestion(): void {
+    const id = this.question()?.id;
+    if (id) this.qs.delete(id);
   }
 }

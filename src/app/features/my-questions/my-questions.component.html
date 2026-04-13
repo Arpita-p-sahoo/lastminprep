@@ -22,7 +22,7 @@
                 </div>
                 @if (q.isHot) { <span class="tag tag-hot">🔥 TOP</span> }
               </div>
-              <div class="q-title">{{ q.title }}</div>
+              <a class="q-title" [routerLink]="['/questions', q.id]">{{ q.title }}</a>
               <div class="q-footer">
                 <div class="q-actions">
                   <button class="q-btn voted">▲ {{ q.votes }}</button>

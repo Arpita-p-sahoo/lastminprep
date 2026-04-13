@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
@@ -11,7 +12,7 @@ import { Question } from '../../core/models';
 @Component({
   selector: 'app-my-questions',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent],
+  imports: [RouterLink, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent],
   templateUrl: './my-questions.component.html',
   styleUrls: ['./my-questions.component.css'],
 })

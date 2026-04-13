@@ -1,43 +1,61 @@
+<div class="min-h-screen flex flex-col animate-fade-up">
+  <nav class="topnav">
+    <a routerLink="/" class="flex items-center gap-2 no-underline">
+      <div class="logo-mark">L</div>
+      <div class="logo-text">last<span>min</span>prep</div>
+    </a>
+    <div class="flex items-center gap-2">
+      <button class="icon-btn" (click)="theme.toggle()">{{ theme.isDark() ? '☀️' : '🌙' }}</button>
+      @if (!auth.isLoggedIn()) {
+      <button class="nbtn ghost" routerLink="/login">Log in</button>
+      <button class="nbtn solid" routerLink="/signup">Sign up free</button>
+      } @else {
+      <button class="nbtn solid" routerLink="/dashboard">Dashboard →</button>
+      }
+    </div>
+  </nav>
 
-    <div class="min-h-screen flex flex-col animate-fade-up">
-      <nav class="topnav">
-        <a routerLink="/" class="flex items-center gap-2 no-underline">
-          <div class="logo-mark">L</div>
-          <div class="logo-text">last<span>min</span>prep</div>
-        </a>
-        <div class="flex items-center gap-2">
-          <button class="icon-btn" (click)="theme.toggle()">{{ theme.isDark() ? '☀️' : '🌙' }}</button>
-          @if (!auth.isLoggedIn()) {
-            <button class="nbtn ghost" routerLink="/login">Log in</button>
-            <button class="nbtn solid" routerLink="/signup">Sign up free</button>
-          } @else {
-            <button class="nbtn solid" routerLink="/dashboard">Dashboard →</button>
-          }
-        </div>
-      </nav>
-
-      <div class="hero-wrap">
-        <div class="hero-left">
-          <div class="hero-badge">
-            <span class="badge-dot"></span> #1 Interview Prep Community
-          </div>
-          <h1 class="hero-title">
-            Crack your next<br>
-            <span class="text-accent">tech interview</span><br>
-            in minutes.
-          </h1>
-          <p class="hero-sub">
-            Community-curated, highly-rated questions sorted by tech stack.
-            Post, rate, and discover what's actually being asked in 2026.
-          </p>
-          <div class="hero-btns">
-            <button class="btn-lmp btn-primary" routerLink="/signup">Start preparing free →</button>
-            <button class="btn-lmp btn-secondary" routerLink="/explore">Browse questions</button>
-          </div>
-        </div>
-        <div class="hero-right">
-          <div class="lmp-card" style="box-shadow:var(--shadow-lg)"></div>
-        </div>
+  <div class="hero-wrap">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="badge-dot"></span> #1 Interview Prep Community
+      </div>
+      <h1 class="hero-title">
+        Crack your next<br>
+        <span class="text-accent">tech interview</span><br>
+        in minutes.
+      </h1>
+      <p class="hero-sub">
+        Community-curated, highly-rated questions sorted by tech stack.
+        Post, rate, and discover what's actually being asked in 2026.
+      </p>
+      <div class="hero-btns">
+        <button class="btn-lmp btn-primary" routerLink="/signup">Start preparing free →</button>
+        <button class="btn-lmp btn-secondary" routerLink="/explore">Browse questions</button>
       </div>
     </div>
-  
+    <div class="hero-right">
+      <div class="lmp-card" style="box-shadow:var(--shadow-lg)">
+        <div class="flex justify-between items-center mb-4">
+          <span style="font-size:13px;font-weight:600;">🔥 Trending now</span>
+          <span class="tag tag-new">Live</span>
+        </div>
+        @for (q of trending(); track q.id) {
+        <div class="hv-q">
+          <div class="flex gap-2 mb-2">
+            <span class="tag tag-tech">{{ q.tech }}</span>
+            @if (q.hash) { <span class="tag tag-hash">{{ q.hash }}</span> }
+          </div>
+          <div style="font-size:13px;line-height:1.5;">{{ q.title }}</div>
+          <div class="flex gap-3 mt-2">
+            <span style="font-size:11px;color:var(--green);">▲ {{ q.votes }}</span>
+            <span style="font-size:11px;color:var(--ink3);">💬 {{ q.comments }}</span>
+            @if (q.hot) { <span class="tag tag-hot" style="font-size:10px;padding:2px 7px;">HOT</span> }
+            @if (q.isNew) { <span class="tag tag-new" style="font-size:10px;padding:2px 7px;">NEW</span> }
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

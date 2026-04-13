@@ -1,67 +1,70 @@
-
-    <div class="q-card">
-      <div class="q-card-top">
-        <div class="q-tags">
-          <span class="tag tag-tech">{{ question().techTag }}</span>
-          @for (h of question().hashtags; track h) {
-            <span class="tag tag-hash">{{ h }}</span>
-          }
-        </div>
-        @if (question().isHot) { <span class="tag tag-hot">🔥 TOP</span> }
-        @if (question().isNew) { <span class="tag tag-new">NEW</span> }
-      </div>
-      <div class="q-title">{{ question().title }}</div>
-      <div class="q-footer">
-        <div class="q-user">
-          @if (authorRoute) {
-            <a class="q-ava" [routerLink]="authorRoute">{{ authorInitial }}</a>
-            <a [routerLink]="authorRoute">&#64;{{ authorHandle }}</a>
-          } @else {
-            <div class="q-ava">{{ authorInitial }}</div>
-            &#64;{{ authorHandle }}
-          }
-        </div>
-        <div class="q-actions">
-          <button class="q-btn" [class.voted]="question().isVoted" (click)="qs.vote(question().id)">
-            ▲ {{ question().votes }}
-          </button>
-          <button class="q-btn" (click)="toggleComments()">💬 {{ question().comments }}</button>
-          <button class="q-btn" [class.saved]="question().isSaved" (click)="qs.save(question().id)">
-            {{ question().isSaved ? '⭐' : '🔖' }}
-          </button>
-        </div>
-      </div>
-      
-      @if (showComments) {
-        <div class="comments">
-          <div class="comments-title">Comments ({{ question().comments }})</div>
-          @if (question().thread?.length) {
-            <ng-container [ngTemplateOutlet]="commentTpl" [ngTemplateOutletContext]="{ items: question().thread }"></ng-container>
-          } @else {
-            <div style="font-size:12px;color:var(--ink3);">No comments yet</div>
-          }
-          <div class="comment-input">
-            <input class="lmp-input" [(ngModel)]="newComment" placeholder="Write a comment..." />
-            <button class="btn-lmp btn-primary btn-sm" (click)="addComment()" [disabled]="!newComment.trim()">Post</button>
-          </div>
-        </div>
+<div class="q-card">
+  <div class="q-card-top">
+    <div class="q-tags">
+      <span class="tag tag-tech">{{ question().techTag }}</span>
+      @for (h of question().hashtags; track h) {
+      <span class="tag tag-hash">{{ h }}</span>
       }
     </div>
-    
-    <ng-template #commentTpl let-items="items">
-      @for (c of items; track c.id) {
-        <div class="comment">
-          <div class="c-head">
-            <div class="c-ava">{{ c.author.name?.charAt(0) }}</div>
-            <div class="c-meta">&#64;{{ c.author.name?.toLowerCase()?.replace(' ', '_') }} • {{ c.createdAt | date:'short' }}</div>
-          </div>
-          <div class="c-text">{{ c.text }}</div>
-          @if (c.replies?.length) {
-            <div class="replies">
-              <ng-container [ngTemplateOutlet]="commentTpl" [ngTemplateOutletContext]="{ items: c.replies }"></ng-container>
-            </div>
-          }
-        </div>
+    @if (question().isHot) { <span class="tag tag-hot">🔥 TOP</span> }
+    @if (question().isNew) { <span class="tag tag-new">NEW</span> }
+  </div>
+  <a class="q-title" [routerLink]="['/questions', question().id]">{{ question().title }}</a>
+  <div class="q-footer">
+    <div class="q-user">
+      @if (authorRoute) {
+      <a class="q-ava" [routerLink]="authorRoute">{{ authorInitial }}</a>
+      <a [routerLink]="authorRoute">&#64;{{ authorHandle }}</a>
+      } @else {
+      <div class="q-ava">{{ authorInitial }}</div>
+      &#64;{{ authorHandle }}
       }
-    </ng-template>
-  
+    </div>
+    <div class="q-actions">
+      <button class="q-btn" [class.voted]="question().isVoted" (click)="qs.vote(question().id)">
+        ▲ {{ question().votes }}
+      </button>
+      <button class="q-btn" (click)="toggleComments()">💬 {{ question().comments }}</button>
+      <button class="q-btn" [class.saved]="question().isSaved" (click)="qs.save(question().id)">
+        {{ question().isSaved ? '⭐' : '🔖' }}
+      </button>
+      @if (canDelete) {
+      <button class="q-btn del" (click)="deleteQuestion()">🗑️</button>
+      }
+    </div>
+  </div>
+
+  @if (showComments) {
+  <div class="comments">
+    <div class="comments-title">Comments ({{ question().comments }})</div>
+    @if (question().thread?.length) {
+    <ng-container [ngTemplateOutlet]="commentTpl"
+      [ngTemplateOutletContext]="{ items: question().thread }"></ng-container>
+    } @else {
+    <div style="font-size:12px;color:var(--ink3);">No comments yet</div>
+    }
+    <div class="comment-input">
+      <input class="lmp-input" [(ngModel)]="newComment" placeholder="Write a comment..." />
+      <button class="btn-lmp btn-primary btn-sm" (click)="addComment()" [disabled]="!newComment.trim()">Post</button>
+    </div>
+  </div>
+  }
+</div>
+
+<ng-template #commentTpl let-items="items">
+  @for (c of items; track c.id) {
+  <div class="comment">
+    <div class="c-head">
+      <div class="c-ava">{{ c.author.name?.charAt(0) }}</div>
+      <div class="c-meta">&#64;{{ c.author.name?.toLowerCase()?.replace(' ', '_') }} • {{ c.createdAt | date:'short' }}
+      </div>
+    </div>
+    <div class="c-text">{{ c.text }}</div>
+    @if (c.replies?.length) {
+    <div class="replies">
+      <ng-container [ngTemplateOutlet]="commentTpl" [ngTemplateOutletContext]="{ items: c.replies }"></ng-container>
+    </div>
+    }
+  </div>
+  }
+</ng-template>

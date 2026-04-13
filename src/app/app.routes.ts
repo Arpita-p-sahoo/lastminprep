@@ -87,6 +87,13 @@ export const routes: Routes = [
     title: 'My Questions — LastMinPrep',
   },
   {
+    path: 'questions/:id',
+    loadComponent: () =>
+      import('./features/question-detail/question-detail.component').then((m) => m.QuestionDetailComponent),
+    canActivate: [authGuard],
+    title: 'Question — LastMinPrep',
+  },
+  {
     path: 'notifications',
     loadComponent: () =>
       import('./features/notifications/notifications.component').then((m) => m.NotificationsComponent),

@@ -1,8 +1,9 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Question } from '../models';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
+import { Observable, map, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
@@ -13,7 +14,7 @@ export class QuestionService {
   questions = signal<Question[]>([]);
 
   loadAll(): void {
-    this.http.get<Question[]>(`${this.API}/questions`).subscribe({
+    this.http.get<any>(`${this.API}/questions`).subscribe({
       next: data => this.questions.set(this.normalizeList(data)),
       error: () => this.questions.set([]),
     });
@@ -25,6 +26,26 @@ export class QuestionService {
 
   getSaved(): Question[] {
     return this.questions().filter(q => q.isSaved);
+  }
+
+  getById(id: string): Question | null {
+    const q = this.questions().find(x => String(x.id) === String(id));
+    return q ?? null;
+  }
+
+  fetchById(id: string): Observable<Question> {
+    return this.http.get<any>(`${this.API}/questions/${id}`).pipe(
+      map(res => this.normalize(res?.data ?? res?.item ?? res)),
+      tap(q => {
+        this.questions.update(qs => {
+          const idx = qs.findIndex(x => x.id === q.id);
+          if (idx === -1) return [q, ...qs];
+          const next = [...qs];
+          next[idx] = { ...next[idx], ...q };
+          return next;
+        });
+      })
+    );
   }
 
   vote(id: string): void {
@@ -68,9 +89,7 @@ export class QuestionService {
 
   comment(questionId: string, text: string): void {
     const author = this.auth.currentUser();
-    const body: any = { text };
-    if (author?.id) body.authorId = author.id;
-    this.http.post<{ comment: any }>(`${this.API}/questions/${questionId}/comments`, body).subscribe({
+    this.http.post<{ comment: any }>(`${this.API}/questions/${questionId}/comments`, { text }).subscribe({
       next: res => {
         const comment = res?.comment ?? { id: Date.now().toString(), author, text, createdAt: new Date() };
         this.questions.update(qs =>
@@ -84,14 +103,31 @@ export class QuestionService {
     });
   }
 
-  delete(id: string): void {
+  delete(id: string): void;
+  delete(id: string, callbacks?: { onSuccess?: () => void; onError?: () => void }): void;
+  delete(id: string, callbacks?: { onSuccess?: () => void; onError?: () => void }): void {
     this.http.delete(`${this.API}/questions/${id}`).subscribe({
-      next: () => this.questions.update(qs => qs.filter(q => q.id !== id)),
+      next: () => {
+        this.questions.update(qs => qs.filter(q => q.id !== id));
+        callbacks?.onSuccess?.();
+      },
+      error: () => {
+        callbacks?.onError?.();
+      },
     });
   }
 
   private normalizeList(list: any[]): Question[] {
-    return (list || []).map(item => this.normalize(item));
+    const raw = Array.isArray(list)
+      ? list
+      : Array.isArray((list as any)?.data)
+        ? (list as any).data
+        : Array.isArray((list as any)?.items)
+          ? (list as any).items
+          : Array.isArray((list as any)?.results)
+            ? (list as any).results
+            : [];
+    return raw.map((item: any) => this.normalize(item));
   }
 
   private normalize(item: any): Question {

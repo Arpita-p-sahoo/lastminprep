@@ -9,6 +9,7 @@
     .q-btn:hover { background:var(--bg3);color:var(--accent); }
     .q-btn.voted { color:var(--green); }
     .q-btn.saved { color:var(--amber); }
+    .q-btn.del:hover { color: var(--red); }
     .comments { margin-top:12px;border-top:1px solid var(--border);padding-top:12px; }
     .comments-title { font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:6px; }
     .comment { margin-bottom:12px; }

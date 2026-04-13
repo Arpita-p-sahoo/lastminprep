@@ -6,110 +6,147 @@
     <app-sidebar />
     <div class="content">
       <div class="content-inner">
-        <div class="lmp-card" style="padding:1rem;margin-bottom:1rem;">
-          <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div class="profile-ava-img">
-                @if (auth.currentUser()?.avatar) {
-                <img [src]="auth.currentUser()?.avatar" alt="avatar" />
-                } @else {
-                {{ auth.currentUser()?.name?.charAt(0) }}
+        <div class="lmp-card" style="padding:0;overflow:hidden;margin-bottom:1.5rem;">
+          <div class="profile-cover"
+            [style.backgroundImage]="auth.currentUser()?.bannerUrl ? 'url(' + auth.currentUser()?.bannerUrl + ')' : ''"
+            [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'">
+            @if (editOpen()) {
+            <div class="banner-edit-btn" (click)="toggleBannerMenu($event)" title="Change banner">📷</div>
+            @if (bannerMenuOpen()) {
+            <div class="mini-menu mini-menu--up mini-menu--banner" (click)="$event.stopPropagation()">
+              <div class="item" (click)="chooseBanner('custom')">Custom URL</div>
+              <div class="item" (click)="chooseBanner('default')">Reset to default</div>
+              <div class="item" (click)="chooseBanner('remove')">Remove banner</div>
+            </div>
+            }
+            }
+          </div>
+          <div style="padding:0 1.25rem 1.25rem;">
+            <div class="profile-head">
+              <div class="profile-ava-wrap">
+                <div class="profile-ava-img">
+                  @if (auth.currentUser()?.avatar) {
+                  <img [src]="auth.currentUser()?.avatar" alt="avatar" />
+                  } @else {
+                  {{ auth.currentUser()?.name?.charAt(0) }}
+                  }
+                  @if (editOpen()) {
+                  <div class="ava-edit-btn" (click)="toggleAvatarMenu($event)" title="Edit avatar">✏️</div>
+                  @if (avatarMenuOpen()) {
+                  <div class="mini-menu" (click)="$event.stopPropagation()">
+                    <div class="item" (click)="chooseAvatar('custom')">Custom URL</div>
+                    <div class="item" (click)="chooseAvatar('default')">Use default avatar</div>
+                    <div class="item" (click)="chooseAvatar('remove')">Remove avatar</div>
+                  </div>
+                  }
+                  }
+                </div>
+              </div>
+              @if (!editOpen()) {
+              <button class="btn-lmp btn-secondary btn-sm profile-action-btn" (click)="openEdit()">Edit profile</button>
+              } @else {
+              <button class="btn-lmp btn-secondary btn-sm profile-action-btn" (click)="cancelEdit()">Close</button>
+              }
+            </div>
+            <div style="margin-top:10px;">
+              <div class="profile-name">{{ auth.currentUser()?.name }}</div>
+              <div class="profile-title-txt">
+                {{ auth.currentUser()?.designation }}
+                @if (auth.currentUser()?.address) { <span class="profile-sep">·</span><span>{{
+                  auth.currentUser()?.address }}</span> }
+              </div>
+              <div class="profile-meta-row">
+                <div class="profile-meta-item">🏢 {{ auth.currentUser()?.organisation }}</div>
+                <div class="profile-meta-item">🎓 {{ auth.currentUser()?.experience }}</div>
+                <div class="profile-meta-item">🔗 <span style="color:var(--accent);cursor:pointer;">LinkedIn</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+                @for (t of auth.currentUser()?.techStack ?? []; track t) {
+                <span class="tag tag-tech">{{ t }}</span>
                 }
               </div>
-              <div>
-                <div class="profile-name">{{ auth.currentUser()?.name }}</div>
-                <div class="profile-title-txt">
-                  {{ auth.currentUser()?.designation }}
-                  @if (auth.currentUser()?.organisation) { · {{ auth.currentUser()?.organisation }} }
-                  @if (auth.currentUser()?.address) { · {{ auth.currentUser()?.address }} }
+              <div class="profile-stats-row">
+                <div class="pstat">
+                  <div class="pstat-n">{{ auth.currentUser()?.questionsPosted }}</div>
+                  <div class="pstat-l">Questions</div>
                 </div>
-                <div class="profile-title-txt">
-                  {{ auth.currentUser()?.questionsPosted }} questions · {{ auth.currentUser()?.totalVotes }} votes · {{
-                  auth.currentUser()?.streak }} streak
+                <div class="pstat">
+                  <div class="pstat-n" style="color:var(--accent);">{{ auth.currentUser()?.totalVotes }}</div>
+                  <div class="pstat-l">Votes</div>
+                </div>
+                <div class="pstat">
+                  <div class="pstat-n">🔥 {{ auth.currentUser()?.streak }}</div>
+                  <div class="pstat-l">Streak</div>
                 </div>
               </div>
-            </div>
-            <div>
-              @if (!editOpen()) {
-              <button class="btn-lmp btn-secondary btn-sm" (click)="openEdit()">Edit profile</button>
-              } @else {
-              <button class="btn-lmp btn-secondary btn-sm" (click)="cancelEdit()">Close</button>
+
+              @if (editOpen()) {
+              <div class="lmp-card profile-edit-card" style="margin-top:14px;">
+                <div class="feed-head" style="margin-bottom:10px;">
+                  <h2 style="margin:0;">Edit profile</h2>
+                </div>
+                <div class="field"><label>Name *</label><input class="lmp-input" [(ngModel)]="form.name"
+                    placeholder="John Doe" /></div>
+                <div class="field-row">
+                  <div class="field"><label>Designation</label><input class="lmp-input" [(ngModel)]="form.designation"
+                      placeholder="Software Engineer" /></div>
+                  <div class="field"><label>Organisation</label><input class="lmp-input" [(ngModel)]="form.organisation"
+                      placeholder="Acme Inc." /></div>
+                </div>
+                <div class="field"><label>Address</label><input class="lmp-input" [(ngModel)]="form.address"
+                    placeholder="City, State, Country" /></div>
+                <div class="field"><label>Highest education</label><input class="lmp-input"
+                    [(ngModel)]="form.highestEducation" placeholder="B.Tech CSE" /></div>
+                <div class="field-row">
+                  <div class="field">
+                    <label>Experience</label>
+                    <select class="lmp-input" [(ngModel)]="form.experience">
+                      <option value="">Select</option>
+                      <option>0-2 yrs</option>
+                      <option>2-5 yrs</option>
+                      <option>5-8 yrs</option>
+                      <option>8+ yrs</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Gender</label>
+                    <select class="lmp-input" [(ngModel)]="form.gender">
+                      <option value="">Select</option>
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Other</option>
+                      <option>Prefer not to say</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field-row">
+                  <div class="field"><label>Age</label><input class="lmp-input" type="number" [(ngModel)]="form.age"
+                      placeholder="24" /></div>
+                  <div class="field"><label>DOB</label><input class="lmp-input" type="date" [(ngModel)]="form.dob" />
+                  </div>
+                </div>
+                <div class="field-row">
+                  <div class="field"><label>Avatar URL</label><input class="lmp-input" [(ngModel)]="form.avatarUrl"
+                      placeholder="https://..." /></div>
+                  <div class="field"><label>Banner image URL</label><input class="lmp-input"
+                      [(ngModel)]="form.bannerUrl" placeholder="https://..." /></div>
+                </div>
+                <div class="field"><label>LinkedIn URL</label><input class="lmp-input" [(ngModel)]="form.linkedinUrl"
+                    placeholder="https://www.linkedin.com/in/..." /></div>
+                <div class="field"><label>Tech stack</label><input class="lmp-input" [(ngModel)]="form.techStackText"
+                    placeholder="Angular, TypeScript, NestJS" /></div>
+                <div style="display:flex;gap:10px;margin-top:12px;">
+                  <button class="btn-lmp btn-primary" style="flex:1;" [disabled]="saving()" (click)="saveProfile()">
+                    {{ saving() ? 'Saving…' : 'Save changes' }}
+                  </button>
+                  <button class="btn-lmp btn-secondary" style="flex:1;" [disabled]="saving()"
+                    (click)="cancelEdit()">Cancel</button>
+                </div>
+              </div>
               }
             </div>
           </div>
-
-          @if (auth.currentUser()?.techStack?.length) {
-          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
-            @for (t of auth.currentUser()?.techStack ?? []; track t) {
-            <span class="tag tag-tech">{{ t }}</span>
-            }
-          </div>
-          }
-
-          @if (editOpen()) {
-          <div class="lmp-card" style="margin-top:14px;">
-            <div class="feed-head" style="margin-bottom:10px;">
-              <h2 style="margin:0;">Edit profile</h2>
-            </div>
-            <div class="field"><label>Name *</label><input class="lmp-input" [(ngModel)]="form.name"
-                placeholder="John Doe" /></div>
-            <div class="field-row">
-              <div class="field"><label>Designation</label><input class="lmp-input" [(ngModel)]="form.designation"
-                  placeholder="Software Engineer" /></div>
-              <div class="field"><label>Organisation</label><input class="lmp-input" [(ngModel)]="form.organisation"
-                  placeholder="Acme Inc." /></div>
-            </div>
-            <div class="field"><label>Address</label><input class="lmp-input" [(ngModel)]="form.address"
-                placeholder="City, State, Country" /></div>
-            <div class="field"><label>Highest education</label><input class="lmp-input"
-                [(ngModel)]="form.highestEducation" placeholder="B.Tech CSE" /></div>
-            <div class="field-row">
-              <div class="field">
-                <label>Experience</label>
-                <select class="lmp-input" [(ngModel)]="form.experience">
-                  <option value="">Select</option>
-                  <option>0-2 yrs</option>
-                  <option>2-5 yrs</option>
-                  <option>5-8 yrs</option>
-                  <option>8+ yrs</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Gender</label>
-                <select class="lmp-input" [(ngModel)]="form.gender">
-                  <option value="">Select</option>
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
-                  <option>Prefer not to say</option>
-                </select>
-              </div>
-            </div>
-            <div class="field-row">
-              <div class="field"><label>Age</label><input class="lmp-input" type="number" [(ngModel)]="form.age"
-                  placeholder="24" /></div>
-              <div class="field"><label>DOB</label><input class="lmp-input" type="date" [(ngModel)]="form.dob" /></div>
-            </div>
-            <div class="field-row">
-              <div class="field"><label>Avatar URL</label><input class="lmp-input" [(ngModel)]="form.avatarUrl"
-                  placeholder="https://..." /></div>
-              <div class="field"><label>Banner image URL</label><input class="lmp-input" [(ngModel)]="form.bannerUrl"
-                  placeholder="https://..." /></div>
-            </div>
-            <div class="field"><label>LinkedIn URL</label><input class="lmp-input" [(ngModel)]="form.linkedinUrl"
-                placeholder="https://www.linkedin.com/in/..." /></div>
-            <div class="field"><label>Tech stack</label><input class="lmp-input" [(ngModel)]="form.techStackText"
-                placeholder="Angular, TypeScript, NestJS" /></div>
-            <div style="display:flex;gap:10px;margin-top:12px;">
-              <button class="btn-lmp btn-primary" style="flex:1;" [disabled]="saving()" (click)="saveProfile()">
-                {{ saving() ? 'Saving…' : 'Save changes' }}
-              </button>
-              <button class="btn-lmp btn-secondary" style="flex:1;" [disabled]="saving()" (click)="cancelEdit()">
-                Cancel
-              </button>
-            </div>
-          </div>
-          }
         </div>
         <div class="feed-head">
           <h2>Posted questions</h2>
