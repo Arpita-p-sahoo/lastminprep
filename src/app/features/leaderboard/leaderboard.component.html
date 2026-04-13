@@ -26,32 +26,40 @@
           </div>
 
           <div class="lmp-card">
-            @for (entry of leaderboard; track entry.rank) {
-              <div class="lb-item" [class.current]="entry.isCurrentUser">
-                <div class="lb-rank" [class.gold]="entry.rank===1" [class.silver]="entry.rank===2" [class.bronze]="entry.rank===3">
-                  @if (entry.rank === 1) { <span class="mi" style="font-size:18px;">workspace_premium</span> }
-                  @else if (entry.rank === 2) { <span class="mi" style="font-size:18px;">military_tech</span> }
-                  @else if (entry.rank === 3) { <span class="mi" style="font-size:18px;">emoji_events</span> }
-                  @else { {{ entry.rank }} }
+            @if (leaderboard.length) {
+              @for (entry of leaderboard; track entry.rank) {
+                <div class="lb-item" [class.current]="entry.isCurrentUser">
+                  <div class="lb-rank" [class.gold]="entry.rank===1" [class.silver]="entry.rank===2" [class.bronze]="entry.rank===3">
+                    @if (entry.rank === 1) { <span class="mi" style="font-size:18px;">workspace_premium</span> }
+                    @else if (entry.rank === 2) { <span class="mi" style="font-size:18px;">military_tech</span> }
+                    @else if (entry.rank === 3) { <span class="mi" style="font-size:18px;">emoji_events</span> }
+                    @else { {{ entry.rank }} }
+                  </div>
+                  <div class="lb-ava" [style.background]="entry.color">{{ entry.name.charAt(0) }}</div>
+                  <div class="lb-info">
+                    <div class="lb-name">{{ entry.name }} {{ entry.isCurrentUser ? '(you)' : '' }}</div>
+                    <div class="lb-score">{{ entry.questions }} questions · {{ entry.votes }} votes</div>
+                  </div>
+                  <div class="lb-pts">{{ entry.votes }}</div>
                 </div>
-                <div class="lb-ava" [style.background]="entry.color">{{ entry.name.charAt(0) }}</div>
-                <div class="lb-info">
-                  <div class="lb-name">{{ entry.name }} {{ entry.isCurrentUser ? '(you)' : '' }}</div>
-                  <div class="lb-score">{{ entry.questions }} questions · {{ entry.votes }} votes</div>
-                </div>
-                <div class="lb-pts">{{ entry.votes }}</div>
-              </div>
+              }
+            } @else {
+              <div style="text-align:center;padding:2rem;color:var(--ink3);">No leaderboard data yet</div>
             }
           </div>
         </div></div>
         <div class="rpanel">
           <div class="rp-card">
             <div class="rp-title"><span class="mi" style="font-size:18px;vertical-align:middle;">workspace_premium</span> Your badges</div>
-            @for (b of badges; track b.name) {
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
-                <div style="font-size:24px;"><span class="mi" style="font-size:22px;">{{ b.icon }}</span></div>
-                <div><div style="font-size:13px;font-weight:600;">{{ b.name }}</div><div style="font-size:11px;color:var(--ink3);">{{ b.desc }}</div></div>
-              </div>
+            @if (badges.length) {
+              @for (b of badges; track b.name) {
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+                  <div style="font-size:24px;"><span class="mi" style="font-size:22px;">{{ b.icon }}</span></div>
+                  <div><div style="font-size:13px;font-weight:600;">{{ b.name }}</div><div style="font-size:11px;color:var(--ink3);">{{ b.desc }}</div></div>
+                </div>
+              }
+            } @else {
+              <div style="padding:8px 0;color:var(--ink3);font-size:12px;">No badges yet</div>
             }
           </div>
         </div>

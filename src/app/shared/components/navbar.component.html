@@ -15,9 +15,11 @@
       <span class="mi">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</span>
     </button>
     @if (auth.isLoggedIn()) {
-    <button class="icon-btn relative" routerLink="/notifications">
+    <button class="icon-btn relative" routerLink="/notifications" (click)="clearNotifications()">
       <span class="mi">notifications</span>
-      <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-white"></span>
+      @if (hasUnread()) {
+        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-white"></span>
+      }
     </button>
     <div class="nav-ava" routerLink="/profile">
       {{ auth.currentUser()?.name?.charAt(0) || 'U' }}

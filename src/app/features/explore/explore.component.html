@@ -7,6 +7,7 @@
     <div class="content">
       <div class="content-inner">
         <div class="step-label">Step 1 — Domain</div>
+        @if (domains.length) {
         <div class="ts-grid">
           @for (d of domains; track d.id) {
           <div class="ts-card" [class.sel]="selectedDomain?.id === d.id" (click)="selectDomain(d)">
@@ -21,9 +22,13 @@
           </div>
           }
         </div>
+        } @else {
+        <div style="text-align:center;padding:2rem;color:var(--ink3);">No domains available</div>
+        }
         @if (selectedDomain) {
         <div class="mt-8">
           <div class="step-label">Step 2 — {{ selectedDomain.name }} technologies</div>
+          @if (selectedDomain.frameworks.length) {
           <div class="ts-grid">
             @for (fw of selectedDomain.frameworks; track fw.name) {
             <div class="ts-card" [class.sel]="selectedFw === fw.name" (click)="selectFw(fw.name)">
@@ -38,6 +43,9 @@
             </div>
             }
           </div>
+          } @else {
+          <div style="text-align:center;padding:2rem;color:var(--ink3);">No technologies available</div>
+          }
         </div>
         }
       </div>

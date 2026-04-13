@@ -1,38 +1,51 @@
-
-    <div class="flex flex-col min-h-screen animate-fade-up">
-      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
-      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
-      <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-      <div class="main-layout">
-        <app-sidebar />
-        <div class="content"><div class="content-inner">
-          <div class="page-header">
-            <div style="font-size:20px;font-weight:800;">Notifications</div>
-            <div style="font-size:13px;color:var(--ink2);margin-top:3px;">Choose what you want to be notified about.</div>
-          </div>
-
-          @for (section of sections(); track section.title) {
-            <div class="notif-section-title">{{ section.title }}</div>
-            <div class="notif-stack">
-              @for (it of section.items; track it.id) {
-                <div class="notif-card">
-                  <div class="notif-icon" [class]="it.iconClass">
-                    <span class="mi">{{ it.icon }}</span>
-                  </div>
-                  <div class="notif-body">
-                    <div class="notif-top">
-                      <div class="notif-title">{{ it.title }}</div>
-                      <span class="notif-tag" [class]="it.tagClass">{{ it.tag }}</span>
-                    </div>
-                    <div class="notif-sub">{{ it.subtitle }}</div>
-                    <div class="notif-example">“{{ it.example }}”</div>
-                  </div>
-                </div>
-              }
+<div class="flex flex-col min-h-screen animate-fade-up">
+  <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+  <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+  <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+  <div class="main-layout">
+    <app-sidebar />
+    <div class="content">
+      <div class="content-inner">
+        <div class="page-header">
+          <div style="font-size:20px;font-weight:800;">Notifications</div>
+          <div class="notif-subhead">
+            <div style="font-size:13px;color:var(--ink2);margin-top:3px;">
+              Updates about your questions and comments.
+              <a routerLink="/settings" class="notif-settings-link">Manage settings</a>
             </div>
+            @if (unreadCount() > 0) {
+            <div class="notif-unread">{{ unreadCount() }} new</div>
+            }
+          </div>
+        </div>
+
+        @if (notifications().length) {
+        <div class="notif-list">
+          @for (n of notifications(); track n.id) {
+          <a class="notif-item" [class.unread]="isUnread(n)"
+            [routerLink]="n.question?.id ? ['/questions', n.question?.id] : ['/dashboard']">
+            <div class="notif-icon">
+              <span class="mi">{{ n.icon }}</span>
+            </div>
+            <div class="notif-body">
+              <div class="notif-top">
+                <div class="notif-title">{{ n.title }}</div>
+                <div class="notif-time">{{ n.createdAt | date:'short' }}</div>
+              </div>
+              <div class="notif-text">{{ n.text }}</div>
+            </div>
+          </a>
           }
-        </div></div>
+        </div>
+        } @else {
+        <div class="notif-empty">
+          <div class="notif-empty-icon"><span class="mi" style="font-size:48px;">notifications</span></div>
+          <div class="notif-empty-title">No notifications yet</div>
+          <div class="notif-empty-sub">When someone comments on your questions, you'll see it here.</div>
+        </div>
+        }
       </div>
-      <app-bottom-nav (postClick)="postOpen.set(true)" />
     </div>
-  
+  </div>
+  <app-bottom-nav (postClick)="postOpen.set(true)" />
+</div>

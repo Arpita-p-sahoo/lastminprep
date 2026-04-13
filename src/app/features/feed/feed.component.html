@@ -19,6 +19,9 @@
         @for (q of list(); track q.id) {
         <app-question-card [question]="q" />
         }
+        @if (!list().length) {
+        <div style="text-align:center;padding:2rem;color:var(--ink3);">No questions found</div>
+        }
       </div>
     </div>
     <div class="rpanel">

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SidebarComponent } from '../../shared/components/sidebar.component';
@@ -7,7 +7,7 @@ import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { QuestionCardComponent } from '../../shared/components/question-card.component';
 import { QuestionService } from '../../core/services/question.service';
-import { Question, User } from '../../core/models';
+import { User } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -24,16 +24,28 @@ export class UserProfileComponent {
   drawerOpen = signal(false);
   postOpen = signal(false);
   userId = this.route.snapshot.paramMap.get('id') ?? '';
-  questions = signal<Question[]>([]);
   user = signal<User | null>(null);
+  loadingUser = signal(false);
+  userError = signal('');
+  questions = computed(() => this.qs.getByAuthor(this.userId));
   constructor() {
     const id = this.userId;
-    const list = this.qs.getByAuthor(id);
-    this.questions.set(list);
     if (id) {
+      this.loadingUser.set(true);
       this.auth.fetchUserById(id).subscribe({
-        next: u => this.user.set(u),
+        next: u => {
+          this.user.set(u);
+          this.userError.set('');
+          this.loadingUser.set(false);
+        },
+        error: () => {
+          this.user.set(null);
+          this.userError.set('User not found');
+          this.loadingUser.set(false);
+        },
       });
+    } else {
+      this.userError.set('User not found');
     }
   }
   get userName(): string {

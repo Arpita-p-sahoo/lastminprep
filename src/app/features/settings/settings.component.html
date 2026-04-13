@@ -22,18 +22,12 @@
 
           <div class="settings-group">
             <div class="settings-group-title">Notifications</div>
-            <div class="settings-row">
-              <div><div class="settings-label">Email notifications</div><div class="settings-sub">Get notified when someone votes your question</div></div>
-              <button class="toggle on"></button>
-            </div>
-            <div class="settings-row">
-              <div><div class="settings-label">Job alerts</div><div class="settings-sub">Notify me about matching job posts</div></div>
-              <button class="toggle on"></button>
-            </div>
-            <div class="settings-row">
-              <div><div class="settings-label">Weekly digest</div><div class="settings-sub">Summary of trending questions every Monday</div></div>
-              <button class="toggle"></button>
-            </div>
+            @for (it of notifItems; track it.id) {
+              <div class="settings-row">
+                <div><div class="settings-label">{{ it.label }}</div><div class="settings-sub">{{ it.description }}</div></div>
+                <button class="toggle" [class.on]="isNotifEnabled(it.id)" (click)="toggleNotif(it.id)"></button>
+              </div>
+            }
             <div class="settings-row">
               <div><div class="settings-label">Push notifications</div><div class="settings-sub">Mobile push alerts (requires app install)</div></div>
               <button class="toggle" [class.on]="pushEnabled()" (click)="pushEnabled.set(!pushEnabled())"></button>

@@ -1,109 +1,170 @@
-import { Component, computed, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
+import { AuthService } from '../../core/services/auth.service';
+import { QuestionService } from '../../core/services/question.service';
+import { RouterLink } from '@angular/router';
+import { Comment, Question } from '../../core/models';
 
-type NotifItem = {
+type NotifEvent = {
   id: string;
-  section: string;
+  kind: 'comment' | 'reply' | 'system';
   icon: string;
-  iconClass: string;
-  tag: string;
-  tagClass: string;
   title: string;
-  subtitle: string;
-  example: string;
+  text: string;
+  createdAt: Date;
+  from?: { id?: string; name?: string };
+  question?: { id: string; title: string };
 };
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent],
+  imports: [CommonModule, RouterLink, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent],
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css'],
 })
 export class NotificationsComponent {
+  auth = inject(AuthService);
+  qs = inject(QuestionService);
   drawerOpen = signal(false);
   postOpen = signal(false);
+  private lastSeen = signal<number>(0);
+  private lastSeenStorageKey = computed(() => {
+    const userId = this.auth.currentUser()?.id ? String(this.auth.currentUser()!.id) : 'guest';
+    return `lmp_notif_last_seen_${userId}`;
+  });
 
-  items: NotifItem[] = [
-    {
-      id: 'q-vote',
-      section: 'QUESTION NOTIFICATIONS',
-      icon: 'arrow_upward',
-      iconClass: 'vote',
-      tag: 'Vote',
-      tagClass: 'vote',
-      title: 'Someone voted on your question',
-      subtitle: 'When any user upvotes a question you posted.',
-      example: 'Rahul Dev voted on your question — "What is the difference between Angular Signals and NgRx?"',
-    },
-    {
-      id: 'q-comment',
-      section: 'QUESTION NOTIFICATIONS',
-      icon: 'chat_bubble',
-      iconClass: 'comment',
-      tag: 'Comment',
-      tagClass: 'comment',
-      title: 'Someone commented on your question',
-      subtitle: 'When any user adds a comment to a question you posted.',
-      example: 'Sneha commented on your question — "REST is simpler but GraphQL gives you exactly what you ask for"',
-    },
-    {
-      id: 'q-save',
-      section: 'QUESTION NOTIFICATIONS',
-      icon: 'bookmark',
-      iconClass: 'save',
-      tag: 'Save',
-      tagClass: 'save',
-      title: 'Someone saved your question',
-      subtitle: 'When a user bookmarks your question to their saved list.',
-      example: 'Amit saved your question — "How do you optimize PostgreSQL queries in NestJS?"',
-    },
-    {
-      id: 'c-like',
-      section: 'COMMENT NOTIFICATIONS',
-      icon: 'thumb_up',
-      iconClass: 'like',
-      tag: 'Like',
-      tagClass: 'like',
-      title: 'Someone liked your comment',
-      subtitle: 'When a user likes a comment you wrote.',
-      example: 'Rahul liked your comment — "Signals simplify reactive state without boilerplate"',
-    },
-    {
-      id: 'sys-trending',
-      section: 'SYSTEM NOTIFICATIONS',
-      icon: 'notifications',
-      iconClass: 'system',
-      tag: 'System',
-      tagClass: 'system',
-      title: 'Your question is trending',
-      subtitle: 'When your question crosses 50 votes and gets marked as Hot.',
-      example: 'Your question is trending! — "What is the difference between Angular Signals and NgRx? has 50+ votes"',
-    },
-    {
-      id: 'sys-welcome',
-      section: 'SYSTEM NOTIFICATIONS',
-      icon: 'check_circle',
-      iconClass: 'system-ok',
-      tag: 'System',
-      tagClass: 'system',
-      title: 'Welcome to LastMinPrep',
-      subtitle: 'Sent automatically when a new user signs up.',
-      example: 'Welcome Ankita! Start by posting your first interview question and connecting with the community.',
-    },
-  ];
+  constructor() {
+    effect(
+      () => {
+        const key = this.lastSeenStorageKey();
+        this.lastSeen.set(this.loadLastSeen(key));
+      },
+      { allowSignalWrites: true }
+    );
 
-  sections = computed(() => {
-    const out: Array<{ title: string; items: NotifItem[] }> = [];
-    for (const it of this.items) {
-      const found = out.find(s => s.title === it.section);
-      if (found) found.items.push(it);
-      else out.push({ title: it.section, items: [it] });
+    effect(
+      () => {
+        const items = this.notifications();
+        if (!items.length) return;
+        this.markSeenToLatest();
+      },
+      { allowSignalWrites: true }
+    );
+  }
+
+  notifications = computed<NotifEvent[]>(() => {
+    const userId = this.auth.currentUser()?.id ? String(this.auth.currentUser()!.id) : '';
+    if (!userId) return [];
+
+    const out: NotifEvent[] = [];
+    const authored = this.qs.getByAuthor(userId);
+    for (const q of authored) {
+      const thread = q.thread ?? [];
+      this.collectThreadNotifs(out, q, thread, userId);
     }
+
+    const joinedAt = this.auth.currentUser()?.joinedAt;
+    if (joinedAt) {
+      const d = joinedAt instanceof Date ? joinedAt : new Date(joinedAt as any);
+      if (!Number.isNaN(d.getTime())) {
+        out.push({
+          id: `sys-welcome-${userId}`,
+          kind: 'system',
+          icon: 'celebration',
+          title: 'Welcome to LastMinPrep',
+          text: 'Start by posting a question, commenting on others, and saving the best ones for later.',
+          createdAt: d,
+        });
+      }
+    }
+
+    out.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     return out;
   });
+
+  unreadCount = computed(() => {
+    const last = this.lastSeen();
+    if (!last) return this.notifications().length;
+    let c = 0;
+    for (const n of this.notifications()) {
+      if (n.createdAt.getTime() > last) c += 1;
+    }
+    return c;
+  });
+
+  isUnread(n: NotifEvent): boolean {
+    const t = n.createdAt?.getTime?.() ?? 0;
+    const last = this.lastSeen();
+    if (!last) return true;
+    return t > last;
+  }
+
+  markSeen(at?: number): void {
+    const now = typeof at === 'number' && Number.isFinite(at) ? Math.max(0, Math.floor(at)) : Date.now();
+    const key = this.lastSeenStorageKey();
+    try {
+      localStorage.setItem(key, String(now));
+    } catch { }
+    this.lastSeen.set(now);
+  }
+
+  markSeenToLatest(): void {
+    const latest = this.notifications().reduce((max, n) => Math.max(max, n.createdAt.getTime()), 0);
+    this.markSeen(latest || Date.now());
+  }
+
+  private collectThreadNotifs(out: NotifEvent[], q: Question, thread: Comment[], currentUserId: string, parent?: Comment): void {
+    for (const c of thread) {
+      const authorId = c?.author?.id ? String(c.author.id) : '';
+      const authorName = c?.author?.name ? String(c.author.name) : 'Someone';
+      const createdAt = c?.createdAt instanceof Date ? c.createdAt : new Date(c?.createdAt as any);
+      const okDate = createdAt && !Number.isNaN(createdAt.getTime());
+
+      const parentAuthorId = parent?.author?.id ? String(parent.author.id) : '';
+
+      if (okDate && authorId && authorId !== currentUserId) {
+        if (!parent) {
+          out.push({
+            id: `c-${q.id}-${c.id}`,
+            kind: 'comment',
+            icon: 'chat_bubble',
+            title: `${authorName} commented on your question`,
+            text: q.title,
+            createdAt,
+            from: { id: authorId, name: authorName },
+            question: { id: String(q.id), title: q.title },
+          });
+        } else if (parentAuthorId && parentAuthorId === currentUserId) {
+          out.push({
+            id: `r-${q.id}-${c.id}`,
+            kind: 'reply',
+            icon: 'reply',
+            title: `${authorName} replied to your comment`,
+            text: q.title,
+            createdAt,
+            from: { id: authorId, name: authorName },
+            question: { id: String(q.id), title: q.title },
+          });
+        }
+      }
+
+      if (c?.replies?.length) this.collectThreadNotifs(out, q, c.replies, currentUserId, c);
+    }
+  }
+
+  private loadLastSeen(key: string): number {
+    try {
+      const raw = localStorage.getItem(key);
+      const n = Number(raw ?? 0);
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    } catch {
+      return 0;
+    }
+  }
 }

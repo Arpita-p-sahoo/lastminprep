@@ -270,9 +270,13 @@
 
               <div class="rp-card">
                 <div class="rp-title">Tech stack</div>
-                <div class="rp-tags">
-                  @for (t of auth.currentUser()?.techStack ?? []; track t) { <span class="p-tag">{{ t }}</span> }
-                </div>
+                @if ((auth.currentUser()?.techStack ?? []).length) {
+                  <div class="rp-tags">
+                    @for (t of auth.currentUser()?.techStack ?? []; track t) { <span class="p-tag">{{ t }}</span> }
+                  </div>
+                } @else {
+                  <div style="padding:6px 0;color:var(--ink3);font-size:12px;">No tech stack added</div>
+                }
               </div>
             </div>
           </div>
