@@ -45,6 +45,22 @@ export class ProfileComponent {
     return this.qs.getByAuthor(id);
   };
 
+  toggleEdit(): void {
+    if (this.editOpen()) {
+      this.cancelEdit();
+      return;
+    }
+    this.openEdit();
+  }
+
+  joinedLabel(): string {
+    const raw = this.auth.currentUser()?.joinedAt;
+    if (!raw) return '';
+    const d = raw instanceof Date ? raw : new Date(raw as any);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleString(undefined, { month: 'short', year: 'numeric' });
+  }
+
   openEdit(): void {
     const u = this.auth.currentUser();
     if (!u) return;

@@ -1,7 +1,7 @@
 
     .sidebar { width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h)); }
-    .sidebar-inner { padding:1rem 0.75rem;flex:1; }
-    .sb-section { font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink3);padding:10px 8px 4px;margin-top:4px; }
+    .sidebar-inner { padding:0.5rem 0.75rem;flex:1; }
+    .sb-section { font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink3);padding:6px 8px 4px;margin-top:0; }
     .sb-badge { margin-left:auto;font-size:10px;background:var(--accent);color:#fff;padding:2px 7px;border-radius:999px;font-weight:600; }
     .sb-badge.green { background:var(--green); }
     .sidebar-user { padding:0.75rem;border-top:1px solid var(--border);margin-top:auto; }

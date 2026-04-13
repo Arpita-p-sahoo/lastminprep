@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
@@ -21,6 +21,18 @@ export class FeedComponent {
   drawerOpen = signal(false);
   postOpen = signal(false);
   active = 'Top rated';
+
+  constructor() {
+    this.qs.markFeedSeen();
+    effect(
+      () => {
+        const items = this.qs.questions();
+        if (!items.length) return;
+        this.qs.markFeedSeenToLatest();
+      },
+      { allowSignalWrites: true }
+    );
+  }
 
   list() {
     const items = [...this.qs.questions()];

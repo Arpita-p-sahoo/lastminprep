@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Comment, Question } from '../models';
 import { AuthService } from './auth.service';
@@ -10,12 +10,60 @@ export class QuestionService {
   private readonly API = environment.apiUrl;
   constructor(private auth: AuthService, private http: HttpClient) {
     this.loadAll();
+    effect(
+      () => {
+        const userId = this.userKey();
+        const lastSeen = this.loadOrInitFeedLastSeen(userId);
+        this.feedLastSeen.set(lastSeen);
+      },
+      { allowSignalWrites: true }
+    );
   }
   questions = signal<Question[]>([]);
+  private feedLastSeen = signal<number>(0);
+  newFeedCount = computed(() => {
+    const lastSeen = this.feedLastSeen();
+    if (!lastSeen) return 0;
+    const lastSeenMs = Number(lastSeen);
+    if (!Number.isFinite(lastSeenMs) || lastSeenMs <= 0) return 0;
+
+    let count = 0;
+    for (const q of this.questions()) {
+      const t = q.createdAt instanceof Date ? q.createdAt.getTime() : new Date(q.createdAt as any).getTime();
+      if (Number.isFinite(t) && t > lastSeenMs) count += 1;
+    }
+    return count;
+  });
+
+  markFeedSeen(at?: number): void {
+    const userId = this.userKey();
+    const now = typeof at === 'number' && Number.isFinite(at) ? Math.max(0, Math.floor(at)) : Date.now();
+    const key = this.feedLastSeenStorageKey(userId);
+    try {
+      localStorage.setItem(key, String(now));
+    } catch { }
+    this.feedLastSeen.set(now);
+  }
+
+  markFeedSeenToLatest(): void {
+    const latest = this.questions().reduce((max, q) => {
+      const t = q.createdAt instanceof Date ? q.createdAt.getTime() : new Date(q.createdAt as any).getTime();
+      return Number.isFinite(t) ? Math.max(max, t) : max;
+    }, 0);
+    this.markFeedSeen(latest || Date.now());
+  }
 
   loadAll(): void {
     this.http.get<any>(`${this.API}/questions`).subscribe({
-      next: data => this.questions.set(this.normalizeList(data)),
+      next: data => {
+        const list = this.normalizeList(data);
+        list.sort((a, b) => {
+          const at = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as any).getTime();
+          const bt = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as any).getTime();
+          return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
+        });
+        this.questions.set(list);
+      },
       error: () => this.questions.set([]),
     });
   }
@@ -90,7 +138,7 @@ export class QuestionService {
     this.http.post<Question>(`${this.API}/questions`, body).subscribe({
       next: created => {
         const normalized = this.normalize(created);
-        this.questions.update(qs => [normalized, ...qs]);
+        this.questions.update(qs => [normalized, ...qs.filter(x => String(x.id) !== String(normalized.id))]);
         const user = this.auth.currentUser();
         if (user?.id && normalized.author?.id && String(user.id) === String(normalized.author.id)) {
           this.auth.updateLocalUser({ questionsPosted: (user.questionsPosted ?? 0) + 1 });
@@ -271,5 +319,28 @@ export class QuestionService {
     }
 
     return { thread: next, deleted };
+  }
+
+  private userKey(): string {
+    const id = this.auth.currentUser()?.id;
+    return id ? String(id) : 'anon';
+  }
+
+  private feedLastSeenStorageKey(userId: string): string {
+    return `lmp_feed_last_seen:${userId}`;
+  }
+
+  private loadOrInitFeedLastSeen(userId: string): number {
+    const key = this.feedLastSeenStorageKey(userId);
+    try {
+      const raw = localStorage.getItem(key);
+      const parsed = raw ? Number(raw) : NaN;
+      if (Number.isFinite(parsed) && parsed > 0) return Math.floor(parsed);
+      const now = Date.now();
+      localStorage.setItem(key, String(now));
+      return now;
+    } catch {
+      return Date.now();
+    }
   }
 }

@@ -14,7 +14,7 @@
   <div class="drawer-body">
     <div class="sb-section">Main</div>
     <a class="sb-link" routerLink="/dashboard" (click)="close.emit()"><span class="mi">dashboard</span> Dashboard</a>
-    <a class="sb-link" routerLink="/feed" (click)="close.emit()"><span class="mi">dynamic_feed</span> Feed</a>
+    <a class="sb-link" routerLink="/feed" (click)="close.emit()"><span class="mi">dynamic_feed</span> Feed @if (qs.newFeedCount() > 0) { <span class="sb-badge">{{ qs.newFeedCount() }}</span> }</a>
     <a class="sb-link" routerLink="/explore" (click)="close.emit()"><span class="mi">explore</span> Explore</a>
     <a class="sb-link" routerLink="/jobs" (click)="close.emit()"><span class="mi">work</span> Jobs</a>
     <a class="sb-link" routerLink="/leaderboard" (click)="close.emit()"><span class="mi">leaderboard</span>

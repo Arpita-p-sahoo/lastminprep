@@ -32,6 +32,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem('lmp_theme');
+        const dark = saved ? saved === 'dark' : true;
+        document.documentElement.classList.toggle('dark', dark);
+      } catch {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
   <base href="/">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>

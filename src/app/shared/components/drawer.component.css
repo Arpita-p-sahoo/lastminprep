@@ -11,4 +11,5 @@
     .logo-text { font-size:15px;font-weight:800;letter-spacing:-0.02em;color:var(--ink); }
     .logo-text span { color:var(--accent); }
     .sb-section { font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink3);padding:10px 8px 4px;margin-top:4px; }
+    .sb-badge { margin-left:auto;font-size:10px;background:var(--accent);color:#fff;padding:2px 7px;border-radius:999px;font-weight:600; }
   
