@@ -1,4 +1,8 @@
 {
+    "framework": "angular",
+    "installCommand": "npm ci",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist/lastminprep/browser",
     "rewrites": [
         {
             "source": "/(.*)",
