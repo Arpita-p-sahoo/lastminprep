@@ -5,6 +5,7 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav.component
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { QuestionService } from '../../core/services/question.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Question } from '../../core/models';
 
 @Component({
@@ -16,8 +17,12 @@ import { Question } from '../../core/models';
 })
 export class MyQuestionsComponent {
   qs = inject(QuestionService);
+  auth = inject(AuthService);
   drawerOpen = signal(false);
   postOpen = signal(false);
-  myQ = () => this.qs.getByAuthor('1');
+  myQ = () => {
+    const userId = this.auth.currentUser()?.id ?? '';
+    return this.qs.getByAuthor(userId);
+  };
   totalVotes = () => this.myQ().reduce((s, q) => s + q.votes, 0);
 }

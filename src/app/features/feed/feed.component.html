@@ -22,12 +22,7 @@
           </div>
         </div>
         <div class="rpanel">
-          <div class="rp-card">
-            <div class="rp-title">🔥 Hot this week</div>
-            @for (t of [['#AngularSignals','+42 today'],['#SystemDesign','+38 today'],['#NestJS','+27 today']]; track t[0]) {
-              <div class="trend-item"><div class="trend-num">{{ $index+1 }}</div><div><div class="trend-name">{{t[0]}}</div><div class="trend-count">{{t[1]}}</div></div></div>
-            }
-          </div>
+          <div class="rp-card"></div>
         </div>
       </div>
       <app-bottom-nav (postClick)="postOpen.set(true)" />

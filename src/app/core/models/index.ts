@@ -3,8 +3,11 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
+  bannerUrl?: string;
   designation: string;
   organisation: string;
+  address?: string;
+  highestEducation?: string;
   experience: string;
   age: number;
   gender: string;

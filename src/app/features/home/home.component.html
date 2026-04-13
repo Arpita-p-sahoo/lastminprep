@@ -34,34 +34,9 @@
             <button class="btn-lmp btn-primary" routerLink="/signup">Start preparing free →</button>
             <button class="btn-lmp btn-secondary" routerLink="/explore">Browse questions</button>
           </div>
-          <div class="hero-stats">
-            <div class="h-stat"><div class="h-stat-n">12<span>k+</span></div><div class="h-stat-l">Questions</div></div>
-            <div class="h-stat"><div class="h-stat-n">4<span>k+</span></div><div class="h-stat-l">Members</div></div>
-            <div class="h-stat"><div class="h-stat-n">180<span>+</span></div><div class="h-stat-l">Job posts</div></div>
-          </div>
         </div>
         <div class="hero-right">
-          <div class="lmp-card" style="box-shadow:var(--shadow-lg)">
-            <div class="flex justify-between items-center mb-4">
-              <span style="font-size:13px;font-weight:600;">🔥 Trending now</span>
-              <span class="tag tag-new">Live</span>
-            </div>
-            @for (q of trending; track q.title) {
-              <div class="hv-q">
-                <div class="flex gap-2 mb-2">
-                  <span class="tag tag-tech">{{ q.tech }}</span>
-                  @if (q.hash) { <span class="tag tag-hash">{{ q.hash }}</span> }
-                </div>
-                <div style="font-size:13px;line-height:1.5;">{{ q.title }}</div>
-                <div class="flex gap-3 mt-2">
-                  <span style="font-size:11px;color:var(--green);">▲ {{ q.votes }}</span>
-                  <span style="font-size:11px;color:var(--ink3);">💬 {{ q.comments }}</span>
-                  @if (q.hot) { <span class="tag tag-hot" style="font-size:10px;padding:2px 7px;">HOT</span> }
-                  @if (q.isNew) { <span class="tag tag-new" style="font-size:10px;padding:2px 7px;">NEW</span> }
-                </div>
-              </div>
-            }
-          </div>
+          <div class="lmp-card" style="box-shadow:var(--shadow-lg)"></div>
         </div>
       </div>
     </div>

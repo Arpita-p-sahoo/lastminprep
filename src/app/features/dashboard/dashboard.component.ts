@@ -8,6 +8,7 @@ import { QuestionCardComponent } from '../../shared/components/question-card.com
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { RouterLink } from '@angular/router';
+import { JobService } from '../../core/services/job.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,22 +20,15 @@ import { RouterLink } from '@angular/router';
 export class DashboardComponent {
   auth = inject(AuthService);
   qs = inject(QuestionService);
+  jobs = inject(JobService);
   drawerOpen = signal(false);
   postOpen = signal(false);
   activeChip = 'All';
   chips = ['All', 'Angular', 'Node.js', 'React', 'System Design', 'DevOps'];
-  trending = [
-    { name: '#AngularSignals', count: 284 },
-    { name: '#SystemDesign', count: 201 },
-    { name: '#NodeJS', count: 176 },
-    { name: '#ReactHooks', count: 154 },
-    { name: '#Docker', count: 98 },
-  ];
-  latestJobs = [
-    { title: 'Senior Angular Developer', company: 'Razorpay', loc: 'Remote', stack: ['Angular', 'TypeScript'] },
-    { title: 'Full Stack Engineer', company: 'Groww', loc: 'Hybrid', stack: ['Node.js', 'React'] },
-    { title: 'Frontend Developer', company: 'Zepto', loc: 'Remote', stack: ['React', 'Next.js'] },
-  ];
+  trending: { name: string; count: number }[] = [];
+  get latestJobs() {
+    return this.jobs.jobs().slice(0, 3).map(j => ({ title: j.title, company: j.company, loc: j.location, stack: j.techStack }));
+  }
 
   get firstName(): string {
     const name = this.auth.currentUser()?.name;

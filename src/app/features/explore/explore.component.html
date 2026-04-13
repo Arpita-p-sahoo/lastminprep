@@ -13,7 +13,6 @@
                 <div class="ts-card" [class.sel]="selectedDomain?.id === d.id" (click)="selectDomain(d)">
                   <div class="ts-icon">{{ d.icon }}</div>
                   <div class="ts-name">{{ d.name }}</div>
-                  <div class="ts-count">{{ d.count.toLocaleString() }} questions</div>
                 </div>
               }
             </div>
@@ -25,7 +24,6 @@
                     <div class="ts-card" [class.sel]="selectedFw === fw.name" (click)="selectFw(fw.name)">
                       <div class="ts-icon">{{ fw.icon }}</div>
                       <div class="ts-name">{{ fw.name }}</div>
-                      <div class="ts-count">{{ fw.count }} questions</div>
                     </div>
                   }
                 </div>

@@ -22,7 +22,12 @@ export class UserProfileComponent {
   drawerOpen = signal(false);
   postOpen = signal(false);
   userId = this.route.snapshot.paramMap.get('id') ?? '';
-  questions = signal<Question[]>(this.qs.getByAuthor(this.userId));
+  questions = signal<Question[]>([]);
+  constructor() {
+    const id = this.userId;
+    const list = this.qs.getByAuthor(id);
+    this.questions.set(list);
+  }
   get userName(): string {
     const q = this.questions()[0];
     return q?.author.name ?? 'User';

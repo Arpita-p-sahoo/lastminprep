@@ -21,13 +21,8 @@ export class SearchComponent {
   postOpen = signal(false);
   query = '';
   results = signal<Question[]>([]);
-  popularTags = ['#AngularSignals', '#SystemDesign', '#NodeJS', '#TypeScript', '#ReactHooks', '#Docker'];
-  recentResults = [
-    { title: 'What is the difference between Angular Signals and NgRx?', tech: 'Angular', votes: 284, author: '@rahul_dev' },
-    { title: 'Explain the Node.js event loop in detail', tech: 'Node.js', votes: 201, author: '@sneha_backend' },
-    { title: 'Design a URL shortener like Bitly', tech: 'System Design', votes: 176, author: '@priya_sde' },
-    { title: 'TypeScript generics with real-world examples', tech: 'TypeScript', votes: 198, author: '@arpita_sahoo' },
-  ];
+  popularTags: string[] = [];
+  recentResults: { title: string; tech: string; votes: number; author: string }[] = [];
   onSearch(): void {
     if (!this.query.trim()) { this.results.set([]); return; }
     const q = this.query.toLowerCase();
