@@ -22,20 +22,32 @@ export class JobService {
       techStack: job.techStack || [],
       description: job.description || '',
     };
-    this.http.post<Job>(`${this.API}/jobs`, body).subscribe({
-      next: created => this.jobs.update(j => [this.normalize(created), ...j]),
+    this.http.post<any>(`${this.API}/jobs`, body).subscribe({
+      next: res => {
+        const created = res?.data ?? res?.item ?? res;
+        this.jobs.update(j => [this.normalize(created), ...j]);
+      },
     });
   }
 
   private load(): void {
-    this.http.get<Job[]>(`${this.API}/jobs`).subscribe({
+    this.http.get<any>(`${this.API}/jobs`).subscribe({
       next: data => this.jobs.set(this.normalizeList(data)),
       error: () => this.jobs.set([]),
     });
   }
 
   private normalizeList(list: any[]): Job[] {
-    return (list || []).map(item => this.normalize(item));
+    const raw = Array.isArray(list)
+      ? list
+      : Array.isArray((list as any)?.data)
+        ? (list as any).data
+        : Array.isArray((list as any)?.items)
+          ? (list as any).items
+          : Array.isArray((list as any)?.results)
+            ? (list as any).results
+            : [];
+    return raw.map((item: any) => this.normalize(item));
   }
 
   private normalize(item: any): Job {

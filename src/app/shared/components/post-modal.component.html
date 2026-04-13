@@ -1,5 +1,5 @@
 <div class="modal-overlay" [class.open]="open()" (click)="onOverlayClick($event)">
-  <div class="modal-box" (click)="$event.stopPropagation()">
+  <div class="modal-box" (click)="onModalBoxClick($event)">
     <div class="modal-handle"></div>
     <div class="modal-head">
       <div class="modal-title">Post a question</div>
@@ -22,19 +22,18 @@
         }
       </div>
       }
-      @if (suggestedTech.length) {
       <div class="tech-pills">
-        @for (t of suggestedTech; track t) {
-        @if (!selectedTech.includes(t)) {
+        @for (t of techOptionsToShow(); track t) {
         <span class="tech-pill" (click)="toggleTech(t)">+ {{ t }}</span>
         }
-        }
       </div>
+      @if (showMoreTechButton()) {
+      <button class="tech-more" type="button" (click)="toggleMoreTech()">More</button>
       }
     </div>
     <div class="field">
       <label>Hashtags</label>
-      <div class="tech-input-wrap">
+      <div class="tech-input-wrap" #hashtagWrap>
         <input class="lmp-input" [(ngModel)]="hashtagQuery" (focus)="hashtagOpen=true" (input)="hashtagOpen=true"
           placeholder="Type to search tags (e.g., angular, signals)" />
         @if (hashtagOpen) {

@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output } from '@angular/core';
+import { Component, ElementRef, ViewChild, effect, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { QuestionService } from '../../core/services/question.service';
 import { TagOptionsService } from '../../core/services/tag-options.service';
@@ -16,9 +16,12 @@ export class PostModalComponent {
   qs = inject(QuestionService);
   tagOptions = inject(TagOptionsService);
 
+  @ViewChild('hashtagWrap') hashtagWrap?: ElementRef<HTMLElement>;
+
   questionText = '';
   selectedTech = [] as string[];
   suggestedTech = [] as string[];
+  techMoreOpen = false;
   techTouched = false;
   suggestTimer: any = null;
 
@@ -32,7 +35,7 @@ export class PostModalComponent {
         this.tagOptions.ensureLoaded();
         this.computeSuggestions();
       }
-    });
+    }, { allowSignalWrites: true });
     effect(() => {
       const isOpen = this.open();
       const tagsCount = this.tagOptions.tags().length;
@@ -42,6 +45,15 @@ export class PostModalComponent {
 
   onOverlayClick(e: MouseEvent): void {
     if ((e.target as HTMLElement).classList.contains('modal-overlay')) this.close.emit();
+  }
+
+  onModalBoxClick(e: MouseEvent): void {
+    e.stopPropagation();
+    if (!this.hashtagOpen) return;
+    const target = e.target as Node | null;
+    const wrap = this.hashtagWrap?.nativeElement;
+    if (!target || !wrap) return;
+    if (!wrap.contains(target)) this.hashtagOpen = false;
   }
 
   onQuestionInput(): void {
@@ -54,12 +66,10 @@ export class PostModalComponent {
 
     const selectedTech = this.selectedTech.map(t => t.trim()).filter(Boolean);
     const techTag = selectedTech[0] ?? 'General';
-    const techAsHashtags = selectedTech.slice(1).map(t => (t.startsWith('#') ? t : `#${t}`));
-    const hashtags = [
-      ...this.selectedHashtags.map(h => h.trim()).filter(Boolean).map(h => (h.startsWith('#') ? h : `#${h}`)),
-      ...techAsHashtags,
-    ];
-    const uniqueHashtags = Array.from(new Set(hashtags));
+    const techHashtag = techTag !== 'General' ? this.normalizeHashtag(techTag) : '';
+    const selectedHashtags = this.selectedHashtags.map(h => this.normalizeHashtag(h)).filter(Boolean);
+    const extraTechHashtags = selectedTech.slice(1).map(t => this.normalizeHashtag(t)).filter(Boolean);
+    const uniqueHashtags = Array.from(new Set([techHashtag, ...selectedHashtags, ...extraTechHashtags].filter(Boolean)));
 
     this.qs.post({
       title: this.questionText,
@@ -69,6 +79,7 @@ export class PostModalComponent {
     this.questionText = '';
     this.selectedTech = [];
     this.suggestedTech = [];
+    this.techMoreOpen = false;
     this.techTouched = false;
     this.hashtagQuery = '';
     this.selectedHashtags = [];
@@ -91,10 +102,26 @@ export class PostModalComponent {
     }
   }
 
+  toggleMoreTech(): void {
+    this.techMoreOpen = !this.techMoreOpen;
+  }
+
+  techOptionsToShow(): string[] {
+    const base = this.suggestedTech.length ? this.suggestedTech : this.tagOptions.tags();
+    const options = base.filter(t => !this.selectedTech.includes(t));
+    return options.slice(0, this.techMoreOpen ? 24 : 8);
+  }
+
+  showMoreTechButton(): boolean {
+    const base = this.suggestedTech.length ? this.suggestedTech : this.tagOptions.tags();
+    const options = base.filter(t => !this.selectedTech.includes(t));
+    return options.length > (this.techMoreOpen ? 24 : 8);
+  }
+
   addHashtag(tag: string): void {
     if (!this.selectedHashtags.includes(tag)) this.selectedHashtags = [...this.selectedHashtags, tag];
     this.hashtagQuery = '';
-    this.hashtagOpen = true;
+    this.hashtagOpen = false;
   }
 
   removeHashtag(tag: string): void {
@@ -144,5 +171,16 @@ export class PostModalComponent {
     if (!this.techTouched && !this.selectedTech.length && suggestions.length) {
       this.selectedTech = suggestions.slice(0, 3);
     }
+  }
+
+  private normalizeHashtag(value: string): string {
+    const trimmed = value.trim();
+    if (!trimmed) return '';
+    const noHash = trimmed.startsWith('#') ? trimmed.slice(1) : trimmed;
+    return noHash
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9_+.-]/g, '')
+      .trim();
   }
 }

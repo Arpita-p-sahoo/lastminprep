@@ -1,4 +1,3 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -7,34 +6,48 @@ export class TagOptionsService {
   tags = signal<string[]>([]);
   loading = signal(false);
 
-  constructor(private http: HttpClient) {}
+  constructor() { }
 
   ensureLoaded(): void {
     if (this.loaded || this.loading()) return;
     this.loading.set(true);
-
-    const params = new HttpParams()
-      .set('order', 'desc')
-      .set('sort', 'popular')
-      .set('site', 'stackoverflow')
-      .set('pagesize', '200');
-
-    this.http.get<any>('https://api.stackexchange.com/2.3/tags', { params }).subscribe({
-      next: (res) => {
-        const items = Array.isArray(res?.items) ? res.items : [];
-        const list = items
-          .map((t: any) => String(t?.name ?? '').trim())
-          .filter(Boolean);
-        this.tags.set(Array.from(new Set(list)));
-        this.loaded = true;
-      },
-      error: () => {
-        this.tags.set([]);
-      },
-      complete: () => {
-        this.loading.set(false);
-      },
-    });
+    const manual = [
+      'Angular',
+      'React',
+      'Vue.js',
+      'Svelte',
+      'Next.js',
+      'Node.js',
+      'NestJS',
+      'Express',
+      'TypeScript',
+      'JavaScript',
+      'HTML',
+      'CSS',
+      'Tailwind CSS',
+      'RxJS',
+      'NgRx',
+      'Redux',
+      'GraphQL',
+      'REST',
+      'PostgreSQL',
+      'MySQL',
+      'MongoDB',
+      'Redis',
+      'Docker',
+      'Kubernetes',
+      'AWS',
+      'GCP',
+      'Azure',
+      'System Design',
+      'DevOps',
+      'DSA',
+      'Python',
+      'Java',
+      'Go',
+    ];
+    this.tags.set(manual);
+    this.loaded = true;
+    this.loading.set(false);
   }
 }
-
