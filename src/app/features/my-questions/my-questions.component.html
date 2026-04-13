@@ -11,7 +11,7 @@
               <div style="font-size:20px;font-weight:800;">My questions</div>
               <div style="font-size:13px;color:var(--ink2);margin-top:2px;">{{ myQ().length }} questions · {{ totalVotes() }} total votes</div>
             </div>
-            <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)">+ New</button>
+            <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)"><span class="mi" style="font-size:16px;">add</span> New</button>
           </div>
           @for (q of myQ(); track q.id) {
             <div class="q-card">
@@ -20,22 +20,22 @@
                   <span class="tag tag-tech">{{ q.techTag }}</span>
                   @for (h of q.hashtags; track h) { <span class="tag tag-hash">{{ h }}</span> }
                 </div>
-                @if (q.isHot) { <span class="tag tag-hot">🔥 TOP</span> }
+                @if (q.isHot) { <span class="tag tag-hot"><span class="mi" style="font-size:14px;vertical-align:middle;">local_fire_department</span> TOP</span> }
               </div>
               <a class="q-title" [routerLink]="['/questions', q.id]">{{ q.title }}</a>
               <div class="q-footer">
                 <div class="q-actions">
-                  <button class="q-btn voted">▲ {{ q.votes }}</button>
-                  <button class="q-btn">💬 {{ q.commentCount }}</button>
-                  <button class="q-btn edit-btn">✏️ Edit</button>
-                  <button class="q-btn del-btn" (click)="qs.delete(q.id)">🗑️ Delete</button>
+                  <button class="q-btn voted"><span class="mi" style="font-size:16px;">arrow_upward</span> {{ q.votes }}</button>
+                  <button class="q-btn"><span class="mi" style="font-size:16px;">chat_bubble</span> {{ q.commentCount }}</button>
+                  <button class="q-btn edit-btn"><span class="mi" style="font-size:16px;">edit</span> Edit</button>
+                  <button class="q-btn del-btn" (click)="qs.delete(q.id)"><span class="mi" style="font-size:16px;">delete</span> Delete</button>
                 </div>
               </div>
             </div>
           }
           @if (!myQ().length) {
             <div class="empty-state">
-              <div class="empty-icon">📝</div>
+              <div class="empty-icon"><span class="mi" style="font-size:48px;">quiz</span></div>
               <div class="empty-title">No questions posted yet</div>
               <div class="empty-sub">Be the first to contribute — your question might help thousands!</div>
               <button class="btn-lmp btn-primary" style="margin-top:1rem;" (click)="postOpen.set(true)">Post your first question →</button>

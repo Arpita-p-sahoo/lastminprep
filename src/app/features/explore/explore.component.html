@@ -11,7 +11,7 @@
             <div class="ts-grid">
               @for (d of domains; track d.id) {
                 <div class="ts-card" [class.sel]="selectedDomain?.id === d.id" (click)="selectDomain(d)">
-                  <div class="ts-icon">{{ d.icon }}</div>
+                  <div class="ts-icon"><span class="mi" style="font-size:30px;">{{ d.icon }}</span></div>
                   <div class="ts-name">{{ d.name }}</div>
                 </div>
               }
@@ -22,7 +22,7 @@
                 <div class="ts-grid">
                   @for (fw of selectedDomain.frameworks; track fw.name) {
                     <div class="ts-card" [class.sel]="selectedFw === fw.name" (click)="selectFw(fw.name)">
-                      <div class="ts-icon">{{ fw.icon }}</div>
+                      <div class="ts-icon"><span class="mi" style="font-size:30px;">{{ fw.icon }}</span></div>
                       <div class="ts-name">{{ fw.name }}</div>
                     </div>
                   }

@@ -9,7 +9,7 @@
           <div style="margin-bottom:1.5rem;"><div style="font-size:20px;font-weight:800;">Saved questions</div><div style="font-size:13px;color:var(--ink2);margin-top:3px;">Questions you bookmarked for later review.</div></div>
           @for (q of saved(); track q.id) { <app-question-card [question]="q" /> }
           @if (!saved().length) {
-            <div style="text-align:center;padding:3rem;"><div style="font-size:48px;margin-bottom:1rem;opacity:0.4;">⭐</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">No saved questions</div><div style="font-size:13px;color:var(--ink3);">Bookmark questions to revisit them later.</div></div>
+            <div style="text-align:center;padding:3rem;"><div style="font-size:48px;margin-bottom:1rem;opacity:0.4;"><span class="mi" style="font-size:48px;">bookmark</span></div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">No saved questions</div><div style="font-size:13px;color:var(--ink3);">Bookmark questions to revisit them later.</div></div>
           }
         </div></div>
       </div>

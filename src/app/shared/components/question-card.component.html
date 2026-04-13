@@ -6,7 +6,7 @@
       <span class="tag tag-hash">{{ h }}</span>
       }
     </div>
-    @if (question().isHot) { <span class="tag tag-hot">🔥 TOP</span> }
+    @if (question().isHot) { <span class="tag tag-hot"><span class="mi" style="font-size:14px;vertical-align:middle;">local_fire_department</span> TOP</span> }
     @if (question().isNew) { <span class="tag tag-new">NEW</span> }
   </div>
   <a class="q-title" [routerLink]="['/questions', question().id]">{{ question().title }}</a>
@@ -22,14 +22,14 @@
     </div>
     <div class="q-actions">
       <button class="q-btn" [class.voted]="question().isVoted" (click)="qs.vote(question().id)">
-        ▲ {{ question().votes }}
+        <span class="mi" style="font-size:16px;">arrow_upward</span> {{ question().votes }}
       </button>
-      <button class="q-btn" (click)="toggleComments()">💬 {{ question().commentCount }}</button>
+      <button class="q-btn" (click)="toggleComments()"><span class="mi" style="font-size:16px;">chat_bubble</span> {{ question().commentCount }}</button>
       <button class="q-btn" [class.saved]="question().isSaved" (click)="qs.save(question().id)">
-        {{ question().isSaved ? '⭐' : '🔖' }}
+        <span class="mi" style="font-size:18px;">{{ question().isSaved ? 'bookmark' : 'bookmark_border' }}</span>
       </button>
       @if (canDelete) {
-      <button class="q-btn del" (click)="deleteQuestion()">🗑️</button>
+      <button class="q-btn del" (click)="deleteQuestion()"><span class="mi" style="font-size:18px;">delete</span></button>
       }
     </div>
   </div>
@@ -58,6 +58,11 @@
       <div class="c-ava">{{ c.author.name?.charAt(0) }}</div>
       <div class="c-meta">&#64;{{ c.author.name?.toLowerCase()?.replace(' ', '_') }} • {{ c.createdAt | date:'short' }}
       </div>
+      @if (canDeleteComment(c)) {
+      <button class="c-del" type="button" (click)="deleteComment(c.id)">
+        <span class="mi" style="font-size:16px;">delete</span>
+      </button>
+      }
     </div>
     <div class="c-text">{{ c.text }}</div>
     @if (c.replies?.length) {

@@ -1,77 +1,84 @@
+<app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+<div class="flex flex-col min-h-screen animate-fade-up">
+  <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+  <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
 
-    <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-    <div class="flex flex-col min-h-screen animate-fade-up">
-      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
-      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+  <div class="main-layout">
+    <app-sidebar />
 
-      <div class="main-layout">
-        <app-sidebar />
+    <div class="content">
+      <div class="content-inner">
+        <div class="greeting">
+          <div class="greeting-text">Good morning, <span>{{ firstName }}</span> <span class="mi"
+              style="font-size:18px;vertical-align:middle;">waving_hand</span></div>
+          <div class="greeting-sub">Your interview is getting closer. Let's prepare.</div>
+        </div>
 
-        <div class="content">
-          <div class="content-inner">
-            <div class="greeting">
-              <div class="greeting-text">Good morning, <span>{{ firstName }}</span> 👋</div>
-              <div class="greeting-sub">Your interview is getting closer. Let's prepare.</div>
-            </div>
-
-            <div class="stats-row">
-              <div class="stat-card" routerLink="/leaderboard">
-                <div class="stat-n accent">🔥 {{ dayStreak }}</div>
-                <div class="stat-l">Day streak</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-n">{{ answeredCount }}</div>
-                <div class="stat-l">Answered</div>
-              </div>
-              <div class="stat-card" routerLink="/my-questions">
-                <div class="stat-n">{{ postedCount }}</div>
-                <div class="stat-l">Posted</div>
-              </div>
-            </div>
-
-            <div class="feed-head">
-              <h2>Trending today</h2>
-              <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)">+ Post</button>
-            </div>
-
-            <div class="chip-row">
-              @for (chip of chips; track chip) {
-                <div class="chip" [class.active]="activeChip === chip" (click)="activeChip = chip">{{ chip }}</div>
-              }
-            </div>
-
-            @for (q of qs.questions(); track q.id) {
-              <app-question-card [question]="q" />
-            }
+        <div class="stats-row">
+          <div class="stat-card" routerLink="/leaderboard">
+            <div class="stat-n accent"><span class="mi"
+                style="font-size:18px;vertical-align:middle;">local_fire_department</span> {{ dayStreak }}</div>
+            <div class="stat-l">Day streak</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-n">{{ answeredCount }}</div>
+            <div class="stat-l">Answered</div>
+          </div>
+          <div class="stat-card" routerLink="/my-questions">
+            <div class="stat-n">{{ postedCount }}</div>
+            <div class="stat-l">Posted</div>
           </div>
         </div>
 
-        <div class="rpanel">
-          <div class="rp-card">
-            <div class="rp-title">🔥 Trending topics</div>
-            @for (t of trending; track t.name) {
-              <div class="trend-item">
-                <div class="trend-num">{{ $index + 1 }}</div>
-                <div><div class="trend-name">{{ t.name }}</div><div class="trend-count">{{ t.count }} questions</div></div>
-              </div>
-            }
-          </div>
-          <div class="rp-card">
-            <div class="rp-title">💼 Latest jobs</div>
-            @for (j of latestJobs; track j.title) {
-              <div class="job-item" routerLink="/jobs">
-                <div class="job-title-t">{{ j.title }}</div>
-                <div class="job-meta-t">{{ j.company }} · {{ j.loc }}</div>
-                <div class="job-chips">
-                  @for (s of j.stack; track s) { <span class="job-chip">{{ s }}</span> }
-                </div>
-              </div>
-            }
-            <button class="btn-lmp btn-secondary btn-sm" style="width:100%;margin-top:8px;" routerLink="/jobs">View all jobs →</button>
-          </div>
+        <div class="feed-head">
+          <h2>Trending today</h2>
+          <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)"><span class="mi"
+              style="font-size:16px;">add</span> Post</button>
         </div>
+
+        <div class="chip-row">
+          @for (chip of chips; track chip) {
+          <div class="chip" [class.active]="activeChip === chip" (click)="activeChip = chip">{{ chip }}</div>
+          }
+        </div>
+
+        @for (q of qs.questions(); track q.id) {
+        <app-question-card [question]="q" />
+        }
       </div>
-
-      <app-bottom-nav (postClick)="postOpen.set(true)" />
     </div>
-  
+
+    <div class="rpanel">
+      <div class="rp-card">
+        <div class="rp-title"><span class="mi"
+            style="font-size:18px;vertical-align:middle;">local_fire_department</span> Trending topics</div>
+        @for (t of trending; track t.name) {
+        <div class="trend-item">
+          <div class="trend-num">{{ $index + 1 }}</div>
+          <div>
+            <div class="trend-name">{{ t.name }}</div>
+            <div class="trend-count">{{ t.count }} questions</div>
+          </div>
+        </div>
+        }
+      </div>
+      <div class="rp-card">
+        <div class="rp-title"><span class="mi" style="font-size:18px;vertical-align:middle;">work</span> Latest jobs
+        </div>
+        @for (j of latestJobs; track j.title) {
+        <div class="job-item" routerLink="/jobs">
+          <div class="job-title-t">{{ j.title }}</div>
+          <div class="job-meta-t">{{ j.company }} · {{ j.loc }}</div>
+          <div class="job-chips">
+            @for (s of j.stack; track s) { <span class="job-chip">{{ s }}</span> }
+          </div>
+        </div>
+        }
+        <button class="btn-lmp btn-secondary btn-sm" style="width:100%;margin-top:8px;" routerLink="/jobs">View all jobs
+          →</button>
+      </div>
+    </div>
+  </div>
+
+  <app-bottom-nav (postClick)="postOpen.set(true)" />
+</div>

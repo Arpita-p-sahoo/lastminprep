@@ -6,24 +6,24 @@
           <div class="logo-mark">L</div>
           <div class="logo-text">last<span>min</span>prep</div>
         </a>
-        <button class="drawer-close" (click)="close.emit()">✕</button>
+        <button class="drawer-close" (click)="close.emit()"><span class="mi">close</span></button>
       </div>
       <div class="drawer-body">
         <div class="sb-section">Main</div>
-        <a class="sb-link" routerLink="/dashboard" (click)="close.emit()"><span>🏠</span> Dashboard</a>
-        <a class="sb-link" routerLink="/feed" (click)="close.emit()"><span>📋</span> Feed</a>
-        <a class="sb-link" routerLink="/explore" (click)="close.emit()"><span>🎯</span> Explore</a>
-        <a class="sb-link" routerLink="/jobs" (click)="close.emit()"><span>💼</span> Jobs</a>
-        <a class="sb-link" routerLink="/leaderboard" (click)="close.emit()"><span>🏆</span> Leaderboard</a>
-        <a class="sb-link" routerLink="/search" (click)="close.emit()"><span>🔍</span> Search</a>
+        <a class="sb-link" routerLink="/dashboard" (click)="close.emit()"><span class="mi">dashboard</span> Dashboard</a>
+        <a class="sb-link" routerLink="/feed" (click)="close.emit()"><span class="mi">dynamic_feed</span> Feed</a>
+        <a class="sb-link" routerLink="/explore" (click)="close.emit()"><span class="mi">explore</span> Explore</a>
+        <a class="sb-link" routerLink="/jobs" (click)="close.emit()"><span class="mi">work</span> Jobs</a>
+        <a class="sb-link" routerLink="/leaderboard" (click)="close.emit()"><span class="mi">leaderboard</span> Leaderboard</a>
+        <a class="sb-link" routerLink="/search" (click)="close.emit()"><span class="mi">search</span> Search</a>
         <div class="sb-section">You</div>
-        <a class="sb-link" routerLink="/profile" (click)="close.emit()"><span>👤</span> Profile</a>
-        <a class="sb-link" routerLink="/saved" (click)="close.emit()"><span>⭐</span> Saved</a>
-        <a class="sb-link" routerLink="/my-questions" (click)="close.emit()"><span>📝</span> My Questions</a>
-        <a class="sb-link" routerLink="/notifications" (click)="close.emit()"><span>🔔</span> Notifications</a>
+        <a class="sb-link" routerLink="/profile" (click)="close.emit()"><span class="mi">person</span> Profile</a>
+        <a class="sb-link" routerLink="/saved" (click)="close.emit()"><span class="mi">bookmark</span> Saved</a>
+        <a class="sb-link" routerLink="/my-questions" (click)="close.emit()"><span class="mi">quiz</span> My Questions</a>
+        <a class="sb-link" routerLink="/notifications" (click)="close.emit()"><span class="mi">notifications</span> Notifications</a>
         <div class="sb-section">Account</div>
-        <a class="sb-link" routerLink="/settings" (click)="close.emit()"><span>⚙️</span> Settings</a>
-        <button class="sb-link" (click)="auth.logout(); close.emit()"><span>🚪</span> Logout</button>
+        <a class="sb-link" routerLink="/settings" (click)="close.emit()"><span class="mi">settings</span> Settings</a>
+        <button class="sb-link" (click)="auth.logout(); close.emit()"><span class="mi">logout</span> Logout</button>
       </div>
     </div>
   

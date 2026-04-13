@@ -88,7 +88,14 @@ export class QuestionService {
       hashtags: q.hashtags || [],
     };
     this.http.post<Question>(`${this.API}/questions`, body).subscribe({
-      next: created => this.questions.update(qs => [this.normalize(created), ...qs]),
+      next: created => {
+        const normalized = this.normalize(created);
+        this.questions.update(qs => [normalized, ...qs]);
+        const user = this.auth.currentUser();
+        if (user?.id && normalized.author?.id && String(user.id) === String(normalized.author.id)) {
+          this.auth.updateLocalUser({ questionsPosted: (user.questionsPosted ?? 0) + 1 });
+        }
+      },
     });
   }
 
@@ -104,6 +111,38 @@ export class QuestionService {
             return { ...q, thread, commentCount: (q.commentCount ?? 0) + 1 };
           })
         );
+        if (author?.id && comment.author?.id && String(author.id) === String(comment.author.id)) {
+          this.auth.updateLocalUser({ answeredCount: (author.answeredCount ?? 0) + 1 });
+        }
+      },
+    });
+  }
+
+  deleteComment(questionId: string, commentId: string, callbacks?: { onSuccess?: () => void; onError?: () => void }): void {
+    const currentUser = this.auth.currentUser();
+    this.http.delete(`${this.API}/comments/${commentId}`).subscribe({
+      next: () => {
+        let deletedAuthorId: string | undefined;
+        this.questions.update(qs =>
+          qs.map(q => {
+            if (q.id !== questionId) return q;
+            const res = this.removeCommentFromThread(q.thread ?? [], commentId);
+            deletedAuthorId = res.deleted?.author?.id ? String(res.deleted.author.id) : undefined;
+            if (!res.deleted) return q;
+            return {
+              ...q,
+              thread: res.thread.length ? res.thread : undefined,
+              commentCount: Math.max(0, (q.commentCount ?? 0) - 1),
+            };
+          })
+        );
+        if (currentUser?.id && deletedAuthorId && String(currentUser.id) === String(deletedAuthorId)) {
+          this.auth.updateLocalUser({ answeredCount: Math.max(0, (currentUser.answeredCount ?? 0) - 1) });
+        }
+        callbacks?.onSuccess?.();
+      },
+      error: () => {
+        callbacks?.onError?.();
       },
     });
   }
@@ -111,9 +150,15 @@ export class QuestionService {
   delete(id: string): void;
   delete(id: string, callbacks?: { onSuccess?: () => void; onError?: () => void }): void;
   delete(id: string, callbacks?: { onSuccess?: () => void; onError?: () => void }): void {
+    const userId = this.auth.currentUser()?.id;
+    const existing = this.getById(id);
     this.http.delete(`${this.API}/questions/${id}`).subscribe({
       next: () => {
         this.questions.update(qs => qs.filter(q => q.id !== id));
+        if (userId && existing?.author?.id && String(existing.author.id) === String(userId)) {
+          const current = this.auth.currentUser();
+          if (current) this.auth.updateLocalUser({ questionsPosted: Math.max(0, (current.questionsPosted ?? 0) - 1) });
+        }
         callbacks?.onSuccess?.();
       },
       error: () => {
@@ -204,5 +249,27 @@ export class QuestionService {
       createdAt: Number.isNaN(createdAt.getTime()) ? new Date() : createdAt,
       replies: replies?.length ? replies : undefined,
     };
+  }
+
+  private removeCommentFromThread(thread: Comment[], commentId: string): { thread: Comment[]; deleted: Comment | null } {
+    let deleted: Comment | null = null;
+    const next: Comment[] = [];
+
+    for (const c of thread) {
+      if (String(c.id) === String(commentId)) {
+        deleted = c;
+        continue;
+      }
+      if (c.replies?.length) {
+        const r = this.removeCommentFromThread(c.replies, commentId);
+        if (r.deleted) deleted = r.deleted;
+        const updated = r.deleted ? { ...c, replies: r.thread.length ? r.thread : undefined } : c;
+        next.push(updated);
+      } else {
+        next.push(c);
+      }
+    }
+
+    return { thread: next, deleted };
   }
 }

@@ -2,12 +2,11 @@ import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  isDark = signal<boolean>(false);
+  isDark = signal<boolean>(true);
 
   init(): void {
     const saved = localStorage.getItem('lmp_theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const dark = saved ? saved === 'dark' : prefersDark;
+    const dark = saved ? saved === 'dark' : true;
     this.setDark(dark);
   }
 

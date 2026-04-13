@@ -43,10 +43,20 @@ export class AuthService {
       linkedinUrl: u.linkedinUrl ?? '',
       techStack: Array.isArray(u.techStack) ? u.techStack : (u.techStack ? String(u.techStack).split(',').map((s: string) => s.trim()).filter(Boolean) : []),
       streak: Number(u.streak ?? 0),
+      answeredCount: Number(u.answeredCount ?? u.answersCount ?? u.answerCount ?? u.questionsAnswered ?? u.answered ?? 0),
       questionsPosted: Number(u.questionsPosted ?? 0),
       totalVotes: Number(u.totalVotes ?? 0),
       joinedAt: u.joinedAt ? new Date(u.joinedAt) : new Date(),
     };
+  }
+
+  updateLocalUser(partial: Partial<User>): void {
+    const existing = this.currentUser();
+    if (!existing) return;
+    const merged: any = { ...existing, ...partial };
+    const normalized = this.normalizeUser(merged);
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(normalized));
+    this.currentUser.set(normalized);
   }
 
   private saveSession(user: User, token?: string): void {

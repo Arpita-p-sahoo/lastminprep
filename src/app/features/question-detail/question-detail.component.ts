@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Question } from '../../core/models';
+import { Comment, Question } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
@@ -67,12 +67,24 @@ export class QuestionDetailComponent {
     return !!currentId && !!authorId && String(currentId) === String(authorId);
   }
 
+  canDeleteComment(c: Comment): boolean {
+    const currentId = this.auth.currentUser()?.id;
+    const authorId = c?.author?.id;
+    return !!currentId && !!authorId && String(currentId) === String(authorId);
+  }
+
   deleteQuestion(): void {
     const id = this.question()?.id;
     if (!id) return;
     this.qs.delete(id, {
       onSuccess: () => this.router.navigate(['/feed']),
     });
+  }
+
+  deleteComment(commentId: string): void {
+    const questionId = this.question()?.id;
+    if (!questionId || !commentId) return;
+    this.qs.deleteComment(questionId, commentId);
   }
 
   addComment(): void {

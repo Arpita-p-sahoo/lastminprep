@@ -2,7 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Question } from '../../core/models';
+import { Comment, Question } from '../../core/models';
 import { QuestionService } from '../../core/services/question.service';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -48,8 +48,20 @@ export class QuestionCardComponent {
     return !!currentId && !!authorId && String(currentId) === String(authorId);
   }
 
+  canDeleteComment(c: Comment): boolean {
+    const currentId = this.auth.currentUser()?.id;
+    const authorId = c?.author?.id;
+    return !!currentId && !!authorId && String(currentId) === String(authorId);
+  }
+
   deleteQuestion(): void {
     const id = this.question()?.id;
     if (id) this.qs.delete(id);
+  }
+
+  deleteComment(commentId: string): void {
+    const questionId = this.question()?.id;
+    if (!questionId || !commentId) return;
+    this.qs.deleteComment(questionId, commentId);
   }
 }

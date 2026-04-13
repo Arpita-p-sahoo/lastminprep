@@ -11,7 +11,8 @@
             [style.backgroundImage]="auth.currentUser()?.bannerUrl ? 'url(' + auth.currentUser()?.bannerUrl + ')' : ''"
             [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'">
             @if (editOpen()) {
-            <div class="banner-edit-btn" (click)="toggleBannerMenu($event)" title="Change banner">📷</div>
+            <div class="banner-edit-btn" (click)="toggleBannerMenu($event)" title="Change banner"><span class="mi"
+                style="font-size:18px;">photo_camera</span></div>
             @if (bannerMenuOpen()) {
             <div class="mini-menu mini-menu--up mini-menu--banner" (click)="$event.stopPropagation()">
               <div class="item" (click)="chooseBanner('custom')">Custom URL</div>
@@ -31,7 +32,8 @@
                   {{ auth.currentUser()?.name?.charAt(0) }}
                   }
                   @if (editOpen()) {
-                  <div class="ava-edit-btn" (click)="toggleAvatarMenu($event)" title="Edit avatar">✏️</div>
+                  <div class="ava-edit-btn" (click)="toggleAvatarMenu($event)" title="Edit avatar"><span class="mi"
+                      style="font-size:16px;">edit</span></div>
                   @if (avatarMenuOpen()) {
                   <div class="mini-menu" (click)="$event.stopPropagation()">
                     <div class="item" (click)="chooseAvatar('custom')">Custom URL</div>
@@ -56,9 +58,15 @@
                   auth.currentUser()?.address }}</span> }
               </div>
               <div class="profile-meta-row">
-                <div class="profile-meta-item">🏢 {{ auth.currentUser()?.organisation }}</div>
-                <div class="profile-meta-item">🎓 {{ auth.currentUser()?.experience }}</div>
-                <div class="profile-meta-item">🔗 <span style="color:var(--accent);cursor:pointer;">LinkedIn</span>
+                <div class="profile-meta-item"><span class="mi"
+                    style="font-size:18px;vertical-align:middle;">business</span> {{ auth.currentUser()?.organisation }}
+                </div>
+                <div class="profile-meta-item"><span class="mi"
+                    style="font-size:18px;vertical-align:middle;">work_history</span> {{ auth.currentUser()?.experience
+                  }}</div>
+                <div class="profile-meta-item"><span class="mi"
+                    style="font-size:18px;vertical-align:middle;">link</span> <span
+                    style="color:var(--accent);cursor:pointer;">LinkedIn</span>
                 </div>
               </div>
               <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
@@ -76,7 +84,9 @@
                   <div class="pstat-l">Votes</div>
                 </div>
                 <div class="pstat">
-                  <div class="pstat-n">🔥 {{ auth.currentUser()?.streak }}</div>
+                  <div class="pstat-n"><span class="mi"
+                      style="font-size:18px;vertical-align:middle;">local_fire_department</span> {{
+                    auth.currentUser()?.streak }}</div>
                   <div class="pstat-l">Streak</div>
                 </div>
               </div>
@@ -158,7 +168,8 @@
     </div>
     <div class="rpanel">
       <div class="rp-card">
-        <div class="rp-title">📊 Activity</div>
+        <div class="rp-title"><span class="mi" style="font-size:18px;vertical-align:middle;">analytics</span> Activity
+        </div>
         <div class="act-row"><span>Questions posted</span><strong>{{ auth.currentUser()?.questionsPosted }}</strong>
         </div>
         <div class="act-row"><span>Total votes</span><strong style="color:var(--accent);">{{

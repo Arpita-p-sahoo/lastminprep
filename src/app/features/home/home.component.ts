@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ThemeService } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
@@ -15,6 +15,15 @@ export class HomeComponent {
   theme = inject(ThemeService);
   auth = inject(AuthService);
   qs = inject(QuestionService);
+  router = inject(Router);
+
+  go(url: string, requiresAuth = false): void {
+    if (requiresAuth && !this.auth.isLoggedIn()) {
+      this.router.navigateByUrl('/signup');
+      return;
+    }
+    this.router.navigateByUrl(url);
+  }
 
   trending = () => {
     const list = [...this.qs.questions()];

@@ -5,7 +5,9 @@
       <div class="logo-text">last<span>min</span>prep</div>
     </a>
     <div class="flex items-center gap-2">
-      <button class="icon-btn" (click)="theme.toggle()">{{ theme.isDark() ? '☀️' : '🌙' }}</button>
+      <button class="icon-btn" (click)="theme.toggle()">
+        <span class="mi">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+      </button>
       @if (!auth.isLoggedIn()) {
       <button class="nbtn ghost" routerLink="/login">Log in</button>
       <button class="nbtn solid" routerLink="/signup">Sign up free</button>
@@ -26,35 +28,320 @@
         in minutes.
       </h1>
       <p class="hero-sub">
-        Community-curated, highly-rated questions sorted by tech stack.
-        Post, rate, and discover what's actually being asked in 2026.
+        Community-curated interview prep with AI support.
+        Post questions, vote & comment, track your streak, explore jobs, and practice with the AI coach.
       </p>
       <div class="hero-btns">
         <button class="btn-lmp btn-primary" routerLink="/signup">Start preparing free →</button>
         <button class="btn-lmp btn-secondary" routerLink="/explore">Browse questions</button>
       </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="tag tag-tech">Post questions</span>
+        <span class="tag tag-tech">Vote & comment</span>
+        <span class="tag tag-tech">Daily streak</span>
+        <span class="tag tag-tech">Jobs board</span>
+        <span class="tag tag-new">AI coach</span>
+      </div>
     </div>
-    <div class="hero-right">
-      <div class="lmp-card" style="box-shadow:var(--shadow-lg)">
-        <div class="flex justify-between items-center mb-4">
-          <span style="font-size:13px;font-weight:600;">🔥 Trending now</span>
-          <span class="tag tag-new">Live</span>
-        </div>
-        @for (q of trending(); track q.id) {
-        <div class="hv-q">
-          <div class="flex gap-2 mb-2">
-            <span class="tag tag-tech">{{ q.tech }}</span>
-            @if (q.hash) { <span class="tag tag-hash">{{ q.hash }}</span> }
+  </div>
+
+  <div class="ai-wrap animate-fade-up">
+    <div class="lmp-card" style="margin-bottom:10px;padding:1.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.5rem;">
+        <div style="flex:1;min-width:260px;">
+          <div class="hero-badge">
+            <span class="badge-dot"></span> AI Interview Coach — New
           </div>
-          <div style="font-size:13px;line-height:1.5;">{{ q.title }}</div>
-          <div class="flex gap-3 mt-2">
-            <span style="font-size:11px;color:var(--green);">▲ {{ q.votes }}</span>
-            <span style="font-size:11px;color:var(--ink3);">💬 {{ q.comments }}</span>
-            @if (q.hot) { <span class="tag tag-hot" style="font-size:10px;padding:2px 7px;">HOT</span> }
-            @if (q.isNew) { <span class="tag tag-new" style="font-size:10px;padding:2px 7px;">NEW</span> }
+          <h2
+            style="font-size:clamp(24px,4vw,36px);font-weight:800;letter-spacing:-0.03em;line-height:1.12;margin-bottom:0.7rem;">
+            Your AI coach that<br>
+            <span class="text-accent">knows your resume.</span>
+          </h2>
+          <p style="font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:1.4rem;max-width:480px;">
+            Upload your resume. <strong>lastminprep</strong>'s AI bot reads your experience, detects your
+            tech stack, and drills you with exactly the questions you'll face —
+            via chat or voice.
+          </p>
+          <div class="hero-btns">
+            <button class="btn-lmp btn-primary" routerLink="/signup">Start free with AI →</button>
+            <button class="btn-lmp btn-secondary" routerLink="/explore">Browse questions</button>
           </div>
         </div>
-        }
+
+        <div style="flex-shrink:0;display:flex;flex-direction:column;gap:8px;min-width:200px;max-width:260px;">
+          <div class="hv-q" (click)="go('/explore')">
+            <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+              <span class="tag tag-tech">React</span>
+              <span class="tag tag-hot">HOT</span>
+            </div>
+            <div style="font-size:13px;line-height:1.5;">Explain <code
+                style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px;">useEffect</code> vs
+              <code
+                style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px;">useLayoutEffect</code>.
+            </div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+              <span style="font-size:11px;color:var(--green);display:inline-flex;align-items:center;gap:4px;">
+                <span class="mi" style="font-size:14px;">arrow_upward</span>312
+              </span>
+              <span style="font-size:11px;color:var(--ink3);display:inline-flex;align-items:center;gap:4px;">
+                <span class="mi" style="font-size:14px;">chat_bubble</span>47
+              </span>
+              <span class="tag tag-new" style="font-size:10px;padding:2px 7px;">NEW</span>
+            </div>
+          </div>
+          <div class="hv-q" (click)="go('/explore')">
+            <div style="display:flex;gap:6px;margin-bottom:6px;">
+              <span class="tag tag-tech">Node.js</span>
+            </div>
+            <div style="font-size:13px;line-height:1.5;">What is the event loop and how does it work?</div>
+            <div style="margin-top:8px;display:flex;gap:8px;">
+              <span style="font-size:11px;color:var(--green);display:inline-flex;align-items:center;gap:4px;">
+                <span class="mi" style="font-size:14px;">arrow_upward</span>289
+              </span>
+              <span style="font-size:11px;color:var(--ink3);display:inline-flex;align-items:center;gap:4px;">
+                <span class="mi" style="font-size:14px;">chat_bubble</span>31
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lmp-card" style="margin-bottom:10px;">
+      <p
+        style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem;">
+        How it works</p>
+
+      <div class="feature-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:1.5rem;">
+        <div class="feature-card" (click)="go('/signup')">
+          <div class="step-pill"><span class="mi" style="font-size:16px;">upload_file</span>01</div>
+          <div class="feature-title">Upload resume</div>
+          <div class="feature-desc">Drop your PDF. AI extracts your stack, years of exp, and role level instantly.</div>
+        </div>
+        <div class="feature-card" (click)="go('/signup')">
+          <div class="step-pill"><span class="mi" style="font-size:16px;">psychology</span>02</div>
+          <div class="feature-title">AI analyses you</div>
+          <div class="feature-desc">Detects your tech, seniority, and role type. Builds a custom question bank just for
+            you.</div>
+        </div>
+        <div class="feature-card" (click)="go('/signup')">
+          <div class="step-pill"><span class="mi" style="font-size:16px;">forum</span>03</div>
+          <div class="feature-title">Chat or speak</div>
+          <div class="feature-desc">Answer via text chat or voice mode. Real interview pressure, real conditions.</div>
+        </div>
+        <div class="feature-card" (click)="go('/signup')">
+          <div class="step-pill"><span class="mi" style="font-size:16px;">insights</span>04</div>
+          <div class="feature-title">Get feedback</div>
+          <div class="feature-desc">Every answer scored and critiqued instantly. Improve, retry, master it.</div>
+        </div>
+      </div>
+
+      <div class="action-panel" (click)="go('/signup')">
+        <div class="feature-icon" style="width:36px;height:44px;border-radius:8px;">
+          <span class="mi" style="font-size:20px;">picture_as_pdf</span>
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <div style="font-size:13px;font-weight:800;margin-bottom:3px;">Drop your resume — the bot does the rest</div>
+          <div style="font-size:12px;color:var(--ink2);line-height:1.5;">Reads your skills, experience, and tech stack.
+            Personalised question set in seconds.</div>
+        </div>
+        <span class="step-pill" style="margin-bottom:0;white-space:nowrap;">Auto-parsed <span class="mi"
+            style="font-size:16px;">check_circle</span></span>
+      </div>
+
+      <p
+        style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:0.9rem;">
+        Chat mode preview</p>
+
+      <div
+        style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem;">
+          <span style="font-size:13px;font-weight:700;">last<span style="color:var(--accent);">min</span>prep AI
+            Coach</span>
+          <span
+            style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#15803d;background:#dcfce7;border-radius:999px;padding:3px 10px;">
+            <span
+              style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span>Online
+          </span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <div
+              style="width:26px;height:26px;border-radius:50%;background:var(--bg3);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
+              AI</div>
+            <div
+              style="max-width:80%;padding:8px 12px;border-radius:12px;border-bottom-left-radius:3px;background:var(--card);border:1px solid var(--border);font-size:12.5px;line-height:1.55;box-shadow:var(--shadow);">
+              Hi! I've read your resume — <strong>3 yrs React + Node.js</strong>. Starting with a frontend round. Ready?
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:flex-end;flex-direction:row-reverse;">
+            <div
+              style="width:26px;height:26px;border-radius:50%;background:var(--bg4);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
+              U</div>
+            <div
+              style="max-width:80%;padding:8px 12px;border-radius:12px;border-bottom-right-radius:3px;background:var(--accent);color:#fff;font-size:12.5px;line-height:1.55;">
+              Yes, let's go!
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <div
+              style="width:26px;height:26px;border-radius:50%;background:var(--bg3);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
+              AI</div>
+            <div
+              style="max-width:80%;padding:8px 12px;border-radius:12px;border-bottom-left-radius:3px;background:var(--card);border:1px solid var(--border);font-size:12.5px;line-height:1.55;box-shadow:var(--shadow);">
+              <span
+                style="display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;background:var(--bg3);color:var(--accent);margin-bottom:6px;">React
+                · Mid-level</span><br>
+              Explain the difference between
+              <code
+                style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px;color:var(--accent);">useEffect</code>
+              and
+              <code
+                style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px;color:var(--accent);">useLayoutEffect</code>.
+              When would you choose each?
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:flex-end;flex-direction:row-reverse;">
+            <div
+              style="width:26px;height:26px;border-radius:50%;background:var(--bg4);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
+              U</div>
+            <div
+              style="max-width:80%;padding:8px 12px;border-radius:12px;border-bottom-right-radius:3px;background:var(--accent);color:#fff;font-size:12.5px;line-height:1.55;">
+              useEffect runs after paint, useLayoutEffect runs synchronously after DOM mutations but before paint...
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <div
+              style="width:26px;height:26px;border-radius:50%;background:var(--bg3);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">
+              AI</div>
+            <div
+              style="max-width:80%;padding:8px 12px;border-radius:12px;border-bottom-left-radius:3px;background:var(--card);border:1px solid var(--border);font-size:12.5px;line-height:1.55;box-shadow:var(--shadow);">
+              Good start — timing is right! Level up by mentioning <strong>when DOM measurement is needed</strong> (e.g.
+              reading element size before re-render).<br>
+              <span
+                style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#15803d;margin-top:6px;">Score
+                7 / 10 <span class="mi" style="font-size:14px;vertical-align:middle;">check_circle</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p
+        style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:0.9rem;">
+        Voice mode</p>
+
+      <div class="action-panel" (click)="go('/signup')" style="border-style:solid;">
+        <div class="feature-icon" style="width:42px;height:42px;border-radius:50%;">
+          <span class="mi" style="font-size:20px;">mic</span>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:3px;flex-shrink:0;">
+          <div
+            style="width:3px;height:7px;border-radius:2px;background:var(--accent);animation:lmpWave 1s ease-in-out infinite;animation-delay:0s;">
+          </div>
+          <div
+            style="width:3px;height:14px;border-radius:2px;background:var(--accent);animation:lmpWave 1s ease-in-out infinite;animation-delay:.12s;">
+          </div>
+          <div
+            style="width:3px;height:20px;border-radius:2px;background:var(--accent);animation:lmpWave 1s ease-in-out infinite;animation-delay:.24s;">
+          </div>
+          <div
+            style="width:3px;height:11px;border-radius:2px;background:var(--accent);animation:lmpWave 1s ease-in-out infinite;animation-delay:.36s;">
+          </div>
+          <div
+            style="width:3px;height:18px;border-radius:2px;background:var(--accent);animation:lmpWave 1s ease-in-out infinite;animation-delay:.48s;">
+          </div>
+          <div
+            style="width:3px;height:8px;border-radius:2px;background:var(--accent);animation:lmpWave 1s ease-in-out infinite;animation-delay:.60s;">
+          </div>
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">Speak naturally — just like a real interview
+          </div>
+          <div style="font-size:12px;color:var(--ink2);line-height:1.5;">AI listens, transcribes in real-time, and
+            evaluates your spoken answers. Build real confidence before the actual call.</div>
+        </div>
+      </div>
+
+      <p
+        style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:0.9rem;">
+        Everything the AI coach can do</p>
+
+      <div class="feature-grid" style="margin-bottom:1.5rem;">
+        <div class="feature-card" (click)="go('/signup')">
+          <div class="feature-icon"><span class="mi" style="font-size:20px;">description</span></div>
+          <div class="feature-title">Resume-aware questions</div>
+          <div class="feature-desc">Always relevant to your actual stack — no generic spam.</div>
+          <div class="feature-foot"><span class="tag tag-tech">Core feature</span></div>
+        </div>
+
+        <div class="feature-card" (click)="go('/signup')">
+          <div class="feature-icon"><span class="mi" style="font-size:20px;">mic</span></div>
+          <div class="feature-title">Voice interviews</div>
+          <div class="feature-desc">Speak your answers. Builds real confidence before the actual call.</div>
+          <div class="feature-foot"><span class="tag tag-new">New</span></div>
+        </div>
+
+        <div class="feature-card" (click)="go('/dashboard', true)">
+          <div class="feature-icon"><span class="mi" style="font-size:20px;">insights</span></div>
+          <div class="feature-title">Progress tracking</div>
+          <div class="feature-desc">See your score improve over sessions. Know when you're truly ready.</div>
+          <div class="feature-foot"><span class="tag tag-tech">Dashboard</span></div>
+        </div>
+
+        <div class="feature-card" (click)="go('/signup')">
+          <div class="feature-icon"><span class="mi" style="font-size:20px;">tune</span></div>
+          <div class="feature-title">Adaptive difficulty</div>
+          <div class="feature-desc">Struggling somewhere? AI auto-focuses on your weak spots.</div>
+          <div class="feature-foot"><span class="tag tag-tech">Smart</span></div>
+        </div>
+
+        <div class="feature-card disabled">
+          <div class="feature-icon"><span class="mi" style="font-size:20px;">apartment</span></div>
+          <div class="feature-title">Company-specific mode</div>
+          <div class="feature-desc">Tell the AI your target company — it preps for their style.</div>
+          <div class="feature-foot"><span class="tag tag-new">Coming soon</span></div>
+        </div>
+
+        <div class="feature-card" (click)="go('/signup')">
+          <div class="feature-icon"><span class="mi" style="font-size:20px;">bolt</span></div>
+          <div class="feature-title">Instant feedback</div>
+          <div class="feature-desc">Every answer scored and critiqued immediately. No waiting.</div>
+          <div class="feature-foot"><span class="tag tag-tech">AI-powered</span></div>
+        </div>
+      </div>
+
+      <div class="hero-stats" style="margin-bottom:1.5rem;">
+        <div class="h-stat">
+          <div class="h-stat-n">94<span>%</span></div>
+          <div class="h-stat-l">felt more confident after 3 sessions</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-n">2<span>min</span></div>
+          <div class="h-stat-l">average setup time with resume</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-n">50<span>+</span></div>
+          <div class="h-stat-l">tech stacks supported</div>
+        </div>
+      </div>
+
+      <div
+        style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column;align-items:flex-start;">
+        <div style="font-size:16px;font-weight:800;letter-spacing:-0.02em;margin-bottom:0.35rem;">
+          Ready to crack your next interview?
+        </div>
+        <div style="font-size:13px;color:var(--ink2);margin-bottom:1.1rem;">
+          Upload your resume on <strong>last<span style="color:var(--accent);">min</span>prep</strong>. Start in 2
+          minutes. It's free.
+        </div>
+        <button class="btn-lmp btn-primary" routerLink="/signup" style="font-size:14px;padding:10px 26px;">
+          Start with AI coach →
+        </button>
       </div>
     </div>
   </div>

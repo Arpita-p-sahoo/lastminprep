@@ -15,6 +15,7 @@ export interface User {
   linkedinUrl: string;
   techStack: string[];
   streak: number;
+  answeredCount: number;
   questionsPosted: number;
   totalVotes: number;
   joinedAt: Date;

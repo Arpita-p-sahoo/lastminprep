@@ -8,7 +8,7 @@
       <div class="modal-overlay" [class.open]="jobModalOpen()" (click)="jobModalOpen.set(false)">
         <div class="modal-box" (click)="$event.stopPropagation()">
           <div class="modal-handle"></div>
-          <div class="modal-head"><div class="modal-title">Post a job</div><button class="modal-close" (click)="jobModalOpen.set(false)">✕</button></div>
+          <div class="modal-head"><div class="modal-title">Post a job</div><button class="modal-close" (click)="jobModalOpen.set(false)"><span class="mi">close</span></button></div>
           <div class="field"><label>Job title *</label><input class="lmp-input" [(ngModel)]="jobForm.title" placeholder="Senior Angular Developer" /></div>
           <div class="field-row">
             <div class="field"><label>Company *</label><input class="lmp-input" [(ngModel)]="jobForm.company" placeholder="Razorpay" /></div>

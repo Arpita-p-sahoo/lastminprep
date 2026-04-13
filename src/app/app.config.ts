@@ -7,10 +7,16 @@ import { TitleStrategy } from '@angular/router';
 import { LmpTitleStrategy } from './core/services/title-strategy.service';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
+const viewTransitionsSupported =
+  typeof document !== 'undefined' &&
+  typeof (document as any).startViewTransition === 'function';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withViewTransitions(), withComponentInputBinding()),
+    viewTransitionsSupported
+      ? provideRouter(routes, withViewTransitions(), withComponentInputBinding())
+      : provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideAnimations(),
     { provide: TitleStrategy, useClass: LmpTitleStrategy },
