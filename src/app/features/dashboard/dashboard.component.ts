@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
@@ -22,11 +22,18 @@ export class DashboardComponent {
   auth = inject(AuthService);
   qs = inject(QuestionService);
   jobs = inject(JobService);
+  destroyRef = inject(DestroyRef);
   drawerOpen = signal(false);
   postOpen = signal(false);
+  now = signal(Date.now());
   activeChip = 'All';
   chips = ['All', 'Angular', 'Node.js', 'React', 'System Design', 'DevOps'];
   trending: { name: string; count: number }[] = [];
+
+  constructor() {
+    const intervalId = window.setInterval(() => this.now.set(Date.now()), 60_000);
+    this.destroyRef.onDestroy(() => window.clearInterval(intervalId));
+  }
   get latestJobs() {
     return this.jobs.jobs().slice(0, 3).map(j => ({ title: j.title, company: j.company, loc: j.location, stack: j.techStack }));
   }
@@ -59,6 +66,15 @@ export class DashboardComponent {
   get firstName(): string {
     const name = this.auth.currentUser()?.name;
     return name?.split(' ')[0] ?? '';
+  }
+
+  get greeting(): string {
+    this.now();
+    const h = new Date().getHours();
+    if (h >= 5 && h < 12) return 'Good morning';
+    if (h >= 12 && h < 17) return 'Good afternoon';
+    if (h >= 17 && h < 22) return 'Good evening';
+    return 'Good night';
   }
 
   private countNonAuthorComments(thread: Comment[], authorId: string): number {
