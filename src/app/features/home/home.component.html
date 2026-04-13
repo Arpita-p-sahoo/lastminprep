@@ -47,6 +47,32 @@
         <span class="tag tag-new">AI coach</span>
       </div>
     </div>
+    <div class="hero-right animate-fade-up" style="animation-delay: 0.2s;">
+      <div class="dev-window">
+        <div class="dev-header">
+          <div class="dev-dot red"></div>
+          <div class="dev-dot yellow"></div>
+          <div class="dev-dot green"></div>
+          <div style="margin-left: 10px; color: #64748b; font-size: 11px;">interview.ts</div>
+        </div>
+        <div class="dev-body">
+          <span class="code-line"><span class="code-keyword">import</span> {{ '{' }} <span
+              class="code-func">prepare</span> {{ '}' }} <span class="code-keyword">from</span> <span
+              class="code-string">'lastminprep'</span>;</span>
+          <span class="code-line">&nbsp;</span>
+          <span class="code-line"><span class="code-comment">// AI Coach initialized with your resume</span></span>
+          <span class="code-line"><span class="code-keyword">const</span> aiCoach = <span
+              class="code-keyword">new</span> <span class="code-func">AICoach</span>({{ '{' }} <span
+              class="code-string">role</span>: <span class="code-string">'Senior Dev'</span> {{ '}' }});</span>
+          <span class="code-line">&nbsp;</span>
+          <span class="code-line"><span class="code-keyword">await</span> aiCoach.<span
+              class="code-func">startInterview</span>();</span>
+          <span class="code-line"><span class="code-keyword">const</span> result = <span
+              class="code-keyword">await</span> aiCoach.<span class="code-func">analyzeAnswers</span>();<span
+              class="cursor"></span></span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="ai-wrap animate-fade-up">
