@@ -129,6 +129,24 @@ export class QuestionService {
     });
   }
 
+  loadSaved(): void {
+    this.http.get<any>(`${this.API}/questions/saved`).subscribe({
+      next: res => {
+        const list = this.normalizeList(res);
+        this.questions.update(existing => {
+          const next = [...existing];
+          for (const q of list) {
+            const saved = { ...q, isSaved: true };
+            const idx = next.findIndex(x => String(x.id) === String(saved.id));
+            if (idx === -1) next.unshift(saved);
+            else next[idx] = { ...next[idx], ...saved, isSaved: true };
+          }
+          return next;
+        });
+      },
+    });
+  }
+
   post(q: Partial<Question>): void {
     const body = {
       title: q.title || '',

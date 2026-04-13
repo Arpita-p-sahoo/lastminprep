@@ -8,11 +8,15 @@
       <div class="content-inner">
         <div class="feed-head">
           <button class="btn-lmp btn-secondary btn-sm" (click)="back()">← Back</button>
-          @if (canDelete()) {
-            <button class="btn-lmp btn-secondary btn-sm btn-danger" (click)="deleteJob()">Delete</button>
-          } @else {
-            <div></div>
-          }
+          <div class="head-actions">
+            <button class="btn-lmp btn-secondary btn-sm" (click)="toggleSave()">
+              <span class="mi" style="font-size:18px;vertical-align:middle;">{{ isSaved() ? 'bookmark' :
+                'bookmark_border' }}</span>
+            </button>
+            @if (canDelete()) {
+              <button class="btn-lmp btn-secondary btn-sm btn-danger" (click)="deleteJob()">Delete</button>
+            }
+          </div>
         </div>
 
         @if (loading()) {

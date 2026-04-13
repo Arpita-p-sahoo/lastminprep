@@ -128,8 +128,15 @@
           </div>
           <div class="job-footer">
             <span class="job-salary">{{ job.salary }} · {{ job.experience }}</span>
-            <button class="btn-lmp btn-primary btn-sm" (click)="$event.stopPropagation(); apply(job)">{{ job.applyUrl ?
-              'Apply →' : 'Details →' }}</button>
+            <div class="job-actions">
+              <button class="job-btn" [class.saved]="jobService.isJobSaved(job.id)"
+                (click)="$event.stopPropagation(); jobService.toggleJobSaved(job.id)">
+                <span class="mi" style="font-size:18px;">{{ jobService.isJobSaved(job.id) ? 'bookmark' :
+                  'bookmark_border' }}</span>
+              </button>
+              <button class="btn-lmp btn-primary btn-sm" (click)="$event.stopPropagation(); apply(job)">{{ job.applyUrl
+                ? 'Apply →' : 'Details →' }}</button>
+            </div>
           </div>
         </div>
         }

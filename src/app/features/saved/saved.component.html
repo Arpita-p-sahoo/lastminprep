@@ -6,10 +6,57 @@
       <div class="main-layout">
         <app-sidebar />
         <div class="content"><div class="content-inner">
-          <div style="margin-bottom:1.5rem;"><div style="font-size:20px;font-weight:800;">Saved questions</div><div style="font-size:13px;color:var(--ink2);margin-top:3px;">Questions you bookmarked for later review.</div></div>
-          @for (q of saved(); track q.id) { <app-question-card [question]="q" /> }
-          @if (!saved().length) {
-            <div style="text-align:center;padding:3rem;"><div style="font-size:48px;margin-bottom:1rem;opacity:0.4;"><span class="mi" style="font-size:48px;">bookmark</span></div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">No saved questions</div><div style="font-size:13px;color:var(--ink3);">Bookmark questions to revisit them later.</div></div>
+          <div style="margin-bottom:1rem;">
+            <div style="font-size:20px;font-weight:800;">Saved</div>
+            <div style="font-size:13px;color:var(--ink2);margin-top:3px;">Questions and jobs you bookmarked.</div>
+          </div>
+
+          <div class="saved-tabs">
+            <div class="chip" [class.active]="tab()==='questions'" (click)="tab.set('questions')">Questions</div>
+            <div class="chip" [class.active]="tab()==='jobs'" (click)="tab.set('jobs')">Jobs</div>
+          </div>
+
+          @if (tab()==='questions') {
+            @for (q of savedQuestions(); track q.id) { <app-question-card [question]="q" /> }
+            @if (!savedQuestions().length) {
+              <div style="text-align:center;padding:3rem;">
+                <div style="font-size:48px;margin-bottom:1rem;opacity:0.4;"><span class="mi" style="font-size:48px;">bookmark</span></div>
+                <div style="font-size:16px;font-weight:600;margin-bottom:6px;">No saved questions</div>
+                <div style="font-size:13px;color:var(--ink3);">Bookmark questions to revisit them later.</div>
+              </div>
+            }
+          } @else {
+            @for (j of savedJobs(); track j.id) {
+              <div class="lmp-card saved-job-card" (click)="openJob(j)">
+                <div class="saved-job-top">
+                  <div class="saved-job-main">
+                    <div class="saved-job-title">{{ j.title }}</div>
+                    <div class="saved-job-meta">{{ j.company }} · {{ j.location }}</div>
+                  </div>
+                  <div class="saved-job-tags">
+                    <span class="tag tag-job">{{ j.type }}</span>
+                    <span class="tag tag-hash">{{ j.experience }}</span>
+                  </div>
+                </div>
+                <div class="saved-job-desc">{{ j.description }}</div>
+                <div class="saved-job-foot">
+                  <span style="font-size:12px;color:var(--ink3);">{{ j.salary || '—' }}</span>
+                  <div class="saved-job-actions">
+                    <button class="saved-job-save" (click)="$event.stopPropagation(); jobs.toggleJobSaved(j.id)">
+                      <span class="mi" style="font-size:18px;">bookmark</span>
+                    </button>
+                    <button class="btn-lmp btn-secondary btn-sm" (click)="$event.stopPropagation(); openJob(j)">Details →</button>
+                  </div>
+                </div>
+              </div>
+            }
+            @if (!savedJobs().length) {
+              <div style="text-align:center;padding:3rem;">
+                <div style="font-size:48px;margin-bottom:1rem;opacity:0.4;"><span class="mi" style="font-size:48px;">work</span></div>
+                <div style="font-size:16px;font-weight:600;margin-bottom:6px;">No saved jobs</div>
+                <div style="font-size:13px;color:var(--ink3);">Bookmark jobs to revisit them later.</div>
+              </div>
+            }
           }
         </div></div>
       </div>

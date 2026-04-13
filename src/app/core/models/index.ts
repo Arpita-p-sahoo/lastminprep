@@ -58,6 +58,7 @@ export interface Job {
   applyUrl?: string;
   postedAt: Date;
   postedBy: Partial<User>;
+  isSaved?: boolean;
 }
 
 export interface Notification {

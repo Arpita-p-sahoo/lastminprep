@@ -45,6 +45,7 @@ export class JobDetailComponent {
     if (!job) return null;
     return { ...(job.postedBy ?? {}), ...(this.poster() ?? {}) };
   });
+  isSaved = computed(() => (this.id ? this.jobs.isJobSaved(this.id) : false));
   canDelete = computed(() => {
     const currentId = this.auth.currentUser()?.id;
     const posterId = this.job()?.postedBy?.id;
@@ -107,6 +108,11 @@ export class JobDetailComponent {
     const url = String(job.applyUrl ?? '').trim();
     if (!url) return;
     window.open(url, '_blank', 'noopener');
+  }
+
+  toggleSave(): void {
+    if (!this.id) return;
+    this.jobs.toggleJobSaved(this.id);
   }
 
   jobSource(job: Job): string {

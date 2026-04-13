@@ -153,6 +153,36 @@
   color: var(--ink3);
 }
 
+.job-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.job-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: all 0.18s;
+  color: var(--ink3);
+}
+
+.job-btn:hover {
+  background: var(--bg3);
+  color: var(--accent);
+}
+
+.job-btn.saved {
+  color: var(--amber);
+}
+
 .rp-card {
   background: var(--card);
   border: 1px solid var(--border);

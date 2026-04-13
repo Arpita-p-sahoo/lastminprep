@@ -15,12 +15,23 @@ export class JobService {
         const userId = this.userKey();
         const lastSeen = this.loadOrInitJobsLastSeen(userId);
         this.jobsLastSeen.set(lastSeen);
+        this.savedJobs.set([]);
+        if (this.auth.isLoggedIn()) {
+          this.loadSaved();
+        }
       },
       { allowSignalWrites: true }
     );
   }
   jobs = signal<Job[]>([]);
   private jobsLastSeen = signal<number>(0);
+  savedJobs = signal<Job[]>([]);
+  private savedJobIdSet = computed(() => {
+    const set = new Set<string>();
+    for (const j of this.savedJobs()) set.add(String(j.id));
+    for (const j of this.jobs()) if (j.isSaved) set.add(String(j.id));
+    return set;
+  });
   newJobsCount = computed(() => {
     const lastSeen = this.jobsLastSeen();
     if (!lastSeen) return 0;
@@ -51,6 +62,55 @@ export class JobService {
       return Number.isFinite(t) ? Math.max(max, t) : max;
     }, 0);
     this.markJobsSeen(latest || Date.now());
+  }
+
+  loadSaved(): void {
+    this.http.get<any>(`${this.API}/jobs/saved`).subscribe({
+      next: res => {
+        const list = this.normalizeList(res);
+        const saved = list.map(j => ({ ...j, isSaved: true }));
+        this.savedJobs.set(saved);
+        this.jobs.update(existing => {
+          const next = [...existing];
+          for (const s of saved) {
+            const idx = next.findIndex(x => String(x.id) === String(s.id));
+            if (idx === -1) next.unshift(s);
+            else next[idx] = { ...next[idx], ...s, isSaved: true };
+          }
+          return next;
+        });
+      },
+      error: () => this.savedJobs.set([]),
+    });
+  }
+
+  isJobSaved(id: string): boolean {
+    return this.savedJobIdSet().has(String(id));
+  }
+
+  toggleJobSaved(id: string): void {
+    const jobId = String(id);
+    if (!jobId) return;
+    this.http.post<any>(`${this.API}/jobs/${jobId}/save`, {}).subscribe({
+      next: res => {
+        const isSaved = typeof res?.isSaved === 'boolean' ? res.isSaved : undefined;
+        const saved = typeof isSaved === 'boolean' ? isSaved : !this.isJobSaved(jobId);
+        this.jobs.update(list =>
+          list.map(j => (String(j.id) === jobId ? { ...j, isSaved: saved } : j))
+        );
+        if (saved) {
+          const found = this.getById(jobId);
+          if (found) {
+            this.savedJobs.update(items => {
+              const exists = items.some(x => String(x.id) === jobId);
+              return exists ? items : [{ ...found, isSaved: true }, ...items];
+            });
+          }
+        } else {
+          this.savedJobs.update(items => items.filter(x => String(x.id) !== jobId));
+        }
+      },
+    });
   }
 
   getById(id: string): Job | null {
@@ -158,6 +218,7 @@ export class JobService {
         email: postedBy.email ?? item.postedByEmail ?? item.posterEmail ?? '',
         linkedinUrl: postedBy.linkedinUrl ?? postedBy.linkedin ?? item.postedByLinkedinUrl ?? item.posterLinkedinUrl ?? '',
       },
+      isSaved: typeof item.isSaved === 'boolean' ? item.isSaved : undefined,
     };
   }
 
