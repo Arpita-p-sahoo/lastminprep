@@ -7,7 +7,6 @@ dist/
 
 # Environment
 .env
-src/environments/environment.prod.ts
 
 # Logs
 *.log
