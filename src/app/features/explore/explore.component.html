@@ -1,37 +1,47 @@
-
-    <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-    <div class="flex flex-col min-h-screen animate-fade-up">
-      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
-      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
-      <div class="main-layout">
-        <app-sidebar />
-        <div class="content">
-          <div class="content-inner">
-            <div class="step-label">Step 1 — Domain</div>
-            <div class="ts-grid">
-              @for (d of domains; track d.id) {
-                <div class="ts-card" [class.sel]="selectedDomain?.id === d.id" (click)="selectDomain(d)">
-                  <div class="ts-icon"><span class="mi" style="font-size:30px;">{{ d.icon }}</span></div>
-                  <div class="ts-name">{{ d.name }}</div>
-                </div>
+<app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+<div class="flex flex-col min-h-screen animate-fade-up">
+  <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+  <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+  <div class="main-layout">
+    <app-sidebar />
+    <div class="content">
+      <div class="content-inner">
+        <div class="step-label">Step 1 — Domain</div>
+        <div class="ts-grid">
+          @for (d of domains; track d.id) {
+          <div class="ts-card" [class.sel]="selectedDomain?.id === d.id" (click)="selectDomain(d)">
+            <div class="ts-icon">
+              @if (d.icon) {
+              <img class="ts-si" [src]="iconUrl(d.icon, 28)" [alt]="d.name + ' icon'" loading="lazy" />
+              } @else {
+              <div class="ts-logo">{{ badge(d.name) }}</div>
               }
             </div>
-            @if (selectedDomain) {
-              <div class="mt-8">
-                <div class="step-label">Step 2 — {{ selectedDomain.name }} technologies</div>
-                <div class="ts-grid">
-                  @for (fw of selectedDomain.frameworks; track fw.name) {
-                    <div class="ts-card" [class.sel]="selectedFw === fw.name" (click)="selectFw(fw.name)">
-                      <div class="ts-icon"><span class="mi" style="font-size:30px;">{{ fw.icon }}</span></div>
-                      <div class="ts-name">{{ fw.name }}</div>
-                    </div>
-                  }
-                </div>
+            <div class="ts-name">{{ d.name }}</div>
+          </div>
+          }
+        </div>
+        @if (selectedDomain) {
+        <div class="mt-8">
+          <div class="step-label">Step 2 — {{ selectedDomain.name }} technologies</div>
+          <div class="ts-grid">
+            @for (fw of selectedDomain.frameworks; track fw.name) {
+            <div class="ts-card" [class.sel]="selectedFw === fw.name" (click)="selectFw(fw.name)">
+              <div class="ts-icon">
+                @if (fw.icon) {
+                <img class="ts-si" [src]="iconUrl(fw.icon, 28)" [alt]="fw.name + ' icon'" loading="lazy" />
+                } @else {
+                <div class="ts-logo">{{ badge(fw.name) }}</div>
+                }
               </div>
+              <div class="ts-name">{{ fw.name }}</div>
+            </div>
             }
           </div>
         </div>
+        }
       </div>
-      <app-bottom-nav (postClick)="postOpen.set(true)" />
     </div>
-  
+  </div>
+  <app-bottom-nav (postClick)="postOpen.set(true)" />
+</div>

@@ -11,8 +11,13 @@
             [style.backgroundImage]="auth.currentUser()?.bannerUrl ? 'url(' + auth.currentUser()?.bannerUrl + ')' : ''"
             [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'">
             @if (editOpen()) {
-            <div class="banner-edit-btn" (click)="toggleBannerMenu($event)" title="Change banner"><span class="mi"
-                style="font-size:18px;">photo_camera</span></div>
+            <div class="banner-edit-btn" (click)="toggleBannerMenu($event)" title="Change banner">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M9 5l1.5-2h3L15 5h3a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3z"
+                  fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                <circle cx="12" cy="13" r="3.3" fill="none" stroke="currentColor" stroke-width="1.7" />
+              </svg>
+            </div>
             @if (bannerMenuOpen()) {
             <div class="mini-menu mini-menu--up mini-menu--banner" (click)="$event.stopPropagation()">
               <div class="item" (click)="chooseBanner('custom')">Custom URL</div>
@@ -32,8 +37,14 @@
                   {{ auth.currentUser()?.name?.charAt(0) }}
                   }
                   @if (editOpen()) {
-                  <div class="ava-edit-btn" (click)="toggleAvatarMenu($event)" title="Edit avatar"><span class="mi"
-                      style="font-size:16px;">edit</span></div>
+                  <div class="ava-edit-btn" (click)="toggleAvatarMenu($event)" title="Edit avatar">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path d="M4 20h4l10.5-10.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 16v4z" fill="none"
+                        stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                      <path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" />
+                    </svg>
+                  </div>
                   @if (avatarMenuOpen()) {
                   <div class="mini-menu" (click)="$event.stopPropagation()">
                     <div class="item" (click)="chooseAvatar('custom')">Custom URL</div>

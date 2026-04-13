@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { RouterLink } from '@angular/router';
 import { JobService } from '../../core/services/job.service';
+import { Comment } from '../../core/models';
 
 @Component({
   selector: 'app-dashboard',
@@ -40,7 +41,15 @@ export class DashboardComponent {
 
   get answeredCount(): number {
     const user = this.auth.currentUser();
-    return user?.answeredCount ?? 0;
+    if (!user?.id) return 0;
+
+    const authored = this.qs.getByAuthor(user.id);
+    const received = authored.reduce((sum, q) => {
+      if (q.thread?.length) return sum + this.countNonAuthorComments(q.thread, user.id);
+      return sum + (q.commentCount ?? 0);
+    }, 0);
+
+    return Math.max(user.answeredCount ?? 0, received);
   }
 
   get dayStreak(): number {
@@ -50,6 +59,16 @@ export class DashboardComponent {
   get firstName(): string {
     const name = this.auth.currentUser()?.name;
     return name?.split(' ')[0] ?? '';
+  }
+
+  private countNonAuthorComments(thread: Comment[], authorId: string): number {
+    let count = 0;
+    for (const c of thread) {
+      const isFromOther = c?.author?.id && String(c.author.id) !== String(authorId);
+      if (isFromOther) count += 1;
+      if (c.replies?.length) count += this.countNonAuthorComments(c.replies, authorId);
+    }
+    return count;
   }
 
 }

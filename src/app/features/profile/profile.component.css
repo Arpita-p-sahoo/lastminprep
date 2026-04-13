@@ -160,6 +160,14 @@
   user-select: none;
 }
 
+.ava-edit-btn svg,
+.banner-edit-btn svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  color: var(--accent);
+}
+
 .ava-edit-btn {
   right: -6px;
   bottom: -6px;
