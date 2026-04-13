@@ -110,6 +110,12 @@
           }
         </div>
 
+        @if (jobService.loading()) {
+        <div class="lmp-loading">
+          <div class="lmp-spinner"></div>
+          <div>Loading…</div>
+        </div>
+        } @else {
         @for (job of filteredJobs(); track job.id) {
         <div class="job-card" (click)="openJob(job)">
           <div class="job-top">
@@ -143,6 +149,7 @@
 
         @if (!filteredJobs().length) {
         <div style="text-align:center;padding:2rem;color:var(--ink3);">No jobs found</div>
+        }
         }
       </div>
     </div>

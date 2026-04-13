@@ -35,7 +35,13 @@
                     @else if (entry.rank === 3) { <span class="mi" style="font-size:18px;">emoji_events</span> }
                     @else { {{ entry.rank }} }
                   </div>
-                  <div class="lb-ava" [style.background]="entry.color">{{ entry.name.charAt(0) }}</div>
+                  <div class="lb-ava" [style.background]="entry.color">
+                    @if (entry.isCurrentUser && auth.currentUser()?.avatar) {
+                      <img [src]="auth.currentUser()!.avatar" alt="avatar" />
+                    } @else {
+                      {{ entry.name.charAt(0) }}
+                    }
+                  </div>
                   <div class="lb-info">
                     <div class="lb-name">{{ entry.name }} {{ entry.isCurrentUser ? '(you)' : '' }}</div>
                     <div class="lb-score">{{ entry.questions }} questions · {{ entry.votes }} votes</div>

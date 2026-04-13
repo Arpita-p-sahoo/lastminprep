@@ -24,6 +24,7 @@ export class JobService {
     );
   }
   jobs = signal<Job[]>([]);
+  loading = signal(true);
   private jobsLastSeen = signal<number>(0);
   savedJobs = signal<Job[]>([]);
   private savedJobIdSet = computed(() => {
@@ -170,9 +171,16 @@ export class JobService {
   }
 
   private load(): void {
+    this.loading.set(true);
     this.http.get<any>(`${this.API}/jobs`).subscribe({
-      next: data => this.jobs.set(this.normalizeList(data)),
-      error: () => this.jobs.set([]),
+      next: data => {
+        this.jobs.set(this.normalizeList(data));
+        this.loading.set(false);
+      },
+      error: () => {
+        this.jobs.set([]);
+        this.loading.set(false);
+      },
     });
   }
 

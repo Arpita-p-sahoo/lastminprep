@@ -20,7 +20,10 @@
         </div>
 
         @if (loading()) {
-        <div style="text-align:center;padding:2rem;color:var(--ink3);">Loading…</div>
+        <div class="lmp-loading">
+          <div class="lmp-spinner"></div>
+          <div>Loading…</div>
+        </div>
         } @else if (job()) {
         <div class="job-detail-card">
           <div class="job-title">{{ job()!.title }}</div>
@@ -120,4 +123,27 @@
     </div>
   </div>
   <app-bottom-nav (postClick)="postOpen.set(true)" />
+</div>
+
+<div class="modal-overlay" [class.open]="confirmDeleteOpen()" (click)="closeDeleteModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:16px;font-weight:800;">Delete job</div>
+      <button class="btn-lmp btn-secondary btn-sm" type="button" (click)="closeDeleteModal()"
+        [disabled]="deleting()">Close</button>
+    </div>
+    <div class="lmp-modal-text">This job will be permanently removed. This action can’t be undone.</div>
+    <div class="lmp-modal-actions">
+      <button class="btn-lmp btn-secondary" type="button" (click)="closeDeleteModal()" [disabled]="deleting()">
+        Cancel
+      </button>
+      <button class="btn-lmp btn-secondary btn-sm btn-danger" type="button" (click)="confirmDeleteJob()"
+        [disabled]="deleting()">
+        @if (deleting()) {
+        <span class="lmp-spinner sm"></span>
+        }
+        Delete
+      </button>
+    </div>
+  </div>
 </div>

@@ -69,6 +69,7 @@
     color: #fff;
     flex-shrink: 0;
 }
+.sb-user-ava img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;}
 
 .sb-user-info {
     flex: 1;

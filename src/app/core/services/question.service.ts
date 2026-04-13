@@ -20,6 +20,7 @@ export class QuestionService {
     );
   }
   questions = signal<Question[]>([]);
+  loading = signal(true);
   private feedLastSeen = signal<number>(0);
   newFeedCount = computed(() => {
     const lastSeen = this.feedLastSeen();
@@ -54,6 +55,7 @@ export class QuestionService {
   }
 
   loadAll(): void {
+    this.loading.set(true);
     this.http.get<any>(`${this.API}/questions`).subscribe({
       next: data => {
         const list = this.normalizeList(data);
@@ -63,8 +65,12 @@ export class QuestionService {
           return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
         });
         this.questions.set(list);
+        this.loading.set(false);
       },
-      error: () => this.questions.set([]),
+      error: () => {
+        this.questions.set([]);
+        this.loading.set(false);
+      },
     });
   }
 
@@ -165,6 +171,58 @@ export class QuestionService {
     });
   }
 
+  update(
+    id: string,
+    q: Partial<Question>,
+    callbacks?: { onSuccess?: () => void; onError?: () => void }
+  ): void {
+    const questionId = String(id);
+    if (!questionId) return;
+    const body = {
+      title: q.title ?? '',
+      techTag: q.techTag ?? 'General',
+      hashtags: Array.isArray(q.hashtags) ? q.hashtags : [],
+    };
+
+    const applyLocalPatch = (patch: Partial<Question>) => {
+      this.questions.update(list =>
+        list.map(item =>
+          String(item.id) === questionId
+            ? {
+              ...item,
+              ...(patch.title !== undefined ? { title: String(patch.title) } : {}),
+              ...(patch.techTag !== undefined ? { techTag: String(patch.techTag) } : {}),
+              ...(patch.hashtags !== undefined ? { hashtags: Array.isArray(patch.hashtags) ? patch.hashtags : item.hashtags } : {}),
+            }
+            : item
+        )
+      );
+    };
+
+    const handleSuccess = (res: any) => {
+      const raw = res?.data ?? res?.item ?? res;
+      if (raw && typeof raw === 'object') {
+        const normalized = this.normalize(raw);
+        this.questions.update(list => list.map(item => (String(item.id) === questionId ? { ...item, ...normalized } : item)));
+      } else {
+        applyLocalPatch(body as any);
+      }
+      callbacks?.onSuccess?.();
+    };
+
+    const handleError = () => callbacks?.onError?.();
+
+    this.http.patch<any>(`${this.API}/questions/${questionId}`, body).subscribe({
+      next: handleSuccess,
+      error: () => {
+        this.http.put<any>(`${this.API}/questions/${questionId}`, body).subscribe({
+          next: handleSuccess,
+          error: handleError,
+        });
+      },
+    });
+  }
+
   comment(questionId: string, text: string): void {
     const author = this.auth.currentUser();
     this.http.post<{ comment: any }>(`${this.API}/questions/${questionId}/comments`, { text }).subscribe({
@@ -248,10 +306,23 @@ export class QuestionService {
 
   private normalize(item: any): Question {
     const rawAuthor = item?.author;
-    const author =
+    const authorId =
       rawAuthor && typeof rawAuthor === 'object'
-        ? { id: rawAuthor.id ?? rawAuthor._id ?? item.authorId ?? item.authorID, name: rawAuthor.name ?? item.authorName }
-        : { id: item.authorId ?? item.authorID ?? rawAuthor, name: item.authorName };
+        ? (rawAuthor.id ?? rawAuthor._id ?? item.authorId ?? item.authorID)
+        : (item.authorId ?? item.authorID ?? rawAuthor);
+    const authorName =
+      rawAuthor && typeof rawAuthor === 'object'
+        ? (rawAuthor.name ?? item.authorName)
+        : item.authorName;
+    const rawAvatar =
+      rawAuthor && typeof rawAuthor === 'object'
+        ? (rawAuthor.avatar ?? rawAuthor.avatarUrl ?? rawAuthor.photo ?? rawAuthor.image ?? '')
+        : (item.authorAvatar ?? item.authorAvatarUrl ?? item.authorPhoto ?? '');
+    const current = this.auth.currentUser();
+    const authorAvatar =
+      String(rawAvatar ?? '').trim() ||
+      (current?.id && authorId && String(current.id) === String(authorId) ? String(current.avatar ?? '').trim() : '');
+    const author = { id: authorId ?? '', name: authorName ?? '', avatar: authorAvatar };
 
     const thread = this.normalizeThread(
       item?.thread ??
@@ -301,10 +372,23 @@ export class QuestionService {
 
   private normalizeComment(c: any): Comment {
     const rawAuthor = c?.author;
-    const author =
+    const authorId =
       rawAuthor && typeof rawAuthor === 'object'
-        ? { id: rawAuthor.id ?? rawAuthor._id ?? c.authorId ?? c.userId, name: rawAuthor.name ?? c.authorName ?? c.userName }
-        : { id: c.authorId ?? c.userId ?? rawAuthor, name: c.authorName ?? c.userName };
+        ? (rawAuthor.id ?? rawAuthor._id ?? c.authorId ?? c.userId)
+        : (c.authorId ?? c.userId ?? rawAuthor);
+    const authorName =
+      rawAuthor && typeof rawAuthor === 'object'
+        ? (rawAuthor.name ?? c.authorName ?? c.userName)
+        : (c.authorName ?? c.userName);
+    const rawAvatar =
+      rawAuthor && typeof rawAuthor === 'object'
+        ? (rawAuthor.avatar ?? rawAuthor.avatarUrl ?? rawAuthor.photo ?? rawAuthor.image ?? '')
+        : (c.authorAvatar ?? c.authorAvatarUrl ?? c.userAvatar ?? c.userAvatarUrl ?? '');
+    const current = this.auth.currentUser();
+    const authorAvatar =
+      String(rawAvatar ?? '').trim() ||
+      (current?.id && authorId && String(current.id) === String(authorId) ? String(current.avatar ?? '').trim() : '');
+    const author = { id: authorId ?? '', name: authorName ?? '', avatar: authorAvatar };
 
     const createdAt = c?.createdAt ? new Date(c.createdAt) : new Date();
     const replies = this.normalizeThread(c?.replies);

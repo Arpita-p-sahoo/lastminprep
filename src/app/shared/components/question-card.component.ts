@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Comment, Question } from '../../core/models';
 import { QuestionService } from '../../core/services/question.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-question-card',
@@ -17,8 +18,11 @@ export class QuestionCardComponent {
   question = input.required<Question>();
   qs = inject(QuestionService);
   auth = inject(AuthService);
+  toast = inject(ToastService);
   showComments = false;
   newComment = '';
+  deleteTarget: { kind: 'question' | 'comment'; id: string } | null = null;
+  deleting = false;
   toggleComments(): void { this.showComments = !this.showComments; }
   addComment(): void {
     const t = this.newComment.trim();
@@ -56,12 +60,54 @@ export class QuestionCardComponent {
 
   deleteQuestion(): void {
     const id = this.question()?.id;
-    if (id) this.qs.delete(id);
+    if (!id) return;
+    if (!this.canDelete) return;
+    this.deleteTarget = { kind: 'question', id: String(id) };
   }
 
   deleteComment(commentId: string): void {
     const questionId = this.question()?.id;
     if (!questionId || !commentId) return;
-    this.qs.deleteComment(questionId, commentId);
+    this.deleteTarget = { kind: 'comment', id: String(commentId) };
+  }
+
+  closeDeleteModal(): void {
+    if (this.deleting) return;
+    this.deleteTarget = null;
+  }
+
+  confirmDelete(): void {
+    const target = this.deleteTarget;
+    const qid = this.question()?.id;
+    if (!target || !qid) return;
+    if (this.deleting) return;
+
+    this.deleting = true;
+    if (target.kind === 'question') {
+      this.qs.delete(String(qid), {
+        onSuccess: () => {
+          this.deleting = false;
+          this.deleteTarget = null;
+          this.toast.success('Question deleted');
+        },
+        onError: () => {
+          this.deleting = false;
+          this.toast.error('Failed to delete question');
+        },
+      });
+      return;
+    }
+
+    this.qs.deleteComment(String(qid), String(target.id), {
+      onSuccess: () => {
+        this.deleting = false;
+        this.deleteTarget = null;
+        this.toast.success('Comment deleted');
+      },
+      onError: () => {
+        this.deleting = false;
+        this.toast.error('Failed to delete comment');
+      },
+    });
   }
 }

@@ -13,6 +13,12 @@
             </div>
             <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)"><span class="mi" style="font-size:16px;">add</span> New</button>
           </div>
+          @if (qs.loading()) {
+            <div class="lmp-loading">
+              <div class="lmp-spinner"></div>
+              <div>Loading…</div>
+            </div>
+          } @else {
           @for (q of myQ(); track q.id) {
             <div class="q-card">
               <div class="q-card-top">
@@ -25,10 +31,10 @@
               <a class="q-title" [routerLink]="['/questions', q.id]">{{ q.title }}</a>
               <div class="q-footer">
                 <div class="q-actions">
-                  <button class="q-btn voted"><span class="mi" style="font-size:16px;">arrow_upward</span> {{ q.votes }}</button>
-                  <button class="q-btn"><span class="mi" style="font-size:16px;">chat_bubble</span> {{ q.commentCount }}</button>
-                  <button class="q-btn edit-btn"><span class="mi" style="font-size:16px;">edit</span> Edit</button>
-                  <button class="q-btn del-btn" (click)="qs.delete(q.id)"><span class="mi" style="font-size:16px;">delete</span> Delete</button>
+                  <button class="q-btn" [class.voted]="q.isVoted" type="button" (click)="qs.vote(q.id)"><span class="mi" style="font-size:16px;">arrow_upward</span> {{ q.votes }}</button>
+                  <button class="q-btn" type="button" (click)="openComments(q)"><span class="mi" style="font-size:16px;">chat_bubble</span> {{ q.commentCount }}</button>
+                  <button class="q-btn edit-btn" type="button" (click)="editQuestion(q)"><span class="mi" style="font-size:16px;">edit</span> Edit</button>
+                  <button class="q-btn del-btn" type="button" (click)="requestDelete(q)"><span class="mi" style="font-size:16px;">delete</span> Delete</button>
                 </div>
               </div>
             </div>
@@ -41,8 +47,28 @@
               <button class="btn-lmp btn-primary" style="margin-top:1rem;" (click)="postOpen.set(true)">Post your first question →</button>
             </div>
           }
+          }
         </div></div>
       </div>
       <app-bottom-nav (postClick)="postOpen.set(true)" />
+    </div>
+
+    <div class="modal-overlay" [class.open]="confirmDeleteOpen()" (click)="closeDeleteModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:16px;font-weight:800;">Delete question</div>
+          <button class="btn-lmp btn-secondary btn-sm" type="button" (click)="closeDeleteModal()" [disabled]="deleting()">Close</button>
+        </div>
+        <div class="lmp-modal-text">This question will be permanently removed. This action can’t be undone.</div>
+        <div class="lmp-modal-actions">
+          <button class="btn-lmp btn-secondary" type="button" (click)="closeDeleteModal()" [disabled]="deleting()">Cancel</button>
+          <button class="btn-lmp btn-secondary btn-sm btn-danger" type="button" (click)="confirmDelete()" [disabled]="deleting()">
+            @if (deleting()) {
+            <span class="lmp-spinner sm"></span>
+            }
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   

@@ -17,6 +17,32 @@ export class AuthService {
 
   constructor(private router: Router, private http: HttpClient, private toast: ToastService) { }
 
+  private normalizeGender(value: any): 'male' | 'female' | '' {
+    const g = String(value ?? '').trim().toLowerCase();
+    if (!g) return '';
+    if (g.includes('female') || g === 'f') return 'female';
+    if (g.includes('male') || g === 'm') return 'male';
+    return '';
+  }
+
+  private avatarIndex(seed: string): number {
+    const s = String(seed ?? '').trim();
+    if (!s) return 0;
+    let h = 0;
+    for (let i = 0; i < s.length; i += 1) {
+      h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    }
+    return h % 100;
+  }
+
+  private defaultAvatarUrl(seed: string, gender: any): string {
+    const g = this.normalizeGender(gender);
+    if (!g) return '';
+    const idx = this.avatarIndex(seed);
+    const group = g === 'female' ? 'women' : 'men';
+    return `https://randomuser.me/api/portraits/${group}/${idx}.jpg`;
+  }
+
   private loadUser(): User | null {
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
@@ -27,11 +53,15 @@ export class AuthService {
   }
 
   private normalizeUser(u: any): User {
+    const gender = u?.gender ?? '';
+    const rawAvatar = String(u?.avatar ?? u?.avatarUrl ?? '').trim();
+    const seed = String(u?.email ?? u?.name ?? u?.id ?? u?._id ?? '').trim();
+    const avatar = rawAvatar || this.defaultAvatarUrl(seed, gender);
     return {
       id: u.id ?? u._id ?? '',
       name: u.name ?? '',
       email: u.email ?? '',
-      avatar: u.avatar ?? u.avatarUrl ?? '',
+      avatar,
       bannerUrl: u.bannerUrl ?? '',
       designation: u.designation ?? '',
       organisation: u.organisation ?? '',
@@ -39,7 +69,7 @@ export class AuthService {
       highestEducation: u.highestEducation ?? '',
       experience: u.experience ?? '',
       age: Number(u.age ?? 0),
-      gender: u.gender ?? '',
+      gender,
       dob: u.dob ?? '',
       linkedinUrl: u.linkedinUrl ?? '',
       techStack: Array.isArray(u.techStack) ? u.techStack : (u.techStack ? String(u.techStack).split(',').map((s: string) => s.trim()).filter(Boolean) : []),
@@ -113,6 +143,9 @@ export class AuthService {
   }
 
   signup(userData: Partial<User> & { password: string; avatarUrl?: string }): void {
+    const seed = String(userData.email ?? userData.name ?? '').trim();
+    const avatarUrl =
+      String((userData as any).avatarUrl ?? '').trim() || this.defaultAvatarUrl(seed, userData.gender);
     const payload: any = {
       name: userData.name,
       email: userData.email,
@@ -123,7 +156,7 @@ export class AuthService {
       age: userData.age,
       gender: userData.gender,
       dob: userData.dob,
-      avatarUrl: (userData as any).avatarUrl,
+      avatarUrl,
       linkedinUrl: userData.linkedinUrl,
       techStack: userData.techStack,
     };

@@ -1,3 +1,4 @@
+.feed-head { margin-bottom: 12px; }
 .job-detail-card {
   background: var(--card);
   border: 1px solid var(--border);

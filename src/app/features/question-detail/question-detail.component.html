@@ -11,7 +11,10 @@
         </div>
 
         @if (loading()) {
-        <div style="text-align:center;padding:2rem;color:var(--ink3);">Loading…</div>
+        <div class="lmp-loading">
+          <div class="lmp-spinner"></div>
+          <div>Loading…</div>
+        </div>
         } @else if (question()) {
         <div class="q-card">
           <div class="q-card-top">
@@ -22,22 +25,68 @@
               }
             </div>
             @if (canDelete) {
-            <button class="q-btn del" (click)="deleteQuestion()"><span class="mi"
-                style="font-size:18px;vertical-align:middle;">delete</span> Delete</button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+              <button class="q-btn" type="button" (click)="startEdit()"><span class="mi"
+                  style="font-size:18px;vertical-align:middle;">edit</span> Edit</button>
+              <button class="q-btn del" type="button" (click)="deleteQuestion()"><span class="mi"
+                  style="font-size:18px;vertical-align:middle;">delete</span> Delete</button>
+            </div>
             }
           </div>
 
+          @if (editOpen()) {
+          <div style="margin-bottom:10px;">
+            <div style="font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:6px;">Title</div>
+            <input class="lmp-input" [ngModel]="editTitle()" (ngModelChange)="editTitle.set($event)"
+              placeholder="Question title" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:6px;">Tech tag</div>
+              <input class="lmp-input" [ngModel]="editTechTag()" (ngModelChange)="editTechTag.set($event)"
+                placeholder="e.g., Angular" />
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:6px;">Hashtags</div>
+              <input class="lmp-input" [ngModel]="editHashtags()" (ngModelChange)="editHashtags.set($event)"
+                placeholder="comma separated" />
+            </div>
+          </div>
+          <div class="lmp-modal-actions" style="justify-content:flex-start;">
+            <button class="btn-lmp btn-secondary btn-sm" type="button" (click)="cancelEdit()"
+              [disabled]="savingEdit()">Cancel</button>
+            <button class="btn-lmp btn-primary btn-sm" type="button" (click)="saveEdit()"
+              [disabled]="savingEdit() || !editTitle().trim()">
+              @if (savingEdit()) {
+              <span class="lmp-spinner sm"></span>
+              }
+              Save
+            </button>
+          </div>
+          } @else {
           <div class="q-title">{{ question()!.title }}</div>
+          }
 
           <div class="q-footer">
             <div class="q-user">
               @if (question()!.author.id) {
-              <a class="q-ava" [routerLink]="['/user', question()!.author.id]">{{ question()!.author.name?.charAt(0)
-                }}</a>
+              <a class="q-ava" [routerLink]="['/user', question()!.author.id]">
+                @if (question()!.author.avatar) {
+                <img [src]="question()!.author.avatar" alt="avatar" />
+                } @else {
+                {{ question()!.author.name?.charAt(0) }}
+                }
+              </a>
               <a [routerLink]="['/user', question()!.author.id]">&#64;{{
                 question()!.author.name?.toLowerCase()?.replace(' ', '_') }}</a>
               } @else {
-              <div class="q-ava">{{ question()!.author.name?.charAt(0) }}</div>
+              <div class="q-ava">
+                @if (question()!.author.avatar) {
+                <img [src]="question()!.author.avatar" alt="avatar" />
+                } @else {
+                {{ question()!.author.name?.charAt(0) }}
+                }
+              </div>
               &#64;{{ question()!.author.name?.toLowerCase()?.replace(' ', '_') }}
               }
             </div>
@@ -45,7 +94,8 @@
               <button class="q-btn" [class.voted]="question()!.isVoted" (click)="qs.vote(question()!.id)">
                 <span class="mi" style="font-size:16px;">arrow_upward</span> {{ question()!.votes }}
               </button>
-              <button class="q-btn"><span class="mi" style="font-size:16px;">chat_bubble</span> {{
+              <button class="q-btn" type="button" (click)="scrollToComments()"><span class="mi"
+                  style="font-size:16px;">chat_bubble</span> {{
                 question()!.commentCount }}</button>
               <button class="q-btn" [class.saved]="question()!.isSaved" (click)="qs.save(question()!.id)">
                 <span class="mi" style="font-size:18px;">{{ question()!.isSaved ? 'bookmark' : 'bookmark_border'
@@ -54,7 +104,7 @@
             </div>
           </div>
 
-          <div class="comments">
+          <div class="comments" id="comments">
             <div class="comments-title">Comments ({{ question()!.commentCount }})</div>
             @if (question()!.thread?.length) {
             <ng-container [ngTemplateOutlet]="commentTpl"
@@ -63,7 +113,7 @@
             <div style="font-size:12px;color:var(--ink3);">No comments yet</div>
             }
             <div class="comment-input">
-              <input class="lmp-input" [(ngModel)]="newComment" placeholder="Write a comment..." />
+              <input id="comment-input" class="lmp-input" [(ngModel)]="newComment" placeholder="Write a comment..." />
               <button class="btn-lmp btn-primary btn-sm" (click)="addComment()"
                 [disabled]="!newComment.trim()">Post</button>
             </div>
@@ -81,11 +131,53 @@
   <app-bottom-nav (postClick)="postOpen.set(true)" />
 </div>
 
+<div class="modal-overlay" [class.open]="deleteTarget() !== null" (click)="closeDeleteModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:16px;font-weight:800;">
+        @if (deleteTarget()?.kind === 'question') {
+        Delete question
+        } @else {
+        Delete comment
+        }
+      </div>
+      <button class="btn-lmp btn-secondary btn-sm" type="button" (click)="closeDeleteModal()" [disabled]="deleting()">
+        Close
+      </button>
+    </div>
+    <div class="lmp-modal-text">
+      @if (deleteTarget()?.kind === 'question') {
+      This question will be permanently removed. This action can’t be undone.
+      } @else {
+      This comment will be permanently removed. This action can’t be undone.
+      }
+    </div>
+    <div class="lmp-modal-actions">
+      <button class="btn-lmp btn-secondary" type="button" (click)="closeDeleteModal()" [disabled]="deleting()">
+        Cancel
+      </button>
+      <button class="btn-lmp btn-secondary btn-sm btn-danger" type="button" (click)="confirmDelete()"
+        [disabled]="deleting()">
+        @if (deleting()) {
+        <span class="lmp-spinner sm"></span>
+        }
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
 <ng-template #commentTpl let-items="items">
   @for (c of items; track c.id) {
   <div class="comment">
     <div class="c-head">
-      <div class="c-ava">{{ c.author.name?.charAt(0) }}</div>
+      <div class="c-ava">
+        @if (c.author.avatar) {
+        <img [src]="c.author.avatar" alt="avatar" />
+        } @else {
+        {{ c.author.name?.charAt(0) }}
+        }
+      </div>
       <div class="c-meta">&#64;{{ c.author.name?.toLowerCase()?.replace(' ', '_') }} • {{ c.createdAt | date:'short'
         }}</div>
       @if (canDeleteComment(c)) {

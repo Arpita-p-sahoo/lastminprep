@@ -7,8 +7,10 @@
     <div class="content">
       <div class="content-inner">
         @if (loadingUser() && !user()) {
-        <div class="lmp-card" style="padding:1rem;margin-bottom:1rem;text-align:center;color:var(--ink3);">Loading
-          profile…</div>
+        <div class="lmp-loading">
+          <div class="lmp-spinner"></div>
+          <div>Loading profile…</div>
+        </div>
         } @else if (userError() && !user()) {
         <div class="lmp-card" style="padding:1rem;margin-bottom:1rem;text-align:center;color:var(--ink3);">{{
           userError() }}</div>

@@ -11,7 +11,7 @@
             <div>
               <div class="card">
                 <div class="banner"
-                  [style.backgroundImage]="auth.currentUser()?.bannerUrl ? 'url(' + auth.currentUser()?.bannerUrl + ')' : ''">
+                  [style.backgroundImage]="(editOpen() ? form.bannerUrl : auth.currentUser()?.bannerUrl) ? 'url(' + (editOpen() ? form.bannerUrl : auth.currentUser()?.bannerUrl) + ')' : ''">
                   <div class="banner-gradient"></div>
                   <div class="banner-dots"></div>
                   <div class="banner-line"></div>
@@ -21,8 +21,10 @@
                   <div class="profile-top-row">
                     <div class="avatar-wrap">
                       <div class="avatar">
-                        @if (auth.currentUser()?.avatar) {
-                        <img [src]="auth.currentUser()?.avatar" alt="avatar" />
+                        @if (editOpen() && form.avatarUrl.trim()) {
+                        <img [src]="form.avatarUrl" alt="avatar" />
+                        } @else if (auth.currentUser()?.avatar) {
+                        <img [src]="auth.currentUser()!.avatar" alt="avatar" />
                         } @else {
                         {{ auth.currentUser()?.name?.charAt(0) }}
                         }
@@ -271,11 +273,11 @@
               <div class="rp-card">
                 <div class="rp-title">Tech stack</div>
                 @if ((auth.currentUser()?.techStack ?? []).length) {
-                  <div class="rp-tags">
-                    @for (t of auth.currentUser()?.techStack ?? []; track t) { <span class="p-tag">{{ t }}</span> }
-                  </div>
+                <div class="rp-tags">
+                  @for (t of auth.currentUser()?.techStack ?? []; track t) { <span class="p-tag">{{ t }}</span> }
+                </div>
                 } @else {
-                  <div style="padding:6px 0;color:var(--ink3);font-size:12px;">No tech stack added</div>
+                <div style="padding:6px 0;color:var(--ink3);font-size:12px;">No tech stack added</div>
                 }
               </div>
             </div>

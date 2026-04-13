@@ -37,6 +37,8 @@ export class JobDetailComponent {
   drawerOpen = signal(false);
   postOpen = signal(false);
   loading = signal(true);
+  confirmDeleteOpen = signal(false);
+  deleting = signal(false);
   poster = signal<Job['postedBy'] | null>(null);
 
   job = computed<Job | null>(() => (this.id ? this.jobs.getById(this.id) : null));
@@ -90,15 +92,30 @@ export class JobDetailComponent {
       this.toast.error('You can only delete your own job listings');
       return;
     }
-    const ok = window.confirm('Delete this job?');
-    if (!ok) return;
+    this.confirmDeleteOpen.set(true);
+  }
 
+  closeDeleteModal(): void {
+    if (this.deleting()) return;
+    this.confirmDeleteOpen.set(false);
+  }
+
+  confirmDeleteJob(): void {
+    const job = this.job();
+    if (!job?.id) return;
+    if (!this.canDelete()) return;
+    if (this.deleting()) return;
+
+    this.deleting.set(true);
     this.jobs.delete(job.id, {
       onSuccess: () => {
+        this.deleting.set(false);
+        this.confirmDeleteOpen.set(false);
         this.toast.success('Job deleted');
         this.back();
       },
       onError: () => {
+        this.deleting.set(false);
         this.toast.error('Failed to delete job');
       },
     });

@@ -18,11 +18,15 @@
     <button class="icon-btn relative" routerLink="/notifications" (click)="clearNotifications()">
       <span class="mi">notifications</span>
       @if (hasUnread()) {
-        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-white"></span>
+      <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-white"></span>
       }
     </button>
     <div class="nav-ava" routerLink="/profile">
+      @if (auth.currentUser()?.avatar) {
+      <img [src]="auth.currentUser()!.avatar" alt="avatar" />
+      } @else {
       {{ auth.currentUser()?.name?.charAt(0) || 'U' }}
+      }
     </div>
     } @else {
     <div class="nav-btns flex gap-2">

@@ -6,17 +6,30 @@
       <span class="tag tag-hash">{{ h }}</span>
       }
     </div>
-    @if (question().isHot) { <span class="tag tag-hot"><span class="mi" style="font-size:14px;vertical-align:middle;">local_fire_department</span> TOP</span> }
+    @if (question().isHot) { <span class="tag tag-hot"><span class="mi"
+        style="font-size:14px;vertical-align:middle;">local_fire_department</span> TOP</span> }
     @if (question().isNew) { <span class="tag tag-new">NEW</span> }
   </div>
   <a class="q-title" [routerLink]="['/questions', question().id]">{{ question().title }}</a>
   <div class="q-footer">
     <div class="q-user">
       @if (authorRoute) {
-      <a class="q-ava" [routerLink]="authorRoute">{{ authorInitial }}</a>
+      <a class="q-ava" [routerLink]="authorRoute">
+        @if (question().author.avatar) {
+        <img [src]="question().author.avatar" alt="avatar" />
+        } @else {
+        {{ authorInitial }}
+        }
+      </a>
       <a [routerLink]="authorRoute">&#64;{{ authorHandle }}</a>
       } @else {
-      <div class="q-ava">{{ authorInitial }}</div>
+      <div class="q-ava">
+        @if (question().author.avatar) {
+        <img [src]="question().author.avatar" alt="avatar" />
+        } @else {
+        {{ authorInitial }}
+        }
+      </div>
       &#64;{{ authorHandle }}
       }
     </div>
@@ -24,12 +37,14 @@
       <button class="q-btn" [class.voted]="question().isVoted" (click)="qs.vote(question().id)">
         <span class="mi" style="font-size:16px;">arrow_upward</span> {{ question().votes }}
       </button>
-      <button class="q-btn" (click)="toggleComments()"><span class="mi" style="font-size:16px;">chat_bubble</span> {{ question().commentCount }}</button>
+      <button class="q-btn" (click)="toggleComments()"><span class="mi" style="font-size:16px;">chat_bubble</span> {{
+        question().commentCount }}</button>
       <button class="q-btn" [class.saved]="question().isSaved" (click)="qs.save(question().id)">
         <span class="mi" style="font-size:18px;">{{ question().isSaved ? 'bookmark' : 'bookmark_border' }}</span>
       </button>
       @if (canDelete) {
-      <button class="q-btn del" (click)="deleteQuestion()"><span class="mi" style="font-size:18px;">delete</span></button>
+      <button class="q-btn del" (click)="deleteQuestion()"><span class="mi"
+          style="font-size:18px;">delete</span></button>
       }
     </div>
   </div>
@@ -51,11 +66,53 @@
   }
 </div>
 
+<div class="modal-overlay" [class.open]="deleteTarget !== null" (click)="closeDeleteModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:16px;font-weight:800;">
+        @if (deleteTarget?.kind === 'question') {
+        Delete question
+        } @else {
+        Delete comment
+        }
+      </div>
+      <button class="btn-lmp btn-secondary btn-sm" type="button" (click)="closeDeleteModal()" [disabled]="deleting">
+        Close
+      </button>
+    </div>
+    <div class="lmp-modal-text">
+      @if (deleteTarget?.kind === 'question') {
+      This question will be permanently removed. This action can’t be undone.
+      } @else {
+      This comment will be permanently removed. This action can’t be undone.
+      }
+    </div>
+    <div class="lmp-modal-actions">
+      <button class="btn-lmp btn-secondary" type="button" (click)="closeDeleteModal()" [disabled]="deleting">
+        Cancel
+      </button>
+      <button class="btn-lmp btn-secondary btn-sm btn-danger" type="button" (click)="confirmDelete()"
+        [disabled]="deleting">
+        @if (deleting) {
+        <span class="lmp-spinner sm"></span>
+        }
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
 <ng-template #commentTpl let-items="items">
   @for (c of items; track c.id) {
   <div class="comment">
     <div class="c-head">
-      <div class="c-ava">{{ c.author.name?.charAt(0) }}</div>
+      <div class="c-ava">
+        @if (c.author.avatar) {
+        <img [src]="c.author.avatar" alt="avatar" />
+        } @else {
+        {{ c.author.name?.charAt(0) }}
+        }
+      </div>
       <div class="c-meta">&#64;{{ c.author.name?.toLowerCase()?.replace(' ', '_') }} • {{ c.createdAt | date:'short' }}
       </div>
       @if (canDeleteComment(c)) {

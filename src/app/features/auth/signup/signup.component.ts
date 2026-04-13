@@ -35,6 +35,10 @@ export class SignupComponent {
   techQuery = '';
   techOpen = false;
 
+  constructor() {
+    this.tagOptions.ensureLoaded();
+  }
+
   addTech(tag: string): void {
     if (!this.form.techStack.includes(tag)) {
       this.form.techStack = [...this.form.techStack, tag];
@@ -48,7 +52,6 @@ export class SignupComponent {
   }
 
   filteredTech(): string[] {
-    this.tagOptions.ensureLoaded();
     const q = this.techQuery.toLowerCase().trim();
     const options = this.tagOptions.tags();
     const base = q ? options.filter(t => t.toLowerCase().includes(q)) : options.slice(0, 12);
