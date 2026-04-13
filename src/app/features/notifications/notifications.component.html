@@ -8,20 +8,29 @@
         <div class="content"><div class="content-inner">
           <div class="page-header">
             <div style="font-size:20px;font-weight:800;">Notifications</div>
-            <div style="font-size:13px;color:var(--ink2);margin-top:3px;">{{ unread() }} unread</div>
+            <div style="font-size:13px;color:var(--ink2);margin-top:3px;">Choose what you want to be notified about.</div>
           </div>
-          <div class="lmp-card">
-            @for (n of notifications; track n.id) {
-              <div class="notif-item" [class.unread]="!n.isRead">
-                <div class="notif-ava">{{ n.icon }}</div>
-                <div class="notif-content">
-                  <div class="notif-text" [innerHTML]="n.text"></div>
-                  <div class="notif-time">{{ n.time }}</div>
+
+          @for (section of sections(); track section.title) {
+            <div class="notif-section-title">{{ section.title }}</div>
+            <div class="notif-stack">
+              @for (it of section.items; track it.id) {
+                <div class="notif-card">
+                  <div class="notif-icon" [class]="it.iconClass">
+                    <span class="mi">{{ it.icon }}</span>
+                  </div>
+                  <div class="notif-body">
+                    <div class="notif-top">
+                      <div class="notif-title">{{ it.title }}</div>
+                      <span class="notif-tag" [class]="it.tagClass">{{ it.tag }}</span>
+                    </div>
+                    <div class="notif-sub">{{ it.subtitle }}</div>
+                    <div class="notif-example">“{{ it.example }}”</div>
+                  </div>
                 </div>
-                @if (!n.isRead) { <div class="notif-dot"></div> }
-              </div>
-            }
-          </div>
+              }
+            </div>
+          }
         </div></div>
       </div>
       <app-bottom-nav (postClick)="postOpen.set(true)" />
