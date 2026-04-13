@@ -62,7 +62,17 @@
               }
             </div>
             <div style="margin-top:10px;">
-              <div class="profile-name">{{ auth.currentUser()?.name }}</div>
+              <div class="profile-name-row">
+                <div class="profile-name">{{ auth.currentUser()?.name }}</div>
+                <div class="profile-brand">
+                  <span class="profile-brand-mark" aria-label="LastMinPrep">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path fill="currentColor" d="M6 5h4v14h10v3H6z" />
+                    </svg>
+                  </span>
+                  <span class="profile-brand-text">last<span style="color:var(--accent);">min</span>prep</span>
+                </div>
+              </div>
               <div class="profile-title-txt">
                 {{ auth.currentUser()?.designation }}
                 @if (auth.currentUser()?.address) { <span class="profile-sep">·</span><span>{{
@@ -179,7 +189,13 @@
     </div>
     <div class="rpanel">
       <div class="rp-card">
-        <div class="rp-title"><span class="mi" style="font-size:18px;vertical-align:middle;">analytics</span> Activity
+        <div class="rp-title">
+          <span class="rp-brand-mark" aria-label="LastMinPrep">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M6 5h4v14h10v3H6z" />
+            </svg>
+          </span>
+          Activity
         </div>
         <div class="act-row"><span>Questions posted</span><strong>{{ auth.currentUser()?.questionsPosted }}</strong>
         </div>

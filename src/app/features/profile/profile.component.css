@@ -60,11 +60,76 @@
   border-radius: 50%;
 }
 
-.profile-name {
+.profile-name-row {
   margin-top: -38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-name {
+  margin-top: 0;
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+.profile-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--ink2);
+  flex-shrink: 0;
+}
+
+.profile-brand-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-brand-mark svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.profile-brand-text {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.rp-brand-mark {
+  width: 18px;
+  height: 18px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.rp-brand-mark svg {
+  width: 12px;
+  height: 12px;
+  display: block;
 }
 
 .profile-title-txt {
@@ -243,10 +308,12 @@
   .profile-edit-card .field-row {
     grid-template-columns: 1fr;
   }
+
   .profile-ava-wrap {
     transform: translateY(-38px);
   }
-  .profile-name {
+
+  .profile-name-row {
     margin-top: -30px;
   }
 }

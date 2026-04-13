@@ -16,7 +16,7 @@
           <div class="chip" [class.active]="active===c" (click)="active=c">{{ c }}</div>
           }
         </div>
-        @for (q of qs.questions(); track q.id) {
+        @for (q of list(); track q.id) {
         <app-question-card [question]="q" />
         }
       </div>
