@@ -1,0 +1,32 @@
+
+    <aside class="sidebar">
+      <div class="sidebar-inner">
+        <div class="sb-section">Main</div>
+        <a class="sb-link" routerLink="/dashboard" routerLinkActive="active"><span class="sb-icon">🏠</span> Dashboard</a>
+        <a class="sb-link" routerLink="/feed" routerLinkActive="active"><span class="sb-icon">📋</span> Feed <span class="sb-badge">12</span></a>
+        <a class="sb-link" routerLink="/explore" routerLinkActive="active"><span class="sb-icon">🎯</span> Explore</a>
+        <a class="sb-link" routerLink="/jobs" routerLinkActive="active"><span class="sb-icon">💼</span> Jobs <span class="sb-badge green">5</span></a>
+        <a class="sb-link" routerLink="/leaderboard" routerLinkActive="active"><span class="sb-icon">🏆</span> Leaderboard</a>
+        <a class="sb-link" routerLink="/search" routerLinkActive="active"><span class="sb-icon">🔍</span> Search</a>
+
+        <div class="sb-section">You</div>
+        <a class="sb-link" routerLink="/profile" routerLinkActive="active"><span class="sb-icon">👤</span> Profile</a>
+        <a class="sb-link" routerLink="/saved" routerLinkActive="active"><span class="sb-icon">⭐</span> Saved</a>
+        <a class="sb-link" routerLink="/my-questions" routerLinkActive="active"><span class="sb-icon">📝</span> My Questions</a>
+        <a class="sb-link" routerLink="/notifications" routerLinkActive="active"><span class="sb-icon">🔔</span> Notifications <span class="sb-badge">3</span></a>
+
+        <div class="sb-section">Account</div>
+        <a class="sb-link" routerLink="/settings" routerLinkActive="active"><span class="sb-icon">⚙️</span> Settings</a>
+        <button class="sb-link" (click)="auth.logout()"><span class="sb-icon">🚪</span> Logout</button>
+      </div>
+      <div class="sidebar-user">
+        <div class="sb-user-card" routerLink="/profile">
+          <div class="sb-user-ava">{{ auth.currentUser()?.name?.charAt(0) || 'U' }}</div>
+          <div class="sb-user-info">
+            <div class="sb-user-name">{{ auth.currentUser()?.name }}</div>
+            <div class="sb-user-role">{{ auth.currentUser()?.designation }}</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  

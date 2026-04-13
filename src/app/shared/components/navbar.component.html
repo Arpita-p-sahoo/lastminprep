@@ -1,0 +1,30 @@
+
+    <nav class="topnav">
+      <div class="flex items-center gap-2">
+        <button class="icon-btn hamburger" (click)="drawerOpen.emit()">☰</button>
+        <a routerLink="/" class="flex items-center gap-2 no-underline">
+          <div class="logo-mark">L</div>
+          <div class="logo-text">last<span>min</span>prep</div>
+        </a>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="icon-btn" (click)="theme.toggle()">
+          {{ theme.isDark() ? '☀️' : '🌙' }}
+        </button>
+        @if (auth.isLoggedIn()) {
+          <button class="icon-btn relative" routerLink="/notifications">
+            🔔
+            <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-white"></span>
+          </button>
+          <div class="nav-ava" routerLink="/profile">
+            {{ auth.currentUser()?.name?.charAt(0) || 'U' }}
+          </div>
+        } @else {
+          <div class="nav-btns flex gap-2">
+            <button class="nbtn ghost" routerLink="/login">Log in</button>
+            <button class="nbtn solid" routerLink="/signup">Sign up free</button>
+          </div>
+        }
+      </div>
+    </nav>
+  

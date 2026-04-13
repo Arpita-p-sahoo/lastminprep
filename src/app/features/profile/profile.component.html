@@ -1,0 +1,59 @@
+
+    <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+    <div class="flex flex-col min-h-screen animate-fade-up">
+      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+      <div class="main-layout">
+        <app-sidebar />
+        <div class="content">
+          <div class="content-inner">
+            <div class="lmp-card" style="padding:0;overflow:hidden;margin-bottom:1.5rem;">
+              <div class="profile-cover"></div>
+              <div style="padding:0 1.25rem 1.25rem;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                  <div style="position:relative;z-index:1;margin-left:0.25rem;">
+                    <div class="profile-ava-img">{{ auth.currentUser()?.name?.charAt(0) }}</div>
+                  </div>
+                  <button class="btn-lmp btn-secondary btn-sm" style="margin-bottom:4px;">Edit profile</button>
+                </div>
+                <div style="margin-top:10px;">
+                  <div class="profile-name">{{ auth.currentUser()?.name }}</div>
+                  <div class="profile-title-txt">{{ auth.currentUser()?.designation }} · Bhubaneswar, Odisha</div>
+                  <div class="profile-meta-row">
+                    <div class="profile-meta-item">🏢 {{ auth.currentUser()?.organisation }}</div>
+                    <div class="profile-meta-item">🎓 {{ auth.currentUser()?.experience }}</div>
+                    <div class="profile-meta-item">🔗 <span style="color:var(--accent);cursor:pointer;">LinkedIn</span></div>
+                  </div>
+                  <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+                    @for (t of auth.currentUser()?.techStack ?? []; track t) {
+                      <span class="tag tag-tech">{{ t }}</span>
+                    }
+                  </div>
+                  <div class="profile-stats-row">
+                    <div class="pstat"><div class="pstat-n">{{ auth.currentUser()?.questionsPosted }}</div><div class="pstat-l">Questions</div></div>
+                    <div class="pstat"><div class="pstat-n" style="color:var(--accent);">{{ auth.currentUser()?.totalVotes }}</div><div class="pstat-l">Votes</div></div>
+                    <div class="pstat"><div class="pstat-n">43</div><div class="pstat-l">Answered</div></div>
+                    <div class="pstat"><div class="pstat-n">🔥 {{ auth.currentUser()?.streak }}</div><div class="pstat-l">Streak</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="feed-head"><h2>Posted questions</h2></div>
+            @for (q of myQuestions(); track q.id) {
+              <app-question-card [question]="q" />
+            }
+          </div>
+        </div>
+        <div class="rpanel">
+          <div class="rp-card">
+            <div class="rp-title">📊 Activity</div>
+            <div class="act-row"><span>Questions posted</span><strong>{{ auth.currentUser()?.questionsPosted }}</strong></div>
+            <div class="act-row"><span>Total votes</span><strong style="color:var(--accent);">{{ auth.currentUser()?.totalVotes }}</strong></div>
+            <div class="act-row"><span>Comments</span><strong>67</strong></div>
+            <div class="act-row"><span>Saved</span><strong>18</strong></div>
+          </div>
+        </div>
+      </div>
+      <app-bottom-nav (postClick)="postOpen.set(true)" />
+    </div>
+  

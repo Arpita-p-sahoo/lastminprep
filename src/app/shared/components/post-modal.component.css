@@ -1,0 +1,11 @@
+
+    .modal-handle { width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 1rem; }
+    .modal-head { display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem; }
+    .modal-title { font-size:16px;font-weight:700; }
+    .modal-close { background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink3); }
+    .modal-footer { display:flex;justify-content:space-between;align-items:center;margin-top:4px; }
+    .modal-hint { font-size:12px;color:var(--ink3); }
+    .chip-row { display:flex;gap:7px;flex-wrap:wrap;margin-bottom:1rem;overflow-x:auto;padding-bottom:2px; }
+    .field { margin-bottom:12px; }
+    .field label { display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px; }
+  

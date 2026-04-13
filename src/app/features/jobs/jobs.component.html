@@ -1,0 +1,73 @@
+
+    <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+    <div class="flex flex-col min-h-screen animate-fade-up">
+      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+
+      <!-- Job post modal -->
+      <div class="modal-overlay" [class.open]="jobModalOpen()" (click)="jobModalOpen.set(false)">
+        <div class="modal-box" (click)="$event.stopPropagation()">
+          <div class="modal-handle"></div>
+          <div class="modal-head"><div class="modal-title">Post a job</div><button class="modal-close" (click)="jobModalOpen.set(false)">✕</button></div>
+          <div class="field"><label>Job title *</label><input class="lmp-input" [(ngModel)]="jobForm.title" placeholder="Senior Angular Developer" /></div>
+          <div class="field-row">
+            <div class="field"><label>Company *</label><input class="lmp-input" [(ngModel)]="jobForm.company" placeholder="Razorpay" /></div>
+            <div class="field"><label>Location *</label><input class="lmp-input" [(ngModel)]="jobForm.location" placeholder="Bangalore / Remote" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Type</label><select class="lmp-input" [(ngModel)]="jobForm.type"><option>Remote</option><option>Hybrid</option><option>Onsite</option></select></div>
+            <div class="field"><label>Experience</label><select class="lmp-input" [(ngModel)]="jobForm.experience"><option>0-2 yrs</option><option>2-5 yrs</option><option>5+ yrs</option></select></div>
+          </div>
+          <div class="field"><label>Tech stack</label><input class="lmp-input" [(ngModel)]="jobForm.techStack" placeholder="Angular, TypeScript, NestJS" /></div>
+          <div class="field"><label>Salary range</label><input class="lmp-input" [(ngModel)]="jobForm.salary" placeholder="₹12–18 LPA" /></div>
+          <div class="field"><label>Description *</label><textarea class="lmp-input" rows="3" [(ngModel)]="jobForm.description" placeholder="Brief description..."></textarea></div>
+          <button class="submit-btn" (click)="postJob()">Post job →</button>
+        </div>
+      </div>
+
+      <div class="main-layout">
+        <app-sidebar />
+        <div class="content">
+          <div class="content-inner">
+            <div class="feed-head">
+              <h2>Job board</h2>
+              <button class="btn-lmp btn-primary btn-sm" (click)="jobModalOpen.set(true)">+ Post job</button>
+            </div>
+            <div class="chip-row">
+              @for (c of ['All','Remote','Angular','Full-stack','Fresher']; track c) {
+                <div class="chip" [class.active]="activeFilter===c" (click)="activeFilter=c">{{ c }}</div>
+              }
+            </div>
+            @for (job of jobService.jobs(); track job.id) {
+              <div class="job-card">
+                <div class="job-top">
+                  <div>
+                    <div class="job-title">{{ job.title }}</div>
+                    <div class="job-company">{{ job.company }} · {{ job.location }}</div>
+                  </div>
+                  <span class="tag tag-job">{{ job.type }}</span>
+                </div>
+                <div class="job-desc">{{ job.description }}</div>
+                <div class="job-chips">
+                  @for (s of job.techStack; track s) { <span class="job-chip">{{ s }}</span> }
+                </div>
+                <div class="job-footer">
+                  <span class="job-salary">{{ job.salary }} · {{ job.experience }}</span>
+                  <button class="btn-lmp btn-primary btn-sm">Apply →</button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+        <div class="rpanel">
+          <div class="rp-card">
+            <div class="rp-title">📊 Job stats</div>
+            <div class="stat-row"><span>Total jobs</span><strong>180</strong></div>
+            <div class="stat-row"><span>Remote</span><strong style="color:var(--green)">94</strong></div>
+            <div class="stat-row"><span>Posted today</span><strong style="color:var(--accent)">5</strong></div>
+          </div>
+        </div>
+      </div>
+      <app-bottom-nav (postClick)="postOpen.set(true)" />
+    </div>
+  

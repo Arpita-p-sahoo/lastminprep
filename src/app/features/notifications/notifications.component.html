@@ -1,0 +1,29 @@
+
+    <div class="flex flex-col min-h-screen animate-fade-up">
+      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+      <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+      <div class="main-layout">
+        <app-sidebar />
+        <div class="content"><div class="content-inner">
+          <div class="page-header">
+            <div style="font-size:20px;font-weight:800;">Notifications</div>
+            <div style="font-size:13px;color:var(--ink2);margin-top:3px;">{{ unread() }} unread</div>
+          </div>
+          <div class="lmp-card">
+            @for (n of notifications; track n.id) {
+              <div class="notif-item" [class.unread]="!n.isRead">
+                <div class="notif-ava">{{ n.icon }}</div>
+                <div class="notif-content">
+                  <div class="notif-text" [innerHTML]="n.text"></div>
+                  <div class="notif-time">{{ n.time }}</div>
+                </div>
+                @if (!n.isRead) { <div class="notif-dot"></div> }
+              </div>
+            }
+          </div>
+        </div></div>
+      </div>
+      <app-bottom-nav (postClick)="postOpen.set(true)" />
+    </div>
+  

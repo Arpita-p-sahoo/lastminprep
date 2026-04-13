@@ -1,0 +1,20 @@
+
+    <nav class="bottom-nav">
+      <a class="bn-item" routerLink="/dashboard" routerLinkActive="active">
+        <span class="bn-icon">🏠</span><span class="bn-label">Home</span>
+      </a>
+      <a class="bn-item" routerLink="/explore" routerLinkActive="active">
+        <span class="bn-icon">🎯</span><span class="bn-label">Explore</span>
+      </a>
+      <button class="bn-item" (click)="postClick.emit()">
+        <span class="bn-post">+</span>
+        <span class="bn-label">Post</span>
+      </button>
+      <a class="bn-item" routerLink="/jobs" routerLinkActive="active">
+        <span class="bn-icon">💼</span><span class="bn-label">Jobs</span>
+      </a>
+      <a class="bn-item" routerLink="/profile" routerLinkActive="active">
+        <span class="bn-icon">👤</span><span class="bn-label">Me</span>
+      </a>
+    </nav>
+  

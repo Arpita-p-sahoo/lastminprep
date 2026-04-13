@@ -1,0 +1,22 @@
+
+    .q-card-top { display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px; }
+    .q-tags { display:flex;gap:5px;flex-wrap:wrap; }
+    .q-footer { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+    .q-user { display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink3); }
+    .q-ava { width:20px;height:20px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0; }
+    .q-actions { display:flex;gap:6px;margin-left:auto; }
+    .q-btn { display:flex;align-items:center;gap:4px;font-size:12px;color:var(--ink3);background:none;border:none;cursor:pointer;font-family:inherit;padding:5px 8px;border-radius:6px;transition:all 0.18s; }
+    .q-btn:hover { background:var(--bg3);color:var(--accent); }
+    .q-btn.voted { color:var(--green); }
+    .q-btn.saved { color:var(--amber); }
+    .comments { margin-top:12px;border-top:1px solid var(--border);padding-top:12px; }
+    .comments-title { font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:6px; }
+    .comment { margin-bottom:12px; }
+    .c-head { display:flex;align-items:center;gap:8px;margin-bottom:4px; }
+    .c-ava { width:18px;height:18px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff; }
+    .c-meta { font-size:11px;color:var(--ink3); }
+    .c-text { font-size:13px;color:var(--ink);line-height:1.5; }
+    .replies { margin-left:18px;border-left:2px solid var(--border);padding-left:12px;margin-top:8px; }
+    .comment-input { display:flex;gap:8px;align-items:center;margin-top:10px; }
+    .comment-input .lmp-input { flex:1; }
+  

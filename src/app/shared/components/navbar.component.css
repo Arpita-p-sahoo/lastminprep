@@ -1,0 +1,31 @@
+
+    .topnav {
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+    .logo-mark { width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;font-family:var(--mono);flex-shrink:0; }
+    .logo-text { font-size:15px;font-weight:800;letter-spacing:-0.02em;color:var(--ink); }
+    .logo-text span { color:var(--accent); }
+    .icon-btn { width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:border 0.2s;position:relative; }
+    .icon-btn:hover { border-color:var(--accent); }
+    .hamburger { display:none; }
+    .nav-ava { width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer; }
+    .nbtn { font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:inherit;transition:all 0.2s;border:none; }
+    .nbtn.ghost { background:transparent;border:1px solid var(--border2);color:var(--ink2); }
+    .nbtn.ghost:hover { border-color:var(--accent);color:var(--accent); }
+    .nbtn.solid { background:var(--accent);color:#fff; }
+    .nbtn.solid:hover { opacity:0.88; }
+    @media(max-width:768px) {
+      .hamburger { display:flex !important; }
+      .nav-btns { display:none; }
+    }
+  

@@ -1,0 +1,29 @@
+
+    <div class="modal-overlay" [class.open]="open()" (click)="onOverlayClick($event)">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-handle"></div>
+        <div class="modal-head">
+          <div class="modal-title">Post a question</div>
+          <button class="modal-close" (click)="close.emit()">✕</button>
+        </div>
+        <div class="chip-row">
+          @for (tag of techTags; track tag) {
+            <div class="chip" [class.active]="selectedTag === tag" (click)="selectedTag = tag">{{ tag }}</div>
+          }
+        </div>
+        <div class="field">
+          <label>Your question *</label>
+          <textarea class="lmp-input" rows="4" [(ngModel)]="questionText"
+            placeholder="Write your interview question here... Be specific and clear."></textarea>
+        </div>
+        <div class="field">
+          <label>Hashtags</label>
+          <input class="lmp-input" [(ngModel)]="hashtags" placeholder="#angular #signals #interview" />
+        </div>
+        <div class="modal-footer">
+          <span class="modal-hint">Highly rated questions appear at top</span>
+          <button class="btn-lmp btn-primary btn-sm" (click)="submit()">Post →</button>
+        </div>
+      </div>
+    </div>
+  

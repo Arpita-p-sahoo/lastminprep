@@ -1,0 +1,47 @@
+
+    <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+    <div class="flex flex-col min-h-screen animate-fade-up">
+      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+      <div class="main-layout">
+        <app-sidebar />
+        <div class="content"><div class="content-inner">
+          <div style="margin-bottom:1.5rem;">
+            <div style="font-size:20px;font-weight:800;margin-bottom:1rem;">Search</div>
+            <div class="search-bar">
+              <span style="font-size:16px;">🔍</span>
+              <input [(ngModel)]="query" (ngModelChange)="onSearch()" placeholder="Search questions, topics, users..." />
+            </div>
+          </div>
+
+          @if (!query) {
+            <div style="font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Popular searches</div>
+            <div class="chip-row" style="margin-bottom:1.5rem;">
+              @for (t of popularTags; track t) {
+                <div class="chip" (click)="query=t;onSearch()">{{ t }}</div>
+              }
+            </div>
+            <div style="font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Recent questions</div>
+            @for (r of recentResults; track r.title) {
+              <div class="search-result">
+                <div class="sr-title">{{ r.title }}</div>
+                <div class="sr-meta">{{ r.tech }} · {{ r.votes }} votes · {{ r.author }}</div>
+              </div>
+            }
+          } @else {
+            <div style="font-size:13px;color:var(--ink3);margin-bottom:1rem;">{{ results().length }} results for "{{ query }}"</div>
+            @for (r of results(); track r.id) {
+              <div class="search-result">
+                <div class="sr-title">{{ r.title }}</div>
+                <div class="sr-meta">{{ r.techTag }} · {{ r.votes }} votes · &#64;{{ r.author.name?.toLowerCase()?.replace(' ', '_') ?? '' }}</div>
+              </div>
+            }
+            @if (!results().length) {
+              <div style="text-align:center;padding:2rem;color:var(--ink3);">No results found for "{{ query }}"</div>
+            }
+          }
+        </div></div>
+      </div>
+      <app-bottom-nav (postClick)="postOpen.set(true)" />
+    </div>
+  

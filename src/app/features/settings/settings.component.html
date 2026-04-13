@@ -1,0 +1,78 @@
+
+    <div class="flex flex-col min-h-screen animate-fade-up">
+      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+      <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+      <div class="main-layout">
+        <app-sidebar />
+        <div class="content"><div class="content-inner">
+          <div style="font-size:20px;font-weight:800;margin-bottom:1.5rem;">Settings</div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Appearance</div>
+            <div class="settings-row">
+              <div><div class="settings-label">Dark mode</div><div class="settings-sub">Switch between light and dark theme</div></div>
+              <button class="toggle" [class.on]="theme.isDark()" (click)="theme.toggle()"></button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Compact view</div><div class="settings-sub">Show more questions per screen</div></div>
+              <button class="toggle" [class.on]="compact()" (click)="compact.set(!compact())"></button>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Notifications</div>
+            <div class="settings-row">
+              <div><div class="settings-label">Email notifications</div><div class="settings-sub">Get notified when someone votes your question</div></div>
+              <button class="toggle on"></button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Job alerts</div><div class="settings-sub">Notify me about matching job posts</div></div>
+              <button class="toggle on"></button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Weekly digest</div><div class="settings-sub">Summary of trending questions every Monday</div></div>
+              <button class="toggle"></button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Push notifications</div><div class="settings-sub">Mobile push alerts (requires app install)</div></div>
+              <button class="toggle" [class.on]="pushEnabled()" (click)="pushEnabled.set(!pushEnabled())"></button>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Privacy</div>
+            <div class="settings-row">
+              <div><div class="settings-label">Public profile</div><div class="settings-sub">Allow others to view your profile</div></div>
+              <button class="toggle on"></button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Show on leaderboard</div><div class="settings-sub">Appear in public rankings</div></div>
+              <button class="toggle on"></button>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Account</div>
+            <div class="settings-row">
+              <div><div class="settings-label">Change password</div></div>
+              <button class="btn-lmp btn-secondary btn-sm">Update</button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Export my data</div><div class="settings-sub">Download all your questions and activity</div></div>
+              <button class="btn-lmp btn-secondary btn-sm">Export</button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Log out</div><div class="settings-sub">Sign out from this device</div></div>
+              <button class="btn-lmp btn-secondary btn-sm" (click)="auth.logout()">Logout</button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label danger">Delete account</div><div class="settings-sub">Permanently remove all your data</div></div>
+              <button class="btn-lmp btn-sm danger-btn">Delete</button>
+            </div>
+          </div>
+        </div></div>
+      </div>
+      <app-bottom-nav (postClick)="postOpen.set(true)" />
+    </div>
+  
