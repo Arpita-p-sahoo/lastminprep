@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
@@ -16,7 +17,7 @@ type NotifPrefItem = {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent],
+  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, FormsModule],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css'],
 })
@@ -27,6 +28,9 @@ export class SettingsComponent {
   postOpen = signal(false);
   compact = signal(false);
   pushEnabled = signal(true);
+  deleteOpen = signal(false);
+  deleteText = signal('');
+  deleting = signal(false);
 
   notifPrefs = signal<Record<string, boolean>>({});
   notifStorageKey = computed(() => {
@@ -73,6 +77,31 @@ export class SettingsComponent {
     const key = String(id);
     if (!key) return;
     this.notifPrefs.update(p => ({ ...p, [key]: !this.isNotifEnabled(key) }));
+  }
+
+  openDeleteAccount(): void {
+    this.deleteText.set('');
+    this.deleteOpen.set(true);
+  }
+
+  closeDeleteAccount(): void {
+    this.deleteOpen.set(false);
+    this.deleting.set(false);
+  }
+
+  confirmDeleteAccount(): void {
+    if (this.deleting()) return;
+    if (this.deleteText().trim().toUpperCase() !== 'DELETE') return;
+    this.deleting.set(true);
+    this.auth.deleteAccount({
+      onSuccess: () => {
+        this.deleting.set(false);
+        this.deleteOpen.set(false);
+      },
+      onError: () => {
+        this.deleting.set(false);
+      },
+    });
   }
 
   private defaultPrefs(): Record<string, boolean> {

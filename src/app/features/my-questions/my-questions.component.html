@@ -28,7 +28,7 @@
                 </div>
                 @if (q.isHot) { <span class="tag tag-hot"><span class="mi" style="font-size:14px;vertical-align:middle;">local_fire_department</span> TOP</span> }
               </div>
-              <a class="q-title" [routerLink]="['/questions', q.id]">{{ q.title }}</a>
+              <a class="q-title" [class.code]="isCodeText(q.title)" [routerLink]="['/questions', q.id]">{{ displayText(q.title) }}</a>
               <div class="q-footer">
                 <div class="q-actions">
                   <button class="q-btn" [class.voted]="q.isVoted" type="button" (click)="qs.vote(q.id)"><span class="mi" style="font-size:16px;">arrow_upward</span> {{ q.votes }}</button>

@@ -1,0 +1,52 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  background: rgba(15, 14, 23, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+:host-context(.dark) .overlay {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.card {
+  width: 84px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.wave {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 26px;
+}
+
+.wave span {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: lmpWave 0.9s ease-in-out infinite;
+}
+
+.wave span:nth-child(2) {
+  animation-delay: 0.1s;
+  opacity: 0.85;
+}
+
+.wave span:nth-child(3) {
+  animation-delay: 0.2s;
+  opacity: 0.7;
+}

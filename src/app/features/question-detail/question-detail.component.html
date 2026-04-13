@@ -64,7 +64,7 @@
             </button>
           </div>
           } @else {
-          <div class="q-title">{{ question()!.title }}</div>
+          <div class="q-title" [class.code]="isCodeText(question()!.title)">{{ displayText(question()!.title) }}</div>
           }
 
           <div class="q-footer">

@@ -27,7 +27,7 @@
             <div style="font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Recent questions</div>
             @for (r of recentResults; track r.title) {
               <div class="search-result">
-                <div class="sr-title">{{ r.title }}</div>
+                <div class="sr-title" [class.code]="isCodeText(r.title)">{{ displayText(r.title) }}</div>
                 <div class="sr-meta">{{ r.tech }} · {{ r.votes }} votes · {{ r.author }}</div>
               </div>
             }
@@ -38,7 +38,7 @@
             <div style="font-size:13px;color:var(--ink3);margin-bottom:1rem;">{{ results().length }} results for "{{ query }}"</div>
             @for (r of results(); track r.id) {
               <div class="search-result">
-                <div class="sr-title">{{ r.title }}</div>
+                <div class="sr-title" [class.code]="isCodeText(r.title)">{{ displayText(r.title) }}</div>
                 <div class="sr-meta">{{ r.techTag }} · {{ r.votes }} votes · &#64;{{ r.author.name?.toLowerCase()?.replace(' ', '_') ?? '' }}</div>
               </div>
             }

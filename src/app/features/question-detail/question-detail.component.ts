@@ -86,6 +86,32 @@ export class QuestionDetailComponent {
     this.router.navigate(['/feed']);
   }
 
+  displayText(raw: unknown): string {
+    const t = String(raw ?? '');
+    const m = t.match(/^\s*```[a-z0-9+-]*\s*\n([\s\S]*?)\n\s*```\s*$/i);
+    return m ? m[1] : t;
+  }
+
+  isCodeText(raw: unknown): boolean {
+    const t = this.displayText(raw);
+    const trimmed = t.trim();
+    if (!trimmed) return false;
+
+    if (trimmed.includes('```')) return true;
+
+    const hasNewline = /[\r\n]/.test(trimmed);
+    const braces = (trimmed.match(/[{}]/g)?.length ?? 0);
+    const semicolons = (trimmed.match(/;/g)?.length ?? 0);
+    const keywords = /\b(class|public|private|protected|static|void|int|String|System\.out|console\.log|def|function|const|let|var|import|package)\b/.test(
+      trimmed
+    );
+
+    if (hasNewline && (braces >= 2 || semicolons >= 2)) return true;
+    if (braces >= 2 && semicolons >= 1 && keywords) return true;
+    if (hasNewline && (/^\s{2,}/m.test(trimmed) || /\t/.test(trimmed))) return true;
+    return false;
+  }
+
   get canDelete(): boolean {
     const currentId = this.auth.currentUser()?.id;
     const authorId = this.question()?.author.id;

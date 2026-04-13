@@ -1,0 +1,96 @@
+.sidebar {
+    width: var(--sidebar-w);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    height: 100%;
+}
+
+.sidebar-inner {
+    padding: 0.5rem 0.75rem;
+    flex: 1;
+}
+
+.sb-section {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    padding: 6px 8px 4px;
+    margin-top: 0;
+}
+
+.sb-badge {
+    margin-left: auto;
+    font-size: 10px;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+.sb-badge.green {
+    background: var(--green);
+}
+
+.sidebar-user {
+    padding: 0.75rem;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+
+.sb-user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--bg3);
+    cursor: pointer;
+}
+
+.sb-user-ava {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.sb-user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.sb-user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sb-user-role {
+    font-size: 11px;
+    color: var(--ink3);
+}
+
+@media(max-width:768px) {
+    .sidebar {
+        display: none;
+    }
+}

@@ -142,6 +142,51 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
+  deleteAccount(callbacks?: { onSuccess?: () => void; onError?: (message: string) => void }): void {
+    const existing = this.currentUser();
+    if (!existing) {
+      const msg = 'Please login to delete your account';
+      this.toast.error(msg);
+      callbacks?.onError?.(msg);
+      return;
+    }
+
+    const done = () => {
+      this.toast.success('Account deleted');
+      this.logout();
+      callbacks?.onSuccess?.();
+    };
+
+    const fail = (err: any) => {
+      const msg = this.getErrorMessage(err, 'Delete account failed');
+      this.toast.error(msg);
+      callbacks?.onError?.(msg);
+    };
+
+    this.http.delete<any>(`${this.API}/users/me`).subscribe({
+      next: done,
+      error: err => {
+        if (err?.status === 404) {
+          this.http.delete<any>(`${this.API}/users/profile`).subscribe({
+            next: done,
+            error: err2 => {
+              if (err2?.status === 404) {
+                this.http.delete<any>(`${this.API}/users/${existing.id}`).subscribe({
+                  next: done,
+                  error: fail,
+                });
+              } else {
+                fail(err2);
+              }
+            },
+          });
+        } else {
+          fail(err);
+        }
+      },
+    });
+  }
+
   signup(userData: Partial<User> & { password: string; avatarUrl?: string }): void {
     const seed = String(userData.email ?? userData.name ?? '').trim();
     const avatarUrl =

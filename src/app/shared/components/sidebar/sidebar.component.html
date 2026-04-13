@@ -32,13 +32,7 @@
   </div>
   <div class="sidebar-user">
     <div class="sb-user-card" routerLink="/profile">
-      <div class="sb-user-ava">
-        @if (auth.currentUser()?.avatar) {
-          <img [src]="auth.currentUser()!.avatar" alt="avatar" />
-        } @else {
-          {{ auth.currentUser()?.name?.charAt(0) || 'U' }}
-        }
-      </div>
+      <div class="sb-user-ava">{{ auth.currentUser()?.name?.charAt(0) || 'U' }}</div>
       <div class="sb-user-info">
         <div class="sb-user-name">{{ auth.currentUser()?.name }}</div>
         <div class="sb-user-role">{{ auth.currentUser()?.designation }}</div>

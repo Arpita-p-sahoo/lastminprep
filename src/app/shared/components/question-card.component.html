@@ -10,7 +10,11 @@
         style="font-size:14px;vertical-align:middle;">local_fire_department</span> TOP</span> }
     @if (question().isNew) { <span class="tag tag-new">NEW</span> }
   </div>
-  <a class="q-title" [routerLink]="['/questions', question().id]">{{ question().title }}</a>
+  <a
+    class="q-title"
+    [class.code]="isCodeText(question().title)"
+    [routerLink]="['/questions', question().id]"
+  >{{ displayText(question().title) }}</a>
   <div class="q-footer">
     <div class="q-user">
       @if (authorRoute) {

@@ -1,0 +1,63 @@
+<div class="modal-overlay" [class.open]="open()" (click)="onOverlayClick($event)">
+  <div class="modal-box" (click)="onModalBoxClick($event)">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title">Post a question</div>
+      <button class="modal-close" (click)="close.emit()"><span class="mi">close</span></button>
+    </div>
+    <div class="field">
+      <label>Your question *</label>
+      <textarea class="lmp-input" rows="4" [(ngModel)]="questionText" (ngModelChange)="onQuestionInput()"
+        placeholder="Write your interview question here... Be specific and clear."></textarea>
+    </div>
+    <div class="field">
+      <label>Tech stack</label>
+      @if (tagOptions.loading() && !tagOptions.tags().length) {
+      <div class="tech-empty">Fetching tech stacks…</div>
+      }
+      @if (selectedTech.length) {
+      <div class="tech-pills">
+        @for (t of selectedTech; track t) {
+        <span class="tech-pill" (click)="toggleTech(t)">{{ t }} ×</span>
+        }
+      </div>
+      }
+      <div class="tech-pills">
+        @for (t of techOptionsToShow(); track t) {
+        <span class="tech-pill" (click)="toggleTech(t)">+ {{ t }}</span>
+        }
+      </div>
+      @if (showMoreTechButton()) {
+      <button class="tech-more" type="button" (click)="toggleMoreTech()">More</button>
+      }
+    </div>
+    <div class="field">
+      <label>Hashtags</label>
+      <div class="tech-input-wrap" #hashtagWrap>
+        <input class="lmp-input" [(ngModel)]="hashtagQuery" (focus)="hashtagOpen=true" (input)="hashtagOpen=true"
+          placeholder="Type to search tags (e.g., angular, signals)" />
+        @if (hashtagOpen) {
+        <div class="tech-dropdown">
+          @for (opt of filteredHashtags(); track opt) {
+          <div class="tech-option" (click)="addHashtag(opt)">{{ opt }}</div>
+          }
+          @if (!filteredHashtags().length && hashtagQuery.trim()) {
+          <div class="tech-empty">{{ tagOptions.loading() ? 'Loading…' : 'No matches' }}</div>
+          }
+        </div>
+        }
+      </div>
+      @if (selectedHashtags.length) {
+      <div class="tech-pills">
+        @for (t of selectedHashtags; track t) {
+        <span class="tech-pill" (click)="removeHashtag(t)">{{ '#' + t }} ×</span>
+        }
+      </div>
+      }
+    </div>
+    <div class="modal-footer">
+      <span class="modal-hint">Highly rated questions appear at top</span>
+      <button class="btn-lmp btn-primary btn-sm" (click)="submit()">Post →</button>
+    </div>
+  </div>
+</div>

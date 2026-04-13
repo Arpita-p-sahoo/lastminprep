@@ -286,6 +286,27 @@ body {
   }
 }
 
+.q-title.code {
+  display: block;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-weight: 500;
+  font-size: 12.5px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 12px;
+  overflow-x: auto;
+  white-space: pre;
+  tab-size: 2;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.q-title.code:hover {
+  color: var(--ink);
+}
+
 /* ===== TAGS ===== */
 .tag {
   font-size: 11px;
