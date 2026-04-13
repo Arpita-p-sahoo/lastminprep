@@ -26,7 +26,7 @@ export interface Question {
   techTag: string;
   hashtags: string[];
   votes: number;
-  comments: number;
+  commentCount: number;
   author: Partial<User>;
   createdAt: Date;
   isHot?: boolean;

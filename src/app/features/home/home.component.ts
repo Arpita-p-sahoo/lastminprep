@@ -21,7 +21,7 @@ export class HomeComponent {
     list.sort((a, b) => {
       const dv = (b.votes ?? 0) - (a.votes ?? 0);
       if (dv !== 0) return dv;
-      const dc = (b.comments ?? 0) - (a.comments ?? 0);
+      const dc = (b.commentCount ?? 0) - (a.commentCount ?? 0);
       if (dc !== 0) return dc;
       return (b.createdAt?.getTime?.() ?? 0) - (a.createdAt?.getTime?.() ?? 0);
     });
@@ -31,7 +31,7 @@ export class HomeComponent {
       tech: q.techTag,
       hash: q.hashtags?.[0] ?? '',
       votes: q.votes ?? 0,
-      comments: q.comments ?? 0,
+      comments: q.commentCount ?? 0,
       hot: !!q.isHot,
       isNew: !!q.isNew,
     }));

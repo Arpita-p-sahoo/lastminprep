@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Question } from '../models';
+import { Comment, Question } from '../models';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 import { Observable, map, tap } from 'rxjs';
@@ -49,14 +49,19 @@ export class QuestionService {
   }
 
   vote(id: string): void {
-    this.http.post<{ votes?: number; isVoted?: boolean }>(`${this.API}/questions/${id}/vote`, {}).subscribe({
+    this.http.post<{ votes?: number; voteCount?: number; isVoted?: boolean }>(`${this.API}/questions/${id}/vote`, {}).subscribe({
       next: res => {
         this.questions.update(qs =>
           qs.map(q =>
             q.id === id
               ? {
                 ...q,
-                votes: typeof res.votes === 'number' ? res.votes : (q.isVoted ? q.votes - 1 : q.votes + 1),
+                votes:
+                  typeof res.votes === 'number'
+                    ? res.votes
+                    : typeof res.voteCount === 'number'
+                      ? res.voteCount
+                      : (q.isVoted ? q.votes - 1 : q.votes + 1),
                 isVoted: typeof res.isVoted === 'boolean' ? res.isVoted : !q.isVoted,
               }
               : q
@@ -91,12 +96,12 @@ export class QuestionService {
     const author = this.auth.currentUser();
     this.http.post<{ comment: any }>(`${this.API}/questions/${questionId}/comments`, { text }).subscribe({
       next: res => {
-        const comment = res?.comment ?? { id: Date.now().toString(), author, text, createdAt: new Date() };
+        const comment = this.normalizeComment(res?.comment ?? { id: Date.now().toString(), author, text, createdAt: new Date() });
         this.questions.update(qs =>
           qs.map(q => {
             if (q.id !== questionId) return q;
             const thread = q.thread ? [...q.thread, comment] : [comment];
-            return { ...q, thread, comments: (q.comments ?? 0) + 1 };
+            return { ...q, thread, commentCount: (q.commentCount ?? 0) + 1 };
           })
         );
       },
@@ -131,6 +136,25 @@ export class QuestionService {
   }
 
   private normalize(item: any): Question {
+    const rawAuthor = item?.author;
+    const author =
+      rawAuthor && typeof rawAuthor === 'object'
+        ? { id: rawAuthor.id ?? rawAuthor._id ?? item.authorId ?? item.authorID, name: rawAuthor.name ?? item.authorName }
+        : { id: item.authorId ?? item.authorID ?? rawAuthor, name: item.authorName };
+
+    const thread = this.normalizeThread(
+      item?.thread ??
+      item?.commentsThread ??
+      item?.threadItems ??
+      (Array.isArray(item?.comments) ? item.comments : null)
+    );
+    const commentsCount =
+      typeof item?.commentCount === 'number'
+        ? Number(item.commentCount ?? 0)
+        : typeof item?.comments === 'number'
+          ? Number(item.comments ?? 0)
+          : (thread ? thread.length : (Array.isArray(item?.comments) ? item.comments.length : 0));
+
     return {
       id: String(item.id ?? item._id ?? ''),
       title: item.title ?? '',
@@ -138,15 +162,47 @@ export class QuestionService {
       hashtags: Array.isArray(item.hashtags)
         ? item.hashtags
         : (item.hashtags ? String(item.hashtags).split(' ').filter(Boolean) : []),
-      votes: Number(item.votes ?? 0),
-      comments: Number(item.comments ?? 0),
-      author: item.author ?? { id: item.authorId, name: item.authorName },
+      votes: Number(item.votes ?? item.voteCount ?? 0),
+      commentCount: commentsCount,
+      author,
       createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
       isHot: !!item.isHot,
       isNew: !!item.isNew,
       isSaved: !!item.isSaved,
       isVoted: !!item.isVoted,
-      thread: item.thread,
+      thread: thread?.length ? thread : undefined,
+    };
+  }
+
+  private normalizeThread(raw: any): Comment[] | undefined {
+    const list = Array.isArray(raw)
+      ? raw
+      : Array.isArray(raw?.data)
+        ? raw.data
+        : Array.isArray(raw?.items)
+          ? raw.items
+          : Array.isArray(raw?.results)
+            ? raw.results
+            : undefined;
+    if (!list?.length) return undefined;
+    return list.map((c: any) => this.normalizeComment(c));
+  }
+
+  private normalizeComment(c: any): Comment {
+    const rawAuthor = c?.author;
+    const author =
+      rawAuthor && typeof rawAuthor === 'object'
+        ? { id: rawAuthor.id ?? rawAuthor._id ?? c.authorId ?? c.userId, name: rawAuthor.name ?? c.authorName ?? c.userName }
+        : { id: c.authorId ?? c.userId ?? rawAuthor, name: c.authorName ?? c.userName };
+
+    const createdAt = c?.createdAt ? new Date(c.createdAt) : new Date();
+    const replies = this.normalizeThread(c?.replies);
+    return {
+      id: String(c?.id ?? c?._id ?? ''),
+      author,
+      text: c?.text ?? c?.message ?? '',
+      createdAt: Number.isNaN(createdAt.getTime()) ? new Date() : createdAt,
+      replies: replies?.length ? replies : undefined,
     };
   }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Question } from '../../core/models';
@@ -33,26 +33,22 @@ export class QuestionDetailComponent {
   qs = inject(QuestionService);
   auth = inject(AuthService);
 
+  id = this.route.snapshot.paramMap.get('id') ?? '';
   drawerOpen = signal(false);
   postOpen = signal(false);
 
   loading = signal(true);
-  question = signal<Question | null>(null);
+  question = computed<Question | null>(() => (this.id ? this.qs.getById(this.id) : null));
   newComment = '';
 
   constructor() {
-    const id = this.route.snapshot.paramMap.get('id') ?? '';
-    if (!id) {
+    if (!this.id) {
       this.loading.set(false);
       return;
     }
 
-    const local = this.qs.getById(id);
-    if (local) this.question.set(local);
-
-    this.qs.fetchById(id).subscribe({
-      next: (q) => {
-        this.question.set(q);
+    this.qs.fetchById(this.id).subscribe({
+      next: () => {
         this.loading.set(false);
       },
       error: () => {

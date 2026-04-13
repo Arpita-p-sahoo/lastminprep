@@ -1,30 +1,42 @@
-
-    <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-    <div class="flex flex-col min-h-screen animate-fade-up">
-      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
-      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
-      <div class="main-layout">
-        <app-sidebar />
-        <div class="content">
-          <div class="content-inner">
-            <div class="feed-head">
-              <h2>Community feed</h2>
-              <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)">+ Post question</button>
-            </div>
-            <div class="chip-row">
-              @for (c of ['Top rated','Newest','Unanswered','My stack']; track c) {
-                <div class="chip" [class.active]="active===c" (click)="active=c">{{ c }}</div>
-              }
-            </div>
-            @for (q of qs.questions(); track q.id) {
-              <app-question-card [question]="q" />
-            }
+<app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+<div class="flex flex-col min-h-screen animate-fade-up">
+  <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+  <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+  <div class="main-layout">
+    <app-sidebar />
+    <div class="content">
+      <div class="content-inner">
+        <div class="feed-head">
+          <h2>Community feed</h2>
+          <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)">+ Post question</button>
+        </div>
+        <div class="chip-row">
+          @for (c of ['Top rated','Newest','Unanswered','My stack']; track c) {
+          <div class="chip" [class.active]="active===c" (click)="active=c">{{ c }}</div>
+          }
+        </div>
+        @for (q of qs.questions(); track q.id) {
+        <app-question-card [question]="q" />
+        }
+      </div>
+    </div>
+    <div class="rpanel">
+      <div class="rp-card">
+        <div class="rp-title">🔥 Hot this week</div>
+        @for (t of hotThisWeek(); track t.tag) {
+        <div class="trend-item">
+          <div class="trend-num">{{ $index + 1 }}</div>
+          <div>
+            <div class="trend-name">{{ t.tag }}</div>
+            <div class="trend-count">+{{ t.today }} today · {{ t.week }} this week</div>
           </div>
         </div>
-        <div class="rpanel">
-          <div class="rp-card"></div>
-        </div>
+        }
+        @if (!hotThisWeek().length) {
+        <div class="trend-count" style="padding:6px 0;">No activity yet</div>
+        }
       </div>
-      <app-bottom-nav (postClick)="postOpen.set(true)" />
     </div>
-  
+  </div>
+  <app-bottom-nav (postClick)="postOpen.set(true)" />
+</div>

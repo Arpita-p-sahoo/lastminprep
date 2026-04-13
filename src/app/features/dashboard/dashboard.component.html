@@ -16,15 +16,15 @@
 
             <div class="stats-row">
               <div class="stat-card" routerLink="/leaderboard">
-                <div class="stat-n accent">🔥 {{ auth.currentUser()?.streak ?? 0 }}</div>
+                <div class="stat-n accent">🔥 {{ dayStreak }}</div>
                 <div class="stat-l">Day streak</div>
               </div>
               <div class="stat-card">
-                <div class="stat-n">43</div>
+                <div class="stat-n">{{ answeredCount }}</div>
                 <div class="stat-l">Answered</div>
               </div>
               <div class="stat-card" routerLink="/my-questions">
-                <div class="stat-n">{{ auth.currentUser()?.questionsPosted ?? 0 }}</div>
+                <div class="stat-n">{{ postedCount }}</div>
                 <div class="stat-l">Posted</div>
               </div>
             </div>

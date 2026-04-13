@@ -24,7 +24,7 @@
       <button class="q-btn" [class.voted]="question().isVoted" (click)="qs.vote(question().id)">
         ▲ {{ question().votes }}
       </button>
-      <button class="q-btn" (click)="toggleComments()">💬 {{ question().comments }}</button>
+      <button class="q-btn" (click)="toggleComments()">💬 {{ question().commentCount }}</button>
       <button class="q-btn" [class.saved]="question().isSaved" (click)="qs.save(question().id)">
         {{ question().isSaved ? '⭐' : '🔖' }}
       </button>
@@ -36,7 +36,7 @@
 
   @if (showComments) {
   <div class="comments">
-    <div class="comments-title">Comments ({{ question().comments }})</div>
+    <div class="comments-title">Comments ({{ question().commentCount }})</div>
     @if (question().thread?.length) {
     <ng-container [ngTemplateOutlet]="commentTpl"
       [ngTemplateOutletContext]="{ items: question().thread }"></ng-container>
