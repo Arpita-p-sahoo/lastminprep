@@ -11,7 +11,7 @@
           <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)"><span class="mi"
               style="font-size:16px;">add</span> Post question</button>
         </div>
-        <div class="chip-row">
+        <div class="chip-row" style="">
           @for (c of ['Top rated','Newest','Unanswered','My stack']; track c) {
           <div class="chip" [class.active]="active===c" (click)="active=c">{{ c }}</div>
           }
