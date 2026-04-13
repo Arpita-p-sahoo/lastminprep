@@ -1,0 +1,119 @@
+<app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+<div class="flex flex-col min-h-screen animate-fade-up">
+  <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+  <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+  <div class="main-layout">
+    <app-sidebar />
+    <div class="content">
+      <div class="content-inner">
+        <div class="feed-head">
+          <button class="btn-lmp btn-secondary btn-sm" (click)="back()">← Back</button>
+          @if (canDelete()) {
+            <button class="btn-lmp btn-secondary btn-sm btn-danger" (click)="deleteJob()">Delete</button>
+          } @else {
+            <div></div>
+          }
+        </div>
+
+        @if (loading()) {
+        <div style="text-align:center;padding:2rem;color:var(--ink3);">Loading…</div>
+        } @else if (job()) {
+        <div class="job-detail-card">
+          <div class="job-title">{{ job()!.title }}</div>
+          <div class="job-company">{{ job()!.company }} · {{ job()!.location }}</div>
+
+          <div class="job-meta">
+            <span class="tag tag-job">{{ job()!.type }}</span>
+            <span class="tag tag-hash">{{ job()!.experience }}</span>
+            <span class="tag tag-hash">{{ jobSource(job()!) }}</span>
+          </div>
+
+          <div class="job-desc">{{ job()!.description }}</div>
+
+          @if (job()!.techStack.length) {
+          <div class="job-chips">
+            @for (s of job()!.techStack; track s) { <span class="job-chip">{{ s }}</span> }
+          </div>
+          }
+
+          <div class="job-info-grid">
+            <div class="info-item">
+              <div class="info-label">Salary</div>
+              <div class="info-value">{{ job()!.salary || '—' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Posted</div>
+              <div class="info-value">{{ job()!.postedAt | date:'medium' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Posted by</div>
+              <div class="info-value">
+                <div class="poster-line">
+                  @if (posterInfo()?.id) {
+                    <a [routerLink]="['/user', posterInfo()!.id]">{{ posterInfo()!.name || 'User' }}</a>
+                  } @else {
+                    <span>{{ posterInfo()?.name || job()!.postedBy.name || 'Community' }}</span>
+                  }
+                  @if (posterInfo()?.designation || posterInfo()?.organisation) {
+                    <div class="poster-sub">
+                      {{ posterInfo()?.designation || '' }}@if (posterInfo()?.designation && posterInfo()?.organisation) { · }{{ posterInfo()?.organisation || '' }}
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+            @if (job()!.applyUrl) {
+              <div class="info-item">
+                <div class="info-label">Apply link</div>
+                <div class="info-value">
+                  <a [href]="job()!.applyUrl" target="_blank" rel="noopener">Open</a>
+                </div>
+              </div>
+            } @else {
+              <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-value">
+                  @if (posterInfo()?.email) {
+                    <a [href]="'mailto:' + posterInfo()!.email">{{ posterInfo()!.email }}</a>
+                  } @else {
+                    —
+                  }
+                </div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">LinkedIn</div>
+                <div class="info-value">
+                  @if (posterInfo()?.linkedinUrl) {
+                    <a [href]="posterInfo()!.linkedinUrl" target="_blank" rel="noopener">Open</a>
+                  } @else {
+                    —
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="job-actions">
+            @if (job()!.applyUrl) {
+            <button class="btn-lmp btn-primary btn-sm" (click)="apply(job()!)">Apply →</button>
+            } @else {
+            <button class="btn-lmp btn-secondary btn-sm" (click)="back()">Back to jobs</button>
+            }
+          </div>
+        </div>
+        } @else {
+        <div style="text-align:center;padding:2rem;color:var(--ink3);">Job not found</div>
+        }
+      </div>
+    </div>
+    <div class="rpanel">
+      <div class="rp-card">
+        <div class="rp-title">More</div>
+        <div style="color:var(--ink3);font-size:13px;line-height:1.6;">
+          Use filters in the Job board to narrow by type and experience.
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-bottom-nav (postClick)="postOpen.set(true)" />
+</div>

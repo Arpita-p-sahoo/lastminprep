@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { JobService } from '../../core/services/job.service';
 import { QuestionService } from '../../core/services/question.service';
 
 @Component({
@@ -12,5 +13,6 @@ import { QuestionService } from '../../core/services/question.service';
 })
 export class SidebarComponent {
   auth = inject(AuthService);
+  jobs = inject(JobService);
   qs = inject(QuestionService);
 }

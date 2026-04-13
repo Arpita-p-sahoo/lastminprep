@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { User } from '../models';
 import { environment } from '../../../environments/environment';
 import { ToastService } from './toast.service';
+import { Observable, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -46,8 +47,14 @@ export class AuthService {
       answeredCount: Number(u.answeredCount ?? u.answersCount ?? u.answerCount ?? u.questionsAnswered ?? u.answered ?? 0),
       questionsPosted: Number(u.questionsPosted ?? 0),
       totalVotes: Number(u.totalVotes ?? 0),
-      joinedAt: u.joinedAt ? new Date(u.joinedAt) : new Date(),
+      joinedAt: (u.joinedAt || u.createdAt) ? new Date(u.joinedAt || u.createdAt) : new Date(),
     };
+  }
+
+  fetchUserById(id: string): Observable<User> {
+    return this.http.get<any>(`${this.API}/users/${id}`).pipe(
+      map(res => this.normalizeUser(res?.data ?? res?.item ?? res?.user ?? res))
+    );
   }
 
   updateLocalUser(partial: Partial<User>): void {

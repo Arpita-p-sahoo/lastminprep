@@ -54,6 +54,8 @@ export interface Job {
   salary: string;
   techStack: string[];
   description: string;
+  source?: string;
+  applyUrl?: string;
   postedAt: Date;
   postedBy: Partial<User>;
 }

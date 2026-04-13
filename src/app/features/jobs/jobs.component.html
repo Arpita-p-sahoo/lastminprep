@@ -1,68 +1,154 @@
+<app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+<div class="flex flex-col min-h-screen animate-fade-up">
+  <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+  <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
 
-    <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-    <div class="flex flex-col min-h-screen animate-fade-up">
-      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
-      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
-
-      <!-- Job post modal -->
-      <div class="modal-overlay" [class.open]="jobModalOpen()" (click)="jobModalOpen.set(false)">
-        <div class="modal-box" (click)="$event.stopPropagation()">
-          <div class="modal-handle"></div>
-          <div class="modal-head"><div class="modal-title">Post a job</div><button class="modal-close" (click)="jobModalOpen.set(false)"><span class="mi">close</span></button></div>
-          <div class="field"><label>Job title *</label><input class="lmp-input" [(ngModel)]="jobForm.title" placeholder="Senior Angular Developer" /></div>
-          <div class="field-row">
-            <div class="field"><label>Company *</label><input class="lmp-input" [(ngModel)]="jobForm.company" placeholder="Razorpay" /></div>
-            <div class="field"><label>Location *</label><input class="lmp-input" [(ngModel)]="jobForm.location" placeholder="Bangalore / Remote" /></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>Type</label><select class="lmp-input" [(ngModel)]="jobForm.type"><option>Remote</option><option>Hybrid</option><option>Onsite</option></select></div>
-            <div class="field"><label>Experience</label><select class="lmp-input" [(ngModel)]="jobForm.experience"><option>0-2 yrs</option><option>2-5 yrs</option><option>5+ yrs</option></select></div>
-          </div>
-          <div class="field"><label>Tech stack</label><input class="lmp-input" [(ngModel)]="jobForm.techStack" placeholder="Angular, TypeScript, NestJS" /></div>
-          <div class="field"><label>Salary range</label><input class="lmp-input" [(ngModel)]="jobForm.salary" placeholder="₹12–18 LPA" /></div>
-          <div class="field"><label>Description *</label><textarea class="lmp-input" rows="3" [(ngModel)]="jobForm.description" placeholder="Brief description..."></textarea></div>
-          <button class="submit-btn" (click)="postJob()">Post job →</button>
+  <div class="modal-overlay" [class.open]="jobModalOpen()" (click)="jobModalOpen.set(false)">
+    <div class="modal-box job-post-modal" (click)="$event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-head">
+        <div class="modal-title">Post a job</div>
+        <button class="modal-close" (click)="jobModalOpen.set(false)"><span class="mi">close</span></button>
+      </div>
+      <div class="field">
+        <label>Job title *</label>
+        <input class="lmp-input" [(ngModel)]="jobForm.title" placeholder="Senior Angular Developer" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Company *</label>
+          <input class="lmp-input" [(ngModel)]="jobForm.company" placeholder="Razorpay" />
+        </div>
+        <div class="field">
+          <label>Location *</label>
+          <input class="lmp-input" [(ngModel)]="jobForm.location" placeholder="Bangalore / Remote" />
         </div>
       </div>
-
-      <div class="main-layout">
-        <app-sidebar />
-        <div class="content">
-          <div class="content-inner">
-            <div class="feed-head">
-              <h2>Job board</h2>
-              <button class="btn-lmp btn-primary btn-sm" (click)="jobModalOpen.set(true)">+ Post job</button>
-            </div>
-            <div class="chip-row">
-              @for (c of ['All','Remote','Angular','Full-stack','Fresher']; track c) {
-                <div class="chip" [class.active]="activeFilter===c" (click)="activeFilter=c">{{ c }}</div>
-              }
-            </div>
-            @for (job of jobService.jobs(); track job.id) {
-              <div class="job-card">
-                <div class="job-top">
-                  <div>
-                    <div class="job-title">{{ job.title }}</div>
-                    <div class="job-company">{{ job.company }} · {{ job.location }}</div>
-                  </div>
-                  <span class="tag tag-job">{{ job.type }}</span>
-                </div>
-                <div class="job-desc">{{ job.description }}</div>
-                <div class="job-chips">
-                  @for (s of job.techStack; track s) { <span class="job-chip">{{ s }}</span> }
-                </div>
-                <div class="job-footer">
-                  <span class="job-salary">{{ job.salary }} · {{ job.experience }}</span>
-                  <button class="btn-lmp btn-primary btn-sm">Apply →</button>
-                </div>
-              </div>
-            }
-          </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Type</label>
+          <select class="lmp-input" [(ngModel)]="jobForm.type">
+            <option>Remote</option>
+            <option>Hybrid</option>
+            <option>Onsite</option>
+          </select>
         </div>
-        <div class="rpanel">
-          <div class="rp-card"></div>
+        <div class="field">
+          <label>Experience</label>
+          <select class="lmp-input" [(ngModel)]="jobForm.experience">
+            <option>0-2 yrs</option>
+            <option>2-5 yrs</option>
+            <option>5+ yrs</option>
+          </select>
         </div>
       </div>
-      <app-bottom-nav (postClick)="postOpen.set(true)" />
+      <div class="field-row">
+        <div class="field">
+          <label>Source</label>
+          <select class="lmp-input" [(ngModel)]="jobForm.source">
+            <option>Community</option>
+            <option>LinkedIn</option>
+            <option>Naukri</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Apply link</label>
+          <input class="lmp-input" [(ngModel)]="jobForm.applyUrl" placeholder="https://..." />
+        </div>
+      </div>
+      <div class="field">
+        <label>Tech stack</label>
+        <input class="lmp-input" [(ngModel)]="jobForm.techStack" placeholder="Angular, TypeScript, NestJS" />
+      </div>
+      <div class="field">
+        <label>Salary range</label>
+        <input class="lmp-input" [(ngModel)]="jobForm.salary" placeholder="₹12–18 LPA" />
+      </div>
+      <div class="field">
+        <label>Description *</label>
+        <textarea class="lmp-input" rows="3" [(ngModel)]="jobForm.description"
+          placeholder="Brief description..."></textarea>
+      </div>
+      <button class="submit-btn" (click)="postJob()">Post job →</button>
     </div>
-  
+  </div>
+
+  <div class="main-layout">
+    <app-sidebar />
+    <div class="content">
+      <div class="content-inner">
+        <div class="feed-head">
+          <h2>Job board</h2>
+          <button class="btn-lmp btn-primary btn-sm" (click)="jobModalOpen.set(true)">+ Post job</button>
+        </div>
+
+        <div class="job-tools">
+          <div class="job-search">
+            <span class="mi" style="font-size:18px;">search</span>
+            <input [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+              placeholder="Search jobs by title, company, location, stack..." />
+          </div>
+          <div class="job-filters">
+            <select class="lmp-input" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
+              @for (t of typeOptions; track t) { <option [ngValue]="t">{{ t }}</option> }
+            </select>
+            <select class="lmp-input" [ngModel]="experienceFilter()" (ngModelChange)="experienceFilter.set($event)">
+              @for (e of experienceOptions(); track e) { <option [ngValue]="e">{{ e }}</option> }
+            </select>
+          </div>
+        </div>
+
+        <div class="chip-row">
+          @for (s of sourceOptions; track s) {
+          <div class="chip" [class.active]="sourceFilter()===s" (click)="sourceFilter.set(s)">{{ s }}</div>
+          }
+        </div>
+
+        <div class="chip-row">
+          @for (c of quickFilters; track c) {
+          <div class="chip" [class.active]="activeFilter()===c" (click)="activeFilter.set(c)">{{ c }}</div>
+          }
+        </div>
+
+        @for (job of filteredJobs(); track job.id) {
+        <div class="job-card" (click)="openJob(job)">
+          <div class="job-top">
+            <div class="job-main">
+              <div class="job-title">{{ job.title }}</div>
+              <div class="job-company">{{ job.company }} · {{ job.location }}</div>
+            </div>
+            <div class="job-top-tags">
+              <span class="tag tag-job">{{ job.type }}</span>
+              <span class="tag tag-hash">{{ jobSource(job) }}</span>
+            </div>
+          </div>
+          <div class="job-desc">{{ job.description }}</div>
+          <div class="job-chips">
+            @for (s of job.techStack; track s) { <span class="job-chip">{{ s }}</span> }
+          </div>
+          <div class="job-footer">
+            <span class="job-salary">{{ job.salary }} · {{ job.experience }}</span>
+            <button class="btn-lmp btn-primary btn-sm" (click)="$event.stopPropagation(); apply(job)">{{ job.applyUrl ?
+              'Apply →' : 'Details →' }}</button>
+          </div>
+        </div>
+        }
+
+        @if (!filteredJobs().length) {
+        <div style="text-align:center;padding:2rem;color:var(--ink3);">No jobs found</div>
+        }
+      </div>
+    </div>
+
+    <div class="rpanel">
+      <div class="rp-card">
+        <div class="rp-title">Tip</div>
+        <div style="color:var(--ink3);font-size:13px;line-height:1.6;">
+          Click any job to open the full details page.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-bottom-nav (postClick)="postOpen.set(true)" />
+</div>

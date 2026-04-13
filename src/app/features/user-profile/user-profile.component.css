@@ -2,6 +2,13 @@
     .feed-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
     .feed-head h2{font-size:17px;font-weight:700;}
     .profile-ava-img{width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;}
+    .profile-ava-img img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;}
     .profile-name{font-size:16px;font-weight:800;letter-spacing:-0.02em;}
+    .profile-subtitle{font-size:12px;color:var(--ink2);margin-top:2px;}
     .profile-title-txt{font-size:12px;color:var(--ink3);}
+    .profile-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+    .profile-links a{font-size:12px;color:var(--accent);text-decoration:none;}
+    .profile-links a:hover{text-decoration:underline;}
+    .tech-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+    .tech-chip{font-size:10px;padding:2px 7px;border:1px solid var(--border2);color:var(--ink3);border-radius:4px;}
   

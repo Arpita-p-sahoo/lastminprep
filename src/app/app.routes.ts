@@ -52,6 +52,12 @@ export const routes: Routes = [
     data: { description: 'Browse interview questions by tech stack and framework.' },
   },
   {
+    path: 'jobs/:id',
+    loadComponent: () =>
+      import('./features/job-detail/job-detail.component').then((m) => m.JobDetailComponent),
+    title: 'Job — LastMinPrep',
+  },
+  {
     path: 'jobs',
     loadComponent: () =>
       import('./features/jobs/jobs.component').then((m) => m.JobsComponent),

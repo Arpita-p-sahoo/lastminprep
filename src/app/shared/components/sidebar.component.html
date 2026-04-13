@@ -1,32 +1,45 @@
+<aside class="sidebar">
+  <div class="sidebar-inner">
+    <div class="sb-section">Main</div>
+    <a class="sb-link" routerLink="/dashboard" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">dashboard</span></span><span class="sb-text">Dashboard</span></a>
+    <a class="sb-link" routerLink="/feed" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">dynamic_feed</span></span><span class="sb-text">Feed</span> @if (qs.newFeedCount() > 0) { <span
+        class="sb-badge">{{ qs.newFeedCount() }}</span> }</a>
+    <a class="sb-link" routerLink="/explore" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">explore</span></span><span class="sb-text">Explore</span></a>
+    <a class="sb-link" routerLink="/jobs" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">work</span></span><span class="sb-text">Jobs</span> @if (jobs.newJobsCount() > 0) { <span
+        class="sb-badge">{{ jobs.newJobsCount() }}</span> }</a>
+    <a class="sb-link" routerLink="/leaderboard" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">leaderboard</span></span><span class="sb-text">Leaderboard</span></a>
+    <a class="sb-link" routerLink="/search" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">search</span></span><span class="sb-text">Search</span></a>
 
-    <aside class="sidebar">
-      <div class="sidebar-inner">
-        <div class="sb-section">Main</div>
-        <a class="sb-link" routerLink="/dashboard" routerLinkActive="active"><span class="sb-icon"><span class="mi">dashboard</span></span> Dashboard</a>
-        <a class="sb-link" routerLink="/feed" routerLinkActive="active"><span class="sb-icon"><span class="mi">dynamic_feed</span></span> Feed @if (qs.newFeedCount() > 0) { <span class="sb-badge">{{ qs.newFeedCount() }}</span> }</a>
-        <a class="sb-link" routerLink="/explore" routerLinkActive="active"><span class="sb-icon"><span class="mi">explore</span></span> Explore</a>
-        <a class="sb-link" routerLink="/jobs" routerLinkActive="active"><span class="sb-icon"><span class="mi">work</span></span> Jobs <span class="sb-badge green">5</span></a>
-        <a class="sb-link" routerLink="/leaderboard" routerLinkActive="active"><span class="sb-icon"><span class="mi">leaderboard</span></span> Leaderboard</a>
-        <a class="sb-link" routerLink="/search" routerLinkActive="active"><span class="sb-icon"><span class="mi">search</span></span> Search</a>
+    <div class="sb-section">You</div>
+    <a class="sb-link" routerLink="/profile" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">person</span></span><span class="sb-text">Profile</span></a>
+    <a class="sb-link" routerLink="/saved" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">bookmark</span></span><span class="sb-text">Saved</span></a>
+    <a class="sb-link" routerLink="/my-questions" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">quiz</span></span><span class="sb-text">My Questions</span></a>
+    <a class="sb-link" routerLink="/notifications" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">notifications</span></span><span class="sb-text">Notifications</span><span
+        class="sb-badge">3</span></a>
 
-        <div class="sb-section">You</div>
-        <a class="sb-link" routerLink="/profile" routerLinkActive="active"><span class="sb-icon"><span class="mi">person</span></span> Profile</a>
-        <a class="sb-link" routerLink="/saved" routerLinkActive="active"><span class="sb-icon"><span class="mi">bookmark</span></span> Saved</a>
-        <a class="sb-link" routerLink="/my-questions" routerLinkActive="active"><span class="sb-icon"><span class="mi">quiz</span></span> My Questions</a>
-        <a class="sb-link" routerLink="/notifications" routerLinkActive="active"><span class="sb-icon"><span class="mi">notifications</span></span> Notifications <span class="sb-badge">3</span></a>
-
-        <div class="sb-section">Account</div>
-        <a class="sb-link" routerLink="/settings" routerLinkActive="active"><span class="sb-icon"><span class="mi">settings</span></span> Settings</a>
-        <button class="sb-link" (click)="auth.logout()"><span class="sb-icon"><span class="mi">logout</span></span> Logout</button>
+    <div class="sb-section">Account</div>
+    <a class="sb-link" routerLink="/settings" routerLinkActive="active"><span class="sb-icon"><span
+          class="mi">settings</span></span><span class="sb-text">Settings</span></a>
+    <button class="sb-link" (click)="auth.logout()"><span class="sb-icon"><span class="mi">logout</span></span><span
+        class="sb-text">Logout</span></button>
+  </div>
+  <div class="sidebar-user">
+    <div class="sb-user-card" routerLink="/profile">
+      <div class="sb-user-ava">{{ auth.currentUser()?.name?.charAt(0) || 'U' }}</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name">{{ auth.currentUser()?.name }}</div>
+        <div class="sb-user-role">{{ auth.currentUser()?.designation }}</div>
       </div>
-      <div class="sidebar-user">
-        <div class="sb-user-card" routerLink="/profile">
-          <div class="sb-user-ava">{{ auth.currentUser()?.name?.charAt(0) || 'U' }}</div>
-          <div class="sb-user-info">
-            <div class="sb-user-name">{{ auth.currentUser()?.name }}</div>
-            <div class="sb-user-role">{{ auth.currentUser()?.designation }}</div>
-          </div>
-        </div>
-      </div>
-    </aside>
-  
+    </div>
+  </div>
+</aside>

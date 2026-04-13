@@ -9,12 +9,44 @@
           <div class="content-inner">
             <div class="lmp-card" style="padding:1rem;margin-bottom:1rem;">
               <div style="display:flex;align-items:center;gap:10px;">
-                <div class="profile-ava-img">{{ userName.charAt(0) }}</div>
-                <div>
+                <div class="profile-ava-img">
+                  @if (user()?.avatar) {
+                    <img [src]="user()!.avatar" alt="avatar" />
+                  } @else {
+                    {{ userName.charAt(0) }}
+                  }
+                </div>
+                <div style="min-width:0;">
                   <div class="profile-name">{{ userName }}</div>
-                  <div class="profile-title-txt">{{ questions().length }} questions · {{ totalVotes }} votes</div>
+                  @if (user()?.designation || user()?.organisation) {
+                    <div class="profile-subtitle">
+                      {{ user()?.designation || '' }}@if (user()?.designation && user()?.organisation) { · }{{ user()?.organisation || '' }}
+                    </div>
+                  }
+                  <div class="profile-title-txt">{{ questionsCount }} questions · {{ totalVotes }} votes</div>
+                  @if (joinedLabel()) {
+                    <div class="profile-title-txt">{{ joinedLabel() }}</div>
+                  }
+                  @if (user()?.email || user()?.linkedinUrl) {
+                    <div class="profile-links">
+                      @if (user()?.email) {
+                        <a [href]="'mailto:' + user()!.email">{{ user()!.email }}</a>
+                      }
+                      @if (user()?.linkedinUrl) {
+                        <a [href]="user()!.linkedinUrl" target="_blank" rel="noopener">LinkedIn</a>
+                      }
+                    </div>
+                  }
                 </div>
               </div>
+
+              @if (user()?.techStack?.length) {
+                <div class="tech-row">
+                  @for (t of user()!.techStack; track t) {
+                    <span class="tech-chip">{{ t }}</span>
+                  }
+                </div>
+              }
             </div>
             <div class="feed-head"><h2>Posts by {{ userName }}</h2></div>
             @for (q of questions(); track q.id) {

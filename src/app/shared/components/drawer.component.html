@@ -13,21 +13,33 @@
   </div>
   <div class="drawer-body">
     <div class="sb-section">Main</div>
-    <a class="sb-link" routerLink="/dashboard" (click)="close.emit()"><span class="mi">dashboard</span> Dashboard</a>
-    <a class="sb-link" routerLink="/feed" (click)="close.emit()"><span class="mi">dynamic_feed</span> Feed @if (qs.newFeedCount() > 0) { <span class="sb-badge">{{ qs.newFeedCount() }}</span> }</a>
-    <a class="sb-link" routerLink="/explore" (click)="close.emit()"><span class="mi">explore</span> Explore</a>
-    <a class="sb-link" routerLink="/jobs" (click)="close.emit()"><span class="mi">work</span> Jobs</a>
+    <a class="sb-link" routerLink="/dashboard" (click)="close.emit()"><span class="mi">dashboard</span><span
+        class="sb-text">Dashboard</span></a>
+    <a class="sb-link" routerLink="/feed" (click)="close.emit()"><span class="mi">dynamic_feed</span><span
+        class="sb-text">Feed</span> @if (qs.newFeedCount() > 0) { <span class="sb-badge">{{ qs.newFeedCount() }}</span>
+      }</a>
+    <a class="sb-link" routerLink="/explore" (click)="close.emit()"><span class="mi">explore</span><span
+        class="sb-text">Explore</span></a>
+    <a class="sb-link" routerLink="/jobs" (click)="close.emit()"><span class="mi">work</span><span
+        class="sb-text">Jobs</span> @if (jobs.newJobsCount() > 0) { <span class="sb-badge">{{ jobs.newJobsCount()
+        }}</span> }</a>
     <a class="sb-link" routerLink="/leaderboard" (click)="close.emit()"><span class="mi">leaderboard</span>
-      Leaderboard</a>
-    <a class="sb-link" routerLink="/search" (click)="close.emit()"><span class="mi">search</span> Search</a>
+      <span class="sb-text">Leaderboard</span></a>
+    <a class="sb-link" routerLink="/search" (click)="close.emit()"><span class="mi">search</span><span
+        class="sb-text">Search</span></a>
     <div class="sb-section">You</div>
-    <a class="sb-link" routerLink="/profile" (click)="close.emit()"><span class="mi">person</span> Profile</a>
-    <a class="sb-link" routerLink="/saved" (click)="close.emit()"><span class="mi">bookmark</span> Saved</a>
-    <a class="sb-link" routerLink="/my-questions" (click)="close.emit()"><span class="mi">quiz</span> My Questions</a>
+    <a class="sb-link" routerLink="/profile" (click)="close.emit()"><span class="mi">person</span><span
+        class="sb-text">Profile</span></a>
+    <a class="sb-link" routerLink="/saved" (click)="close.emit()"><span class="mi">bookmark</span><span
+        class="sb-text">Saved</span></a>
+    <a class="sb-link" routerLink="/my-questions" (click)="close.emit()"><span class="mi">quiz</span><span
+        class="sb-text">My Questions</span></a>
     <a class="sb-link" routerLink="/notifications" (click)="close.emit()"><span class="mi">notifications</span>
-      Notifications</a>
+      <span class="sb-text">Notifications</span></a>
     <div class="sb-section">Account</div>
-    <a class="sb-link" routerLink="/settings" (click)="close.emit()"><span class="mi">settings</span> Settings</a>
-    <button class="sb-link" (click)="auth.logout(); close.emit()"><span class="mi">logout</span> Logout</button>
+    <a class="sb-link" routerLink="/settings" (click)="close.emit()"><span class="mi">settings</span><span
+        class="sb-text">Settings</span></a>
+    <button class="sb-link" (click)="auth.logout(); close.emit()"><span class="mi">logout</span><span
+        class="sb-text">Logout</span></button>
   </div>
 </div>
