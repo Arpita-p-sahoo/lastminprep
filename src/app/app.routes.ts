@@ -30,6 +30,12 @@ export const routes: Routes = [
     data: { description: 'Join 4,000+ developers preparing smarter.' },
   },
   {
+    path: 'auth/google/callback',
+    loadComponent: () =>
+      import('./features/auth/google-callback/google-callback.component').then((m) => m.GoogleCallbackComponent),
+    title: 'Signing in… — LastMinPrep',
+  },
+  {
     path: 'dashboard',
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),

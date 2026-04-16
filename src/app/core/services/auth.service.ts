@@ -11,11 +11,15 @@ export class AuthService {
   private readonly STORAGE_KEY = 'lmp_user';
   private readonly TOKEN_KEY = 'lmp_token';
   private readonly API = environment.apiUrl;
+  private restoring = false;
 
   currentUser = signal<User | null>(this.loadUser());
-  isLoggedIn = signal<boolean>(!!this.loadUser());
+  isLoggedIn = signal<boolean>(!!this.loadUser() || !!this.loadToken());
 
-  constructor(private router: Router, private http: HttpClient, private toast: ToastService) { }
+  constructor(private router: Router, private http: HttpClient, private toast: ToastService) {
+    const token = this.loadToken();
+    if (!this.currentUser() && token) this.restoreSessionFromToken(token);
+  }
 
   private normalizeGender(value: any): 'male' | 'female' | '' {
     const g = String(value ?? '').trim().toLowerCase();
@@ -49,6 +53,14 @@ export class AuthService {
       return raw ? JSON.parse(raw) : null;
     } catch {
       return null;
+    }
+  }
+
+  private loadToken(): string {
+    try {
+      return String(localStorage.getItem(this.TOKEN_KEY) || '').trim();
+    } catch {
+      return '';
     }
   }
 
@@ -103,6 +115,27 @@ export class AuthService {
     this.isLoggedIn.set(true);
   }
 
+  private restoreSessionFromToken(token: string): void {
+    if (this.restoring) return;
+    this.restoring = true;
+
+    this.http.get<any>(`${this.API}/users/me`, { headers: this.getAuthHeaders() }).subscribe({
+      next: res => {
+        const normalized = this.normalizeUser(res?.data ?? res?.item ?? res?.user ?? res);
+        this.saveSession(normalized, token);
+        this.restoring = false;
+      },
+      error: err => {
+        if (err?.status === 401 || err?.status === 403) {
+          localStorage.removeItem(this.TOKEN_KEY);
+          this.currentUser.set(null);
+          this.isLoggedIn.set(false);
+        }
+        this.restoring = false;
+      },
+    });
+  }
+
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem(this.TOKEN_KEY) || '';
     return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
@@ -131,7 +164,44 @@ export class AuthService {
   }
 
   loginWithGoogle(): void {
-    this.router.navigate(['/login']);
+    if (this.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+    const url = (environment as any).googleAuthUrl || `${this.API}/auth/google`;
+    if (typeof window === 'undefined') return;
+    window.location.assign(url);
+  }
+
+  signupWithGoogle(): void {
+    if (this.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+    const url = (environment as any).googleAuthSignupUrl || `${this.API}/auth/google/signup`;
+    if (typeof window === 'undefined') return;
+    window.location.assign(url);
+  }
+
+  completeGoogleOAuth(params?: { token?: string; returnTo?: string }): void {
+    const token = String(params?.token ?? '').trim();
+    const returnTo = String(params?.returnTo ?? '/dashboard').trim() || '/dashboard';
+
+    if (token) localStorage.setItem(this.TOKEN_KEY, token);
+
+    const withCredentials = !token;
+    this.http.get<any>(`${this.API}/users/me`, { headers: this.getAuthHeaders(), withCredentials }).subscribe({
+      next: res => {
+        const normalized = this.normalizeUser(res?.data ?? res?.item ?? res?.user ?? res);
+        const storedToken = token || localStorage.getItem(this.TOKEN_KEY) || '';
+        this.saveSession(normalized, storedToken);
+        this.router.navigate([returnTo]);
+      },
+      error: err => {
+        this.toast.error(this.getErrorMessage(err, 'Google login failed'));
+        this.router.navigate(['/login']);
+      },
+    });
   }
 
   logout(): void {

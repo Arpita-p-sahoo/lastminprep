@@ -30,6 +30,7 @@ export class ExploreComponent {
       Mobile: 'MB',
       DevOps: 'DO',
       'Data Science': 'DS',
+      AI: 'AI',
       'System Design': 'SD',
     };
     const mapped = domainMap[t];
@@ -111,6 +112,18 @@ export class ExploreComponent {
         { name: 'TensorFlow', icon: 'tensorflow', count: 320, domain: 'datascience' },
         { name: 'PyTorch', icon: 'pytorch', count: 280, domain: 'datascience' },
         { name: 'Pandas', icon: 'pandas', count: 480, domain: 'datascience' },
+      ],
+    },
+    {
+      id: 'ai',
+      name: 'AI',
+      icon: 'openai',
+      count: 1420,
+      frameworks: [
+        { name: 'LLMs', icon: 'openai', count: 520, domain: 'ai' },
+        { name: 'Hugging Face', icon: 'huggingface', count: 340, domain: 'ai' },
+        { name: 'Prompt Engineering', icon: '', count: 260, domain: 'ai' },
+        { name: 'RAG', icon: '', count: 300, domain: 'ai' },
       ],
     },
     {
