@@ -205,7 +205,14 @@ export class AuthService {
   }
 
   uploadAvatar(file: File): Observable<string> {
-    const endpoint = (environment as any).avatarUploadUrl || `${this.API}/uploads/avatar`;
+    const endpoint = (environment as any).avatarUploadUrl || `${this.API}/users/me/avatar`;
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<any>(endpoint, form).pipe(map(res => this.extractUploadedUrl(res)));
+  }
+
+  uploadBanner(file: File): Observable<string> {
+    const endpoint = (environment as any).bannerUploadUrl || `${this.API}/users/me/banner`;
     const form = new FormData();
     form.append('file', file);
     return this.http.post<any>(endpoint, form).pipe(map(res => this.extractUploadedUrl(res)));
@@ -215,6 +222,10 @@ export class AuthService {
     const candidates = [
       res?.url,
       res?.secure_url,
+      res?.avatarUrl,
+      res?.bannerUrl,
+      res?.data?.avatarUrl,
+      res?.data?.bannerUrl,
       res?.data?.url,
       res?.data?.secure_url,
       res?.item?.url,
@@ -222,7 +233,14 @@ export class AuthService {
       res?.result?.secure_url,
     ];
     const url = candidates.find(v => typeof v === 'string' && v.trim());
-    return String(url ?? '').trim();
+    return this.sanitizeUploadedUrl(String(url ?? ''));
+  }
+
+  private sanitizeUploadedUrl(value: string): string {
+    let v = String(value ?? '').trim();
+    v = v.replace(/^[`'"\s]+/, '').replace(/[`'"\s]+$/, '');
+    v = v.replace(/\s+/g, '');
+    return v;
   }
 
   logout(): void {

@@ -214,8 +214,19 @@
 
                     <div class="form-row full">
                       <div class="form-field">
-                        <label>Banner image URL</label>
-                        <input type="url" [(ngModel)]="form.bannerUrl" placeholder="https://..." />
+                        <label>Banner</label>
+                        <div class="avatar-upload-row">
+                          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingBanner()"
+                            (click)="openBannerUpload()">Upload image</button>
+                          @if (form.bannerUrl.trim()) {
+                          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingBanner()"
+                            (click)="removeBanner()">Remove</button>
+                          }
+                          @if (uploadingBanner()) {
+                          <span class="avatar-upload-hint">Uploading…</span>
+                          }
+                        </div>
+                        <div class="avatar-upload-sub">PNG/JPG up to 5MB</div>
                       </div>
                     </div>
 
@@ -228,11 +239,13 @@
                     </div>
 
                     <div class="form-actions">
-                      <button class="btn-lmp btn-primary" type="button" [disabled]="saving() || uploadingAvatar()"
-                        (click)="saveProfile()">
-                        {{ saving() ? 'Saving…' : (uploadingAvatar() ? 'Uploading…' : 'Save changes') }}
+                      <button class="btn-lmp btn-primary" type="button"
+                        [disabled]="saving() || uploadingAvatar() || uploadingBanner()" (click)="saveProfile()">
+                        {{ saving() ? 'Saving…' : ((uploadingAvatar() || uploadingBanner()) ? 'Uploading…' : 'Save
+                        changes') }}
                       </button>
-                      <button class="btn-lmp btn-secondary" type="button" [disabled]="saving() || uploadingAvatar()"
+                      <button class="btn-lmp btn-secondary" type="button"
+                        [disabled]="saving() || uploadingAvatar() || uploadingBanner()"
                         (click)="cancelEdit()">Cancel</button>
                     </div>
                   </div>
@@ -251,6 +264,12 @@
 
                   <div class="ava-dropzone" [class.dragging]="avatarDragActive()" (dragover)="onAvatarDragOver($event)"
                     (dragleave)="onAvatarDragLeave($event)" (drop)="onAvatarDrop($event)">
+                    @if (uploadingAvatar()) {
+                    <div class="ava-loading" aria-live="polite">
+                      <div class="lmp-spinner"></div>
+                      <div class="ava-loading-text">Uploading…</div>
+                    </div>
+                    }
                     <div class="ava-drop-ico">
                       <span class="mi">cloud_upload</span>
                     </div>
@@ -260,6 +279,39 @@
                       style="display:none;" />
                     <button class="btn-lmp btn-primary btn-sm" type="button" [disabled]="uploadingAvatar()"
                       (click)="avatarFileInput.click()">Choose file</button>
+                    <div class="ava-drop-hint">PNG/JPG up to 5MB</div>
+                  </div>
+                </div>
+              </div>
+              }
+
+              @if (bannerUploadOpen()) {
+              <div class="ava-modal-backdrop" (click)="closeBannerUpload()">
+                <div class="ava-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+                  <div class="ava-modal-head">
+                    <div class="ava-modal-title">Upload banner</div>
+                    <button class="ava-modal-x" type="button" (click)="closeBannerUpload()">
+                      <span class="mi">close</span>
+                    </button>
+                  </div>
+
+                  <div class="ava-dropzone" [class.dragging]="bannerDragActive()" (dragover)="onBannerDragOver($event)"
+                    (dragleave)="onBannerDragLeave($event)" (drop)="onBannerDrop($event)">
+                    @if (uploadingBanner()) {
+                    <div class="ava-loading" aria-live="polite">
+                      <div class="lmp-spinner"></div>
+                      <div class="ava-loading-text">Uploading…</div>
+                    </div>
+                    }
+                    <div class="ava-drop-ico">
+                      <span class="mi">cloud_upload</span>
+                    </div>
+                    <div class="ava-drop-title">Drag & drop your image</div>
+                    <div class="ava-drop-sub">or choose a file from your device</div>
+                    <input #bannerFileInput type="file" accept="image/*" (change)="onBannerFileChange($event)"
+                      style="display:none;" />
+                    <button class="btn-lmp btn-primary btn-sm" type="button" [disabled]="uploadingBanner()"
+                      (click)="bannerFileInput.click()">Choose file</button>
                     <div class="ava-drop-hint">PNG/JPG up to 5MB</div>
                   </div>
                 </div>

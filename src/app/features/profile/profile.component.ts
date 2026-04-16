@@ -16,7 +16,7 @@ import { ToastService } from '../../core/services/toast.service';
   imports: [FormsModule, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-  host: { '(document:keydown.escape)': 'closeAvatarUpload()' },
+  host: { '(document:keydown.escape)': 'handleEscape()' },
 })
 export class ProfileComponent {
   auth = inject(AuthService);
@@ -27,9 +27,13 @@ export class ProfileComponent {
   editOpen = signal(false);
   saving = signal(false);
   uploadingAvatar = signal(false);
+  uploadingBanner = signal(false);
   avatarUploadOpen = signal(false);
   avatarDragActive = signal(false);
+  bannerUploadOpen = signal(false);
+  bannerDragActive = signal(false);
   private avatarPreviewObjectUrl = '';
+  private bannerPreviewObjectUrl = '';
   form = {
     name: '',
     designation: '',
@@ -92,10 +96,11 @@ export class ProfileComponent {
   cancelEdit(): void {
     this.editOpen.set(false);
     this.closeAvatarUpload();
+    this.closeBannerUpload();
   }
 
   saveProfile(): void {
-    if (this.saving() || this.uploadingAvatar()) return;
+    if (this.saving() || this.uploadingAvatar() || this.uploadingBanner()) return;
     this.saving.set(true);
 
     const techStack = (this.form.techStackText || '')
@@ -148,6 +153,17 @@ export class ProfileComponent {
     this.form.avatarUrl = '';
   }
 
+  removeBanner(): void {
+    if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
+    this.bannerPreviewObjectUrl = '';
+    this.form.bannerUrl = '';
+  }
+
+  handleEscape(): void {
+    this.closeAvatarUpload();
+    this.closeBannerUpload();
+  }
+
   openAvatarUpload(): void {
     if (this.uploadingAvatar()) return;
     this.avatarDragActive.set(false);
@@ -157,6 +173,17 @@ export class ProfileComponent {
   closeAvatarUpload(): void {
     this.avatarDragActive.set(false);
     this.avatarUploadOpen.set(false);
+  }
+
+  openBannerUpload(): void {
+    if (this.uploadingBanner()) return;
+    this.bannerDragActive.set(false);
+    this.bannerUploadOpen.set(true);
+  }
+
+  closeBannerUpload(): void {
+    this.bannerDragActive.set(false);
+    this.bannerUploadOpen.set(false);
   }
 
   onAvatarDragOver(event: DragEvent): void {
@@ -178,6 +205,36 @@ export class ProfileComponent {
     const file = event.dataTransfer?.files?.[0];
     if (!file) return;
     this.validateAndUploadAvatar(file);
+  }
+
+  onBannerDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.bannerUploadOpen() || this.uploadingBanner()) return;
+    this.bannerDragActive.set(true);
+  }
+
+  onBannerDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.bannerUploadOpen()) return;
+    this.bannerDragActive.set(false);
+  }
+
+  onBannerDrop(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.bannerUploadOpen() || this.uploadingBanner()) return;
+    this.bannerDragActive.set(false);
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+    this.validateAndUploadBanner(file);
+  }
+
+  onBannerFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (!file) return;
+    this.validateAndUploadBanner(file, () => {
+      if (input) input.value = '';
+    });
   }
 
   private validateAndUploadAvatar(file: File, onFinally?: () => void): void {
@@ -210,6 +267,7 @@ export class ProfileComponent {
         if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
         this.avatarPreviewObjectUrl = '';
         this.form.avatarUrl = finalUrl;
+        this.auth.updateLocalUser({ avatar: finalUrl });
         this.toast.success('Avatar uploaded');
         this.closeAvatarUpload();
       },
@@ -222,6 +280,54 @@ export class ProfileComponent {
       },
       complete: () => {
         this.uploadingAvatar.set(false);
+        onFinally?.();
+      },
+    });
+  }
+
+  private validateAndUploadBanner(file: File, onFinally?: () => void): void {
+    if (!file.type.startsWith('image/')) {
+      this.toast.error('Please select an image file');
+      onFinally?.();
+      return;
+    }
+    const maxBytes = 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      this.toast.error('Image must be 5MB or smaller');
+      onFinally?.();
+      return;
+    }
+
+    const previous = this.form.bannerUrl;
+    if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
+    this.bannerPreviewObjectUrl = URL.createObjectURL(file);
+    this.form.bannerUrl = this.bannerPreviewObjectUrl;
+
+    this.uploadingBanner.set(true);
+    this.auth.uploadBanner(file).subscribe({
+      next: url => {
+        const finalUrl = String(url ?? '').trim();
+        if (!finalUrl) {
+          this.toast.error('Banner upload failed');
+          this.form.bannerUrl = previous;
+          return;
+        }
+        if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
+        this.bannerPreviewObjectUrl = '';
+        this.form.bannerUrl = finalUrl;
+        this.auth.updateLocalUser({ bannerUrl: finalUrl });
+        this.toast.success('Banner uploaded');
+        this.closeBannerUpload();
+      },
+      error: err => {
+        if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
+        this.bannerPreviewObjectUrl = '';
+        this.form.bannerUrl = previous;
+        const msg = err?.error?.message ?? err?.message;
+        this.toast.error(typeof msg === 'string' && msg.trim() ? msg : 'Banner upload failed');
+      },
+      complete: () => {
+        this.uploadingBanner.set(false);
         onFinally?.();
       },
     });
