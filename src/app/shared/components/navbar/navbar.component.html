@@ -11,9 +11,6 @@
     </a>
   </div>
   <div class="flex items-center gap-2">
-    <button class="icon-btn" (click)="theme.toggle()">
-      <span class="mi">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</span>
-    </button>
     @if (auth.isLoggedIn()) {
     <button class="icon-btn relative" routerLink="/notifications" (click)="clearNotifications()">
       <span class="mi">notifications</span>
@@ -21,8 +18,28 @@
         <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 border border-white"></span>
       }
     </button>
-    <div class="nav-ava" routerLink="/profile">
-      {{ auth.currentUser()?.name?.charAt(0) || 'U' }}
+    <div class="profile-wrap" #profileWrap>
+      <button class="nav-ava" type="button" (click)="toggleMenu($event)">
+        {{ auth.currentUser()?.name?.charAt(0) || 'U' }}
+      </button>
+      @if (menuOpen()) {
+        <div class="profile-menu" role="menu">
+          <div class="menu-row" role="menuitem">
+            <div class="menu-title">Theme</div>
+            <button type="button" class="menu-toggle" [class.on]="theme.isDark()" (click)="toggleTheme($event)">
+              <span class="knob"></span>
+            </button>
+          </div>
+          <button type="button" class="menu-item" (click)="goSettings()">
+            <span class="mi">settings</span>
+            Settings
+          </button>
+          <button type="button" class="menu-item danger" (click)="logout()">
+            <span class="mi">logout</span>
+            Logout
+          </button>
+        </div>
+      }
     </div>
     } @else {
     <div class="nav-btns flex gap-2">

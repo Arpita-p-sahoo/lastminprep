@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, computed, effect, inject, output, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeService } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -11,6 +11,7 @@ import { Comment, Question } from '../../core/models';
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
+  host: { '(document:click)': 'handleDocClick($event)' },
 })
 export class NavbarComponent {
   theme = inject(ThemeService);
@@ -18,6 +19,8 @@ export class NavbarComponent {
   qs = inject(QuestionService);
   router = inject(Router);
   drawerOpen = output<void>();
+  menuOpen = signal(false);
+  @ViewChild('profileWrap') profileWrap?: ElementRef<HTMLElement>;
 
   private notifLastSeen = signal<number>(0);
   private notifStorageKey = computed(() => {
@@ -53,6 +56,34 @@ export class NavbarComponent {
       localStorage.setItem(key, String(now));
     } catch { }
     this.notifLastSeen.set(now);
+  }
+
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.menuOpen.set(!this.menuOpen());
+  }
+
+  handleDocClick(event: Event): void {
+    if (!this.menuOpen()) return;
+    const wrap = this.profileWrap?.nativeElement;
+    const target = event.target as Node | null;
+    if (wrap && target && wrap.contains(target)) return;
+    this.menuOpen.set(false);
+  }
+
+  toggleTheme(event: Event): void {
+    event.stopPropagation();
+    this.theme.toggle();
+  }
+
+  goSettings(): void {
+    this.menuOpen.set(false);
+    this.router.navigate(['/settings']);
+  }
+
+  logout(): void {
+    this.menuOpen.set(false);
+    this.auth.logout();
   }
 
   private threadHasUnread(q: Question, thread: Comment[], currentUserId: string, lastSeen: number, parent?: Comment): boolean {
