@@ -8,6 +8,7 @@ import { PostModalComponent } from '../../shared/components/post-modal.component
 import { QuestionCardComponent } from '../../shared/components/question-card.component';
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-profile',
@@ -15,14 +16,20 @@ import { QuestionService } from '../../core/services/question.service';
   imports: [FormsModule, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
+  host: { '(document:keydown.escape)': 'closeAvatarUpload()' },
 })
 export class ProfileComponent {
   auth = inject(AuthService);
   qs = inject(QuestionService);
+  toast = inject(ToastService);
   drawerOpen = signal(false);
   postOpen = signal(false);
   editOpen = signal(false);
   saving = signal(false);
+  uploadingAvatar = signal(false);
+  avatarUploadOpen = signal(false);
+  avatarDragActive = signal(false);
+  private avatarPreviewObjectUrl = '';
   form = {
     name: '',
     designation: '',
@@ -84,10 +91,11 @@ export class ProfileComponent {
 
   cancelEdit(): void {
     this.editOpen.set(false);
+    this.closeAvatarUpload();
   }
 
   saveProfile(): void {
-    if (this.saving()) return;
+    if (this.saving() || this.uploadingAvatar()) return;
     this.saving.set(true);
 
     const techStack = (this.form.techStackText || '')
@@ -123,6 +131,100 @@ export class ProfileComponent {
         },
       }
     );
+  }
+
+  onAvatarFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (!file) return;
+    this.validateAndUploadAvatar(file, () => {
+      if (input) input.value = '';
+    });
+  }
+
+  removeAvatar(): void {
+    if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
+    this.avatarPreviewObjectUrl = '';
+    this.form.avatarUrl = '';
+  }
+
+  openAvatarUpload(): void {
+    if (this.uploadingAvatar()) return;
+    this.avatarDragActive.set(false);
+    this.avatarUploadOpen.set(true);
+  }
+
+  closeAvatarUpload(): void {
+    this.avatarDragActive.set(false);
+    this.avatarUploadOpen.set(false);
+  }
+
+  onAvatarDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.avatarUploadOpen() || this.uploadingAvatar()) return;
+    this.avatarDragActive.set(true);
+  }
+
+  onAvatarDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.avatarUploadOpen()) return;
+    this.avatarDragActive.set(false);
+  }
+
+  onAvatarDrop(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.avatarUploadOpen() || this.uploadingAvatar()) return;
+    this.avatarDragActive.set(false);
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+    this.validateAndUploadAvatar(file);
+  }
+
+  private validateAndUploadAvatar(file: File, onFinally?: () => void): void {
+    if (!file.type.startsWith('image/')) {
+      this.toast.error('Please select an image file');
+      onFinally?.();
+      return;
+    }
+    const maxBytes = 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      this.toast.error('Image must be 5MB or smaller');
+      onFinally?.();
+      return;
+    }
+
+    const previous = this.form.avatarUrl;
+    if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
+    this.avatarPreviewObjectUrl = URL.createObjectURL(file);
+    this.form.avatarUrl = this.avatarPreviewObjectUrl;
+
+    this.uploadingAvatar.set(true);
+    this.auth.uploadAvatar(file).subscribe({
+      next: url => {
+        const finalUrl = String(url ?? '').trim();
+        if (!finalUrl) {
+          this.toast.error('Avatar upload failed');
+          this.form.avatarUrl = previous;
+          return;
+        }
+        if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
+        this.avatarPreviewObjectUrl = '';
+        this.form.avatarUrl = finalUrl;
+        this.toast.success('Avatar uploaded');
+        this.closeAvatarUpload();
+      },
+      error: err => {
+        if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
+        this.avatarPreviewObjectUrl = '';
+        this.form.avatarUrl = previous;
+        const msg = err?.error?.message ?? err?.message;
+        this.toast.error(typeof msg === 'string' && msg.trim() ? msg : 'Avatar upload failed');
+      },
+      complete: () => {
+        this.uploadingAvatar.set(false);
+        onFinally?.();
+      },
+    });
   }
 
   toggleAvatarMenu(e: Event): void {

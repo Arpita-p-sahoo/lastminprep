@@ -1,3 +1,112 @@
 :host {
   display: block;
 }
+
+.avatar-upload-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.avatar-upload-hint {
+  font-size: 12px;
+  color: var(--ink3);
+}
+
+.avatar-upload-sub {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ink3);
+}
+
+.ava-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+}
+
+.ava-modal {
+  width: min(520px, 100%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  padding: 14px;
+}
+
+.ava-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ava-modal-title {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.ava-modal-x {
+  height: 34px;
+  width: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--ink2);
+  border-radius: 10px;
+}
+
+.ava-dropzone {
+  border: 1px dashed var(--border2);
+  border-radius: 14px;
+  padding: 18px;
+  background: linear-gradient(180deg, var(--bg2), var(--bg));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.ava-dropzone.dragging {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(91, 79, 245, 0.18);
+}
+
+.ava-drop-ico {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(91, 79, 245, 0.12);
+  color: var(--accent);
+}
+
+.ava-drop-title {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.ava-drop-sub {
+  font-size: 12px;
+  color: var(--ink2);
+  margin-bottom: 6px;
+}
+
+.ava-drop-hint {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-top: 6px;
+}

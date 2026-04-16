@@ -196,8 +196,19 @@
 
                     <div class="form-row full">
                       <div class="form-field">
-                        <label>Avatar URL</label>
-                        <input type="url" [(ngModel)]="form.avatarUrl" placeholder="https://..." />
+                        <label>Avatar</label>
+                        <div class="avatar-upload-row">
+                          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingAvatar()"
+                            (click)="openAvatarUpload()">Upload image</button>
+                          @if (form.avatarUrl.trim()) {
+                          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingAvatar()"
+                            (click)="removeAvatar()">Remove</button>
+                          }
+                          @if (uploadingAvatar()) {
+                          <span class="avatar-upload-hint">Uploading…</span>
+                          }
+                        </div>
+                        <div class="avatar-upload-sub">PNG/JPG up to 5MB</div>
                       </div>
                     </div>
 
@@ -217,15 +228,43 @@
                     </div>
 
                     <div class="form-actions">
-                      <button class="btn-lmp btn-primary" type="button" [disabled]="saving()" (click)="saveProfile()">
-                        {{ saving() ? 'Saving…' : 'Save changes' }}
+                      <button class="btn-lmp btn-primary" type="button" [disabled]="saving() || uploadingAvatar()"
+                        (click)="saveProfile()">
+                        {{ saving() ? 'Saving…' : (uploadingAvatar() ? 'Uploading…' : 'Save changes') }}
                       </button>
-                      <button class="btn-lmp btn-secondary" type="button" [disabled]="saving()"
+                      <button class="btn-lmp btn-secondary" type="button" [disabled]="saving() || uploadingAvatar()"
                         (click)="cancelEdit()">Cancel</button>
                     </div>
                   </div>
                 </div>
               </div>
+
+              @if (avatarUploadOpen()) {
+              <div class="ava-modal-backdrop" (click)="closeAvatarUpload()">
+                <div class="ava-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+                  <div class="ava-modal-head">
+                    <div class="ava-modal-title">Upload avatar</div>
+                    <button class="ava-modal-x" type="button" (click)="closeAvatarUpload()">
+                      <span class="mi">close</span>
+                    </button>
+                  </div>
+
+                  <div class="ava-dropzone" [class.dragging]="avatarDragActive()" (dragover)="onAvatarDragOver($event)"
+                    (dragleave)="onAvatarDragLeave($event)" (drop)="onAvatarDrop($event)">
+                    <div class="ava-drop-ico">
+                      <span class="mi">cloud_upload</span>
+                    </div>
+                    <div class="ava-drop-title">Drag & drop your image</div>
+                    <div class="ava-drop-sub">or choose a file from your device</div>
+                    <input #avatarFileInput type="file" accept="image/*" (change)="onAvatarFileChange($event)"
+                      style="display:none;" />
+                    <button class="btn-lmp btn-primary btn-sm" type="button" [disabled]="uploadingAvatar()"
+                      (click)="avatarFileInput.click()">Choose file</button>
+                    <div class="ava-drop-hint">PNG/JPG up to 5MB</div>
+                  </div>
+                </div>
+              </div>
+              }
 
               <div class="section-head">
                 <h2>Posted questions</h2>

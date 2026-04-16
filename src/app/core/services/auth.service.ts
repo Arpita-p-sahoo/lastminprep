@@ -204,6 +204,27 @@ export class AuthService {
     });
   }
 
+  uploadAvatar(file: File): Observable<string> {
+    const endpoint = (environment as any).avatarUploadUrl || `${this.API}/uploads/avatar`;
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<any>(endpoint, form).pipe(map(res => this.extractUploadedUrl(res)));
+  }
+
+  private extractUploadedUrl(res: any): string {
+    const candidates = [
+      res?.url,
+      res?.secure_url,
+      res?.data?.url,
+      res?.data?.secure_url,
+      res?.item?.url,
+      res?.result?.url,
+      res?.result?.secure_url,
+    ];
+    const url = candidates.find(v => typeof v === 'string' && v.trim());
+    return String(url ?? '').trim();
+  }
+
   logout(): void {
     localStorage.removeItem(this.STORAGE_KEY);
     localStorage.removeItem(this.TOKEN_KEY);
