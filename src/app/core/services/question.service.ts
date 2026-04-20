@@ -21,6 +21,8 @@ export class QuestionService {
   }
   questions = signal<Question[]>([]);
   loading = signal(true);
+  followingQuestions = signal<Question[]>([]);
+  loadingFollowing = signal(false);
   private feedLastSeen = signal<number>(0);
   newFeedCount = computed(() => {
     const lastSeen = this.feedLastSeen();
@@ -70,6 +72,31 @@ export class QuestionService {
       error: () => {
         this.questions.set([]);
         this.loading.set(false);
+      },
+    });
+  }
+
+  loadFollowingFeed(): void {
+    if (!this.auth.isLoggedIn()) {
+      this.followingQuestions.set([]);
+      this.loadingFollowing.set(false);
+      return;
+    }
+    this.loadingFollowing.set(true);
+    this.http.get<any>(`${this.API}/questions/following`).subscribe({
+      next: data => {
+        const list = this.normalizeList(data);
+        list.sort((a, b) => {
+          const at = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as any).getTime();
+          const bt = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as any).getTime();
+          return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
+        });
+        this.followingQuestions.set(list);
+        this.loadingFollowing.set(false);
+      },
+      error: () => {
+        this.followingQuestions.set([]);
+        this.loadingFollowing.set(false);
       },
     });
   }
