@@ -26,7 +26,6 @@ export class SignupComponent {
     age: null as number | null,
     gender: '',
     dob: '',
-    avatarUrl: '',
     linkedinUrl: '',
     techStack: [] as string[],
   };
@@ -85,7 +84,6 @@ export class SignupComponent {
       age: age,
       gender: this.form.gender || undefined,
       dob: this.form.dob || undefined,
-      avatarUrl: this.form.avatarUrl || undefined,
       linkedinUrl: this.form.linkedinUrl || undefined,
       techStack,
     });

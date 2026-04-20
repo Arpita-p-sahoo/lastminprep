@@ -19,7 +19,19 @@
     .icon-btn { width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:border 0.2s;position:relative; }
     .icon-btn:hover { border-color:var(--accent); }
     .hamburger { display:none; }
-    .nav-ava { width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer; }
+    .nav-ava { width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;border:none; }
+    .profile-wrap { position:relative; }
+    .profile-menu { position:absolute; top:44px; right:0; width:220px; background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); padding:8px; z-index:60; }
+    .menu-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 10px; border-radius:10px; }
+    .menu-title { font-size:13px; font-weight:700; color:var(--ink); }
+    .menu-item { width:100%; display:flex; align-items:center; gap:10px; padding:10px 10px; border-radius:10px; background:transparent; border:none; cursor:pointer; font-size:13px; font-weight:700; color:var(--ink); text-align:left; }
+    .menu-item:hover { background:var(--bg3); }
+    .menu-item.danger { color:#ef4444; }
+    .menu-item.danger:hover { background:rgba(239, 68, 68, 0.12); }
+    .menu-toggle { width:44px; height:24px; border-radius:999px; border:1px solid var(--border2); background:var(--bg3); cursor:pointer; position:relative; transition:background 0.2s, border-color 0.2s; padding:0; }
+    .menu-toggle.on { background:rgba(91, 79, 245, 0.18); border-color:var(--accent); }
+    .menu-toggle .knob { position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--ink); transition:transform 0.2s, background 0.2s; }
+    .menu-toggle.on .knob { transform:translateX(20px); background:var(--accent); }
     .nbtn { font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:inherit;transition:all 0.2s;border:none; }
     .nbtn.ghost { background:transparent;border:1px solid var(--border2);color:var(--ink2); }
     .nbtn.ghost:hover { border-color:var(--accent);color:var(--accent); }

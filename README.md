@@ -111,6 +111,7 @@ src/
 | `/` | HomeComponent | — |
 | `/login` | LoginComponent | publicGuard |
 | `/signup` | SignupComponent | publicGuard |
+| `/auth/google/callback` | GoogleCallbackComponent | — |
 | `/dashboard` | DashboardComponent | authGuard |
 | `/feed` | FeedComponent | authGuard |
 | `/explore` | ExploreComponent | — |
@@ -131,6 +132,7 @@ src/
 - ✅ Auth guard + public guard
 - ✅ Responsive: sidebar on desktop, bottom nav on mobile
 - ✅ Mobile drawer navigation
+- ✅ Vercel SPA deployment support (`vercel.json`)
 - ✅ Post questions with tech tags + hashtags
 - ✅ Vote and save questions (with signals)
 - ✅ Job board with post a job
@@ -140,6 +142,25 @@ src/
 - ✅ SEO meta tags per route
 - ✅ Capacitor config for iOS + Android
 - ✅ Lazy-loaded routes
+- ✅ Google OAuth flow (frontend pieces): Google login redirect + callback handler + session restore (backend integration required)
+
+---
+
+## PRD
+
+See [PRD.md](file:///d:/project/lastminprep/lastminprep/PRD.md).
+
+---
+
+## Changelog
+
+### 2026-04-16
+
+- Home page hero redesigned with left-aligned layout and a dev-style coding animation.
+- Google OAuth wired for clicks and callback handling (`/auth/google/callback`), plus token-based session restore on app start.
+- Split Google OAuth endpoints for existing-user login vs new-user signup.
+- Vercel deployment configured to serve Angular SPA output with rewrites.
+- Explore page domain list updated with an AI category.
 
 ## TODO (Backend)
 

@@ -84,6 +84,7 @@ export type Domain =
   | 'mobile'
   | 'devops'
   | 'datascience'
+  | 'ai'
   | 'system';
 
 export interface Framework {

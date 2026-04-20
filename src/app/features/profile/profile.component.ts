@@ -8,6 +8,7 @@ import { PostModalComponent } from '../../shared/components/post-modal.component
 import { QuestionCardComponent } from '../../shared/components/question-card.component';
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-profile',
@@ -15,14 +16,24 @@ import { QuestionService } from '../../core/services/question.service';
   imports: [FormsModule, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
+  host: { '(document:keydown.escape)': 'handleEscape()' },
 })
 export class ProfileComponent {
   auth = inject(AuthService);
   qs = inject(QuestionService);
+  toast = inject(ToastService);
   drawerOpen = signal(false);
   postOpen = signal(false);
   editOpen = signal(false);
   saving = signal(false);
+  uploadingAvatar = signal(false);
+  uploadingBanner = signal(false);
+  avatarUploadOpen = signal(false);
+  avatarDragActive = signal(false);
+  bannerUploadOpen = signal(false);
+  bannerDragActive = signal(false);
+  private avatarPreviewObjectUrl = '';
+  private bannerPreviewObjectUrl = '';
   form = {
     name: '',
     designation: '',
@@ -84,10 +95,12 @@ export class ProfileComponent {
 
   cancelEdit(): void {
     this.editOpen.set(false);
+    this.closeAvatarUpload();
+    this.closeBannerUpload();
   }
 
   saveProfile(): void {
-    if (this.saving()) return;
+    if (this.saving() || this.uploadingAvatar() || this.uploadingBanner()) return;
     this.saving.set(true);
 
     const techStack = (this.form.techStackText || '')
@@ -123,6 +136,201 @@ export class ProfileComponent {
         },
       }
     );
+  }
+
+  onAvatarFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (!file) return;
+    this.validateAndUploadAvatar(file, () => {
+      if (input) input.value = '';
+    });
+  }
+
+  removeAvatar(): void {
+    if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
+    this.avatarPreviewObjectUrl = '';
+    this.form.avatarUrl = '';
+  }
+
+  removeBanner(): void {
+    if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
+    this.bannerPreviewObjectUrl = '';
+    this.form.bannerUrl = '';
+  }
+
+  handleEscape(): void {
+    this.closeAvatarUpload();
+    this.closeBannerUpload();
+  }
+
+  openAvatarUpload(): void {
+    if (this.uploadingAvatar()) return;
+    this.avatarDragActive.set(false);
+    this.avatarUploadOpen.set(true);
+  }
+
+  closeAvatarUpload(): void {
+    this.avatarDragActive.set(false);
+    this.avatarUploadOpen.set(false);
+  }
+
+  openBannerUpload(): void {
+    if (this.uploadingBanner()) return;
+    this.bannerDragActive.set(false);
+    this.bannerUploadOpen.set(true);
+  }
+
+  closeBannerUpload(): void {
+    this.bannerDragActive.set(false);
+    this.bannerUploadOpen.set(false);
+  }
+
+  onAvatarDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.avatarUploadOpen() || this.uploadingAvatar()) return;
+    this.avatarDragActive.set(true);
+  }
+
+  onAvatarDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.avatarUploadOpen()) return;
+    this.avatarDragActive.set(false);
+  }
+
+  onAvatarDrop(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.avatarUploadOpen() || this.uploadingAvatar()) return;
+    this.avatarDragActive.set(false);
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+    this.validateAndUploadAvatar(file);
+  }
+
+  onBannerDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.bannerUploadOpen() || this.uploadingBanner()) return;
+    this.bannerDragActive.set(true);
+  }
+
+  onBannerDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.bannerUploadOpen()) return;
+    this.bannerDragActive.set(false);
+  }
+
+  onBannerDrop(event: DragEvent): void {
+    event.preventDefault();
+    if (!this.bannerUploadOpen() || this.uploadingBanner()) return;
+    this.bannerDragActive.set(false);
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+    this.validateAndUploadBanner(file);
+  }
+
+  onBannerFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (!file) return;
+    this.validateAndUploadBanner(file, () => {
+      if (input) input.value = '';
+    });
+  }
+
+  private validateAndUploadAvatar(file: File, onFinally?: () => void): void {
+    if (!file.type.startsWith('image/')) {
+      this.toast.error('Please select an image file');
+      onFinally?.();
+      return;
+    }
+    const maxBytes = 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      this.toast.error('Image must be 5MB or smaller');
+      onFinally?.();
+      return;
+    }
+
+    const previous = this.form.avatarUrl;
+    if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
+    this.avatarPreviewObjectUrl = URL.createObjectURL(file);
+    this.form.avatarUrl = this.avatarPreviewObjectUrl;
+
+    this.uploadingAvatar.set(true);
+    this.auth.uploadAvatar(file).subscribe({
+      next: url => {
+        const finalUrl = String(url ?? '').trim();
+        if (!finalUrl) {
+          this.toast.error('Avatar upload failed');
+          this.form.avatarUrl = previous;
+          return;
+        }
+        if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
+        this.avatarPreviewObjectUrl = '';
+        this.form.avatarUrl = finalUrl;
+        this.auth.updateLocalUser({ avatar: finalUrl });
+        this.toast.success('Avatar uploaded');
+        this.closeAvatarUpload();
+      },
+      error: err => {
+        if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
+        this.avatarPreviewObjectUrl = '';
+        this.form.avatarUrl = previous;
+        const msg = err?.error?.message ?? err?.message;
+        this.toast.error(typeof msg === 'string' && msg.trim() ? msg : 'Avatar upload failed');
+      },
+      complete: () => {
+        this.uploadingAvatar.set(false);
+        onFinally?.();
+      },
+    });
+  }
+
+  private validateAndUploadBanner(file: File, onFinally?: () => void): void {
+    if (!file.type.startsWith('image/')) {
+      this.toast.error('Please select an image file');
+      onFinally?.();
+      return;
+    }
+    const maxBytes = 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      this.toast.error('Image must be 5MB or smaller');
+      onFinally?.();
+      return;
+    }
+
+    const previous = this.form.bannerUrl;
+    if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
+    this.bannerPreviewObjectUrl = URL.createObjectURL(file);
+    this.form.bannerUrl = this.bannerPreviewObjectUrl;
+
+    this.uploadingBanner.set(true);
+    this.auth.uploadBanner(file).subscribe({
+      next: url => {
+        const finalUrl = String(url ?? '').trim();
+        if (!finalUrl) {
+          this.toast.error('Banner upload failed');
+          this.form.bannerUrl = previous;
+          return;
+        }
+        if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
+        this.bannerPreviewObjectUrl = '';
+        this.form.bannerUrl = finalUrl;
+        this.auth.updateLocalUser({ bannerUrl: finalUrl });
+        this.toast.success('Banner uploaded');
+        this.closeBannerUpload();
+      },
+      error: err => {
+        if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
+        this.bannerPreviewObjectUrl = '';
+        this.form.bannerUrl = previous;
+        const msg = err?.error?.message ?? err?.message;
+        this.toast.error(typeof msg === 'string' && msg.trim() ? msg : 'Banner upload failed');
+      },
+      complete: () => {
+        this.uploadingBanner.set(false);
+        onFinally?.();
+      },
+    });
   }
 
   toggleAvatarMenu(e: Event): void {

@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { publicGuard } from './core/guards/public.guard';
+import { landingGuard } from './core/guards/landing.guard';
 
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
       import('./features/home/home.component').then((m) => m.HomeComponent),
+    canActivate: [landingGuard],
     title: 'LastMinPrep — Crack your next tech interview',
     data: {
       description: 'Community-curated interview questions sorted by tech stack.',
@@ -28,6 +30,12 @@ export const routes: Routes = [
     canActivate: [publicGuard],
     title: 'Sign up — LastMinPrep',
     data: { description: 'Join 4,000+ developers preparing smarter.' },
+  },
+  {
+    path: 'auth/google/callback',
+    loadComponent: () =>
+      import('./features/auth/google-callback/google-callback.component').then((m) => m.GoogleCallbackComponent),
+    title: 'Signing in… — LastMinPrep',
   },
   {
     path: 'dashboard',
