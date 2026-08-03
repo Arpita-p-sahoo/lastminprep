@@ -1,21 +1,28 @@
-
-    <div class="flex flex-col min-h-screen animate-fade-up">
-      <app-navbar (drawerOpen)="drawerOpen.set(true)" />
-      <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
-      <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-      <div class="main-layout">
-        <app-sidebar />
-        <div class="content"><div class="content-inner">
+<div class="flex flex-col min-h-screen animate-fade-up">
+  <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+  <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+  <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
+  <div class="main-layout">
+    <app-sidebar />
+    <div class="content">
+      <div class="content-inner">
+        <div class="settings-wrap">
           <div style="font-size:20px;font-weight:800;margin-bottom:1.5rem;">Settings</div>
 
           <div class="settings-group">
             <div class="settings-group-title">Appearance</div>
             <div class="settings-row">
-              <div><div class="settings-label">Dark mode</div><div class="settings-sub">Switch between light and dark theme</div></div>
+              <div class="settings-text">
+                <div class="settings-label">Dark mode</div>
+                <div class="settings-sub">Switch between light and dark theme</div>
+              </div>
               <button class="toggle" [class.on]="theme.isDark()" (click)="theme.toggle()"></button>
             </div>
             <div class="settings-row">
-              <div><div class="settings-label">Compact view</div><div class="settings-sub">Show more questions per screen</div></div>
+              <div class="settings-text">
+                <div class="settings-label">Compact view</div>
+                <div class="settings-sub">Show more questions per screen</div>
+              </div>
               <button class="toggle" [class.on]="compact()" (click)="compact.set(!compact())"></button>
             </div>
           </div>
@@ -23,13 +30,19 @@
           <div class="settings-group">
             <div class="settings-group-title">Notifications</div>
             @for (it of notifItems; track it.id) {
-              <div class="settings-row">
-                <div><div class="settings-label">{{ it.label }}</div><div class="settings-sub">{{ it.description }}</div></div>
-                <button class="toggle" [class.on]="isNotifEnabled(it.id)" (click)="toggleNotif(it.id)"></button>
+            <div class="settings-row">
+              <div class="settings-text">
+                <div class="settings-label">{{ it.label }}</div>
+                <div class="settings-sub">{{ it.description }}</div>
               </div>
+              <button class="toggle" [class.on]="isNotifEnabled(it.id)" (click)="toggleNotif(it.id)"></button>
+            </div>
             }
             <div class="settings-row">
-              <div><div class="settings-label">Push notifications</div><div class="settings-sub">Mobile push alerts (requires app install)</div></div>
+              <div class="settings-text">
+                <div class="settings-label">Push notifications</div>
+                <div class="settings-sub">Mobile push alerts (requires app install)</div>
+              </div>
               <button class="toggle" [class.on]="pushEnabled()" (click)="pushEnabled.set(!pushEnabled())"></button>
             </div>
           </div>
@@ -37,11 +50,17 @@
           <div class="settings-group">
             <div class="settings-group-title">Privacy</div>
             <div class="settings-row">
-              <div><div class="settings-label">Public profile</div><div class="settings-sub">Allow others to view your profile</div></div>
+              <div class="settings-text">
+                <div class="settings-label">Public profile</div>
+                <div class="settings-sub">Allow others to view your profile</div>
+              </div>
               <button class="toggle on"></button>
             </div>
             <div class="settings-row">
-              <div><div class="settings-label">Show on leaderboard</div><div class="settings-sub">Appear in public rankings</div></div>
+              <div class="settings-text">
+                <div class="settings-label">Show on leaderboard</div>
+                <div class="settings-sub">Appear in public rankings</div>
+              </div>
               <button class="toggle on"></button>
             </div>
           </div>
@@ -49,57 +68,61 @@
           <div class="settings-group">
             <div class="settings-group-title">Account</div>
             <div class="settings-row">
-              <div><div class="settings-label">Change password</div></div>
+              <div class="settings-text">
+                <div class="settings-label">Change password</div>
+              </div>
               <button class="btn-lmp btn-secondary btn-sm">Update</button>
             </div>
             <div class="settings-row">
-              <div><div class="settings-label">Export my data</div><div class="settings-sub">Download all your questions and activity</div></div>
+              <div class="settings-text">
+                <div class="settings-label">Export my data</div>
+                <div class="settings-sub">Download all your questions and activity</div>
+              </div>
               <button class="btn-lmp btn-secondary btn-sm">Export</button>
             </div>
             <div class="settings-row">
-              <div><div class="settings-label">Log out</div><div class="settings-sub">Sign out from this device</div></div>
+              <div class="settings-text">
+                <div class="settings-label">Log out</div>
+                <div class="settings-sub">Sign out from this device</div>
+              </div>
               <button class="btn-lmp btn-secondary btn-sm" (click)="auth.logout()">Logout</button>
             </div>
             <div class="settings-row">
-              <div><div class="settings-label danger">Delete account</div><div class="settings-sub">Permanently remove all your data</div></div>
+              <div class="settings-text">
+                <div class="settings-label danger">Delete account</div>
+                <div class="settings-sub">Permanently remove all your data</div>
+              </div>
               <button class="btn-lmp btn-sm danger-btn" (click)="openDeleteAccount()">Delete</button>
             </div>
           </div>
-        </div></div>
+        </div>
       </div>
-      <app-bottom-nav (postClick)="postOpen.set(true)" />
     </div>
+  </div>
+  <app-bottom-nav (postClick)="postOpen.set(true)" />
+</div>
 
-    <div class="modal-overlay" [class.open]="deleteOpen()" (click)="closeDeleteAccount()">
-      <div class="modal-box" (click)="$event.stopPropagation()">
-        <div class="modal-handle"></div>
-        <div class="modal-head">
-          <div class="modal-title" style="color:var(--accent2);">Delete account</div>
-          <button class="modal-close" type="button" (click)="closeDeleteAccount()">×</button>
-        </div>
-        <div class="lmp-modal-text">
-          This will permanently delete your profile and all your data. Type DELETE to confirm.
-        </div>
-        <div class="field" style="margin-top:12px;">
-          <label>Confirmation</label>
-          <input
-            class="lmp-input"
-            [ngModel]="deleteText()"
-            (ngModelChange)="deleteText.set($event)"
-            placeholder="Type DELETE"
-          />
-        </div>
-        <div class="lmp-modal-actions">
-          <button class="btn-lmp btn-secondary btn-sm" type="button" (click)="closeDeleteAccount()">Cancel</button>
-          <button
-            class="btn-lmp btn-sm danger-btn"
-            type="button"
-            [disabled]="deleteText().trim().toUpperCase() !== 'DELETE' || deleting()"
-            (click)="confirmDeleteAccount()"
-          >
-            @if (deleting()) { Deleting… } @else { Delete }
-          </button>
-        </div>
-      </div>
+<div class="modal-overlay" [class.open]="deleteOpen()" (click)="closeDeleteAccount()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title" style="color:var(--accent2);">Delete account</div>
+      <button class="modal-close" type="button" (click)="closeDeleteAccount()">×</button>
     </div>
-  
+    <div class="lmp-modal-text">
+      This will permanently delete your profile and all your data. Type DELETE to confirm.
+    </div>
+    <div class="field" style="margin-top:12px;">
+      <label>Confirmation</label>
+      <input class="lmp-input" [ngModel]="deleteText()" (ngModelChange)="deleteText.set($event)"
+        placeholder="Type DELETE" />
+    </div>
+    <div class="lmp-modal-actions">
+      <button class="btn-lmp btn-secondary btn-sm" type="button" (click)="closeDeleteAccount()">Cancel</button>
+      <button class="btn-lmp btn-sm danger-btn" type="button"
+        [disabled]="deleteText().trim().toUpperCase() !== 'DELETE' || deleting()" (click)="confirmDeleteAccount()">
+        @if (deleting()) { Deleting… } @else { Delete }
+      </button>
+    </div>
+  </div>
+</div>

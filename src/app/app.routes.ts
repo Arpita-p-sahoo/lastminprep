@@ -128,6 +128,13 @@ export const routes: Routes = [
     title: 'Search — LastMinPrep',
   },
   {
+    path: 'ai',
+    loadComponent: () =>
+      import('./features/ai-practice/ai-practice.component').then((m) => m.AiPracticeComponent),
+    canActivate: [authGuard],
+    title: 'AI Practice — LastMinPrep',
+  },
+  {
     path: 'settings',
     loadComponent: () =>
       import('./features/settings/settings.component').then((m) => m.SettingsComponent),

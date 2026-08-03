@@ -1,0 +1,185 @@
+<div class="flex flex-col min-h-screen animate-fade-up">
+  <app-navbar (drawerOpen)="drawerOpen.set(true)" />
+  <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
+
+  <div class="main-layout">
+    <app-sidebar />
+
+    <div class="content">
+      <div class="content-inner">
+        <div class="ai-shell">
+          <div class="ai-left">
+            <section class="ai-card">
+              <div class="ai-card-head">
+                <div class="ai-card-title">Resume Analysis</div>
+                <span class="mi">description</span>
+              </div>
+
+              <label
+                class="ai-drop"
+                (dragover)="onResumeDragOver($event)"
+                (drop)="onResumeDrop($event)"
+              >
+                <input type="file" accept=".pdf,.doc,.docx" (change)="onResumePicked($any($event.target).files)" />
+                <div class="ai-drop-ico"><span class="mi">upload</span></div>
+                <div class="ai-drop-title">Drop your CV here</div>
+                <div class="ai-drop-sub">PDF, DOCX (Max 5MB)</div>
+              </label>
+
+              @if (resumeFileName()) {
+                <div class="ai-pill">
+                  <span class="mi" style="font-size:16px;color:var(--green);">check_circle</span>
+                  <span>Last upload: {{ resumeFileName() }} @if (resumeFileSizeLabel()) { ({{ resumeFileSizeLabel() }}) }</span>
+                </div>
+              }
+            </section>
+
+            <section class="ai-card ai-card-grow">
+              <div class="ai-card-head">
+                <div class="ai-card-title">Tech Stack Practice</div>
+                <span class="mi">layers</span>
+              </div>
+
+              <div class="ai-muted">Select technologies to calibrate the AI coach.</div>
+
+              <div class="ai-tech-grid">
+                @for (t of techOptions; track t) {
+                  <button
+                    type="button"
+                    class="ai-tech"
+                    [class.on]="selectedTech().includes(t)"
+                    (click)="toggleTech(t)"
+                  >
+                    @if (selectedTech().includes(t)) { <span class="ai-dot"></span> }
+                    {{ t }}
+                  </button>
+                }
+              </div>
+
+              <button type="button" class="ai-primary" (click)="startMockInterview()">
+                <span class="mi">play_arrow</span>
+                Start Mock Interview
+              </button>
+            </section>
+          </div>
+
+          <div class="ai-chat">
+            <div class="ai-chat-head">
+              <div class="ai-coach">
+                <div class="ai-coach-ava"><span class="mi">auto_awesome</span></div>
+                <div class="ai-coach-meta">
+                  <div class="ai-coach-name">Interview AI Coach</div>
+                  <div class="ai-coach-sub">Coach Spark · Active</div>
+                </div>
+              </div>
+
+              <div class="ai-rec">
+                <span class="ai-rec-dot"></span>
+                <span>REC</span>
+              </div>
+            </div>
+
+            <div class="ai-chat-body" #chatBody>
+              @for (m of messages(); track m.id) {
+                @if (m.role === 'ai') {
+                  <div class="ai-bubble-row">
+                    <div class="ai-bubble-ava"><span class="mi">bolt</span></div>
+                    <div class="ai-bubble">
+                      <div class="ai-bubble-text">{{ m.text }}</div>
+                      @if (m.tags?.length) {
+                        <div class="ai-tags">
+                          @for (tag of m.tags; track tag) { <span class="ai-tag">{{ tag }}</span> }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                } @else {
+                  <div class="ai-bubble-row user">
+                    <div class="ai-bubble-ava user"><span class="mi">person</span></div>
+                    <div class="ai-bubble user">
+                      <div class="ai-bubble-text">{{ m.text }}</div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+
+            <div class="ai-chat-input">
+              <div class="ai-input-wrap">
+                <textarea
+                  class="ai-input"
+                  rows="1"
+                  placeholder="Type your response..."
+                  [ngModel]="inputText()"
+                  (ngModelChange)="inputText.set($event)"
+                  (keydown.enter)="$event.preventDefault(); send()"
+                ></textarea>
+                <div class="ai-input-icons">
+                  <button type="button" class="ai-ico" title="Mic"><span class="mi">mic</span></button>
+                  <button type="button" class="ai-ico" title="Attach"><span class="mi">attach_file</span></button>
+                </div>
+              </div>
+
+              <button type="button" class="ai-send" (click)="send()">
+                <span class="mi">send</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="ai-right">
+            <section class="ai-card">
+              <div class="ai-card-title">Live Performance</div>
+
+              <div class="ai-metric">
+                <div class="ai-metric-head">
+                  <span>Clarity</span>
+                  <span class="ai-metric-val" style="color: var(--green);">88%</span>
+                </div>
+                <div class="ai-bar"><div class="ai-bar-fill" style="width: 88%; background: var(--green);"></div></div>
+              </div>
+
+              <div class="ai-metric">
+                <div class="ai-metric-head">
+                  <span>Tech Accuracy</span>
+                  <span class="ai-metric-val" style="color: var(--accent);">92%</span>
+                </div>
+                <div class="ai-bar"><div class="ai-bar-fill" style="width: 92%; background: var(--accent);"></div></div>
+              </div>
+
+              <div class="ai-metric">
+                <div class="ai-metric-head">
+                  <span>Confidence</span>
+                  <span class="ai-metric-val" style="color: #ddb7ff;">74%</span>
+                </div>
+                <div class="ai-bar"><div class="ai-bar-fill" style="width: 74%; background: #ddb7ff;"></div></div>
+              </div>
+            </section>
+
+            <section class="ai-card ai-card-grow">
+              <div class="ai-card-title">AI Coach Insight</div>
+              <div class="ai-tip">
+                “You’re using filler words often. Pause briefly to structure your thought before speaking.”
+              </div>
+              <div class="ai-tip" style="border-left-color: var(--accent);">
+                “Good explanation of fundamentals. Add a concrete example and trade-offs to show depth.”
+              </div>
+            </section>
+
+            <section class="ai-card">
+              <div class="ai-milestone">
+                <span class="mi" style="color: var(--green);">verified</span>
+                <div>
+                  <div class="ai-milestone-title">Next Milestone</div>
+                  <div class="ai-muted">Complete 3 more simulations to unlock advanced mock series.</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-bottom-nav />
+</div>
+

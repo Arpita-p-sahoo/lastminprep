@@ -148,14 +148,14 @@ export class AuthService {
     return fallback;
   }
 
-  login(email: string, password: string): void {
+  login(email: string, password: string, returnTo?: string): void {
     this.http.post<any>(`${this.API}/auth/login`, { email, password }).subscribe({
       next: res => {
         const token = res?.accessToken ?? res?.access_token ?? res?.token ?? '';
         const user = this.normalizeUser(res?.user ?? res);
         this.saveSession(user, token);
         this.toast.success(`Welcome, ${user.name || 'back'}`);
-        this.router.navigate(['/dashboard']);
+        this.router.navigate([this.sanitizeReturnTo(returnTo || '/dashboard')]);
       },
       error: err => {
         this.toast.error(this.getErrorMessage(err, 'Login failed'));
@@ -163,29 +163,30 @@ export class AuthService {
     });
   }
 
-  loginWithGoogle(): void {
+  loginWithGoogle(returnTo?: string): void {
     if (this.isLoggedIn()) {
       this.router.navigate(['/dashboard']);
       return;
     }
-    const url = (environment as any).googleAuthUrl || `${this.API}/auth/google`;
     if (typeof window === 'undefined') return;
-    window.location.assign(url);
+    const base = (environment as any).googleAuthUrl || `${this.API}/auth/google`;
+    window.location.assign(this.buildGoogleAuthUrl(base, returnTo));
   }
 
-  signupWithGoogle(): void {
+  signupWithGoogle(returnTo?: string): void {
     if (this.isLoggedIn()) {
       this.router.navigate(['/dashboard']);
       return;
     }
-    const url = (environment as any).googleAuthSignupUrl || `${this.API}/auth/google/signup`;
     if (typeof window === 'undefined') return;
-    window.location.assign(url);
+    const base = (environment as any).googleAuthSignupUrl || `${this.API}/auth/google/signup`;
+    window.location.assign(this.buildGoogleAuthUrl(base, returnTo));
   }
 
   completeGoogleOAuth(params?: { token?: string; returnTo?: string }): void {
     const token = String(params?.token ?? '').trim();
-    const returnTo = String(params?.returnTo ?? '/dashboard').trim() || '/dashboard';
+    const rawReturnTo = String(params?.returnTo ?? '/dashboard').trim() || '/dashboard';
+    const returnTo = this.sanitizeReturnTo(rawReturnTo);
 
     if (token) localStorage.setItem(this.TOKEN_KEY, token);
 
@@ -202,6 +203,33 @@ export class AuthService {
         this.router.navigate(['/login']);
       },
     });
+  }
+
+  private buildGoogleAuthUrl(base: string, returnTo?: string): string {
+    const url = String(base ?? '').trim();
+    if (!url) return '';
+    if (typeof window === 'undefined') return url;
+
+    const callbackUrl = `${window.location.origin}/auth/google/callback`;
+    const next = this.sanitizeReturnTo(String(returnTo ?? '/dashboard'));
+
+    try {
+      const u = new URL(url, window.location.origin);
+      if (!u.searchParams.has('returnTo')) u.searchParams.set('returnTo', next);
+      if (!u.searchParams.has('callbackUrl')) u.searchParams.set('callbackUrl', callbackUrl);
+      if (!u.searchParams.has('redirect')) u.searchParams.set('redirect', callbackUrl);
+      if (!u.searchParams.has('origin')) u.searchParams.set('origin', window.location.origin);
+      return u.toString();
+    } catch {
+      return url;
+    }
+  }
+
+  private sanitizeReturnTo(value: string): string {
+    const v = String(value ?? '').trim();
+    if (!v) return '/dashboard';
+    if (v.startsWith('/')) return v;
+    return '/dashboard';
   }
 
   uploadAvatar(file: File): Observable<string> {
@@ -296,7 +324,7 @@ export class AuthService {
     });
   }
 
-  signup(userData: Partial<User> & { password: string; avatarUrl?: string }): void {
+  signup(userData: Partial<User> & { password: string; avatarUrl?: string }, returnTo?: string): void {
     const seed = String(userData.email ?? userData.name ?? '').trim();
     const avatarUrl =
       String((userData as any).avatarUrl ?? '').trim() || this.defaultAvatarUrl(seed, userData.gender);
@@ -322,7 +350,7 @@ export class AuthService {
         const user = this.normalizeUser(res?.user ?? res);
         this.saveSession(user, token);
         this.toast.success('Account created');
-        this.router.navigate(['/dashboard']);
+        this.router.navigate([this.sanitizeReturnTo(returnTo || '/dashboard')]);
       },
       error: err => {
         if (err?.status === 404) {
@@ -332,7 +360,7 @@ export class AuthService {
               const user = this.normalizeUser(res2?.user ?? res2);
               this.saveSession(user, token);
               this.toast.success('Account created');
-              this.router.navigate(['/dashboard']);
+              this.router.navigate([this.sanitizeReturnTo(returnTo || '/dashboard')]);
             },
             error: err2 => {
               this.toast.error(this.getErrorMessage(err2, 'Signup failed'));

@@ -13,7 +13,7 @@
       </div>
       <div class="auth-title">Create your account</div>
       <div class="auth-sub">Join 4,000+ developers preparing smarter</div>
-      <button class="google-btn" (click)="auth.signupWithGoogle()">
+      <button class="google-btn" (click)="signupWithGoogle()">
         <svg width="16" height="16" viewBox="0 0 24 24">
           <path fill="#4285F4"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -32,12 +32,12 @@
         <div class="divider-line"></div>
       </div>
 
-      <div class="field"><label>Name *</label><input class="lmp-input" [(ngModel)]="form.name"
+      <div class="field"><label>Name *</label><input class="lmp-input" [(ngModel)]="form.name" autocomplete="name"
           placeholder="Rahul Dubey" /></div>
       <div class="field"><label>Email *</label><input class="lmp-input" [(ngModel)]="form.email" type="email"
-          placeholder="rahuld@test.com" /></div>
+          autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="rahul@gmail.com" /></div>
       <div class="field"><label>Password *</label><input class="lmp-input" type="password" [(ngModel)]="form.password"
-          placeholder="Enter 6+ characters" /></div>
+          autocomplete="new-password" placeholder="Enter 6+ characters" /></div>
 
       <div class="field-row">
         <div class="field"><label>Organisation</label><input class="lmp-input" [(ngModel)]="form.organisation"
@@ -104,10 +104,13 @@
         </div>
         }
 
+        @if (warning) { <div class="form-warn">{{ warning }}</div> }
         @if (error) { <div class="form-error">{{ error }}</div> }
 
         <button class="submit-btn" (click)="signup()">Create account →</button>
-        <div class="auth-foot">Already have an account? <a routerLink="/login">Log in</a></div>
+        <div class="auth-foot">Already have an account? <a routerLink="/login"
+            [queryParams]="{ returnTo: returnTo }">Log in</a></div>
       </div>
     </div>
   </div>
+</div>

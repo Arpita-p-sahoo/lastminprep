@@ -1,8 +1,28 @@
-<div class="toast-wrap">
+<div class="toast-wrap" aria-live="polite" aria-relevant="additions">
   @for (t of toast.toasts(); track t.id) {
-    <div class="toast-item" [class.success]="t.type==='success'" [class.error]="t.type==='error'" [class.info]="t.type==='info'">
-      <div class="toast-msg">{{ t.message }}</div>
-      <button class="toast-x" type="button" (click)="toast.dismiss(t.id)">×</button>
+    <div class="toast-item" [class.success]="t.type==='success'" [class.error]="t.type==='error'" [class.info]="t.type==='info'"
+      [style.--toast-dur]="t.durationMs + 'ms'">
+      <div class="toast-ic" aria-hidden="true">
+        <span class="mi">
+          @if (t.type==='success') { check_circle }
+          @else if (t.type==='error') { error }
+          @else { info }
+        </span>
+      </div>
+      <div class="toast-body">
+        <div class="toast-top">
+          <div class="toast-title">
+            @if (t.type==='success') { Success }
+            @else if (t.type==='error') { Something went wrong }
+            @else { Info }
+          </div>
+          <button class="toast-x" type="button" (click)="toast.dismiss(t.id)" aria-label="Dismiss">
+            <span class="mi" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <div class="toast-msg">{{ t.message }}</div>
+        <div class="toast-bar" aria-hidden="true"></div>
+      </div>
     </div>
   }
 </div>
