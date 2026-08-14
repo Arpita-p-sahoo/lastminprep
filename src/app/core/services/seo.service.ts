@@ -25,7 +25,7 @@ export class SeoService {
       .subscribe((data) => {
         const pageTitle = data['title'] || 'LastMinPrep';
         const description = data['description'] || 'Community-curated interview questions sorted by tech stack.';
-        const ogImage = data['ogImage'] || '/assets/og-image.png';
+        const ogImage = data['ogImage'] || 'https://lastminprep-omega.vercel.app/assets/og-image.png';
         const url = this.router.url;
 
         this.title.setTitle(pageTitle);
@@ -34,7 +34,7 @@ export class SeoService {
         this.meta.updateTag({ property: 'og:title', content: pageTitle });
         this.meta.updateTag({ property: 'og:description', content: description });
         this.meta.updateTag({ property: 'og:image', content: ogImage });
-        this.meta.updateTag({ property: 'og:url', content: `https://lastminprep.dev${url}` });
+        this.meta.updateTag({ property: 'og:url', content: `https://lastminprep-omega.vercel.app${url}` });
         this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
         this.meta.updateTag({ name: 'twitter:description', content: description });
         this.meta.updateTag({ name: 'twitter:image', content: ogImage });

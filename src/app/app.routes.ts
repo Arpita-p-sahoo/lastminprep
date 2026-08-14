@@ -12,7 +12,7 @@ export const routes: Routes = [
     title: 'LastMinPrep — Crack your next tech interview',
     data: {
       description: 'Community-curated interview questions sorted by tech stack.',
-      ogImage: '/assets/og-home.png',
+      ogImage: 'https://lastminprep-omega.vercel.app/assets/og-image.png',
     },
   },
   {
