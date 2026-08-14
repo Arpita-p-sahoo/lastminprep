@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lsof -iTCP -sTCP:LISTEN -P)",
+      "Bash(find . -path ./node_modules -prune -o -iname \"SKILL.md\" -print 2>/dev/null; find ~/.claude -iname \"*.md\" -path \"*skills*\" 2>/dev/null | grep -i lastminprep)",
+      "Read(//Users/arpitasahoo/.claude/**)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(npx playwright *)",
+      "Bash(find / -maxdepth 3 -iname \"*lastminprep*\" 2>/dev/null | grep -v \"/Users/arpitasahoo/Documents/lastminprep/lastminprep\\\\|node_modules\"; echo \"---\"; ls ~/Documents/lastminprep 2>/dev/null)",
+      "Read(//Users/arpitasahoo/Documents/lastminprep/**)",
+      "Bash(curl -s http://localhost:3333/api)",
+      "Bash(curl -s http://localhost:3333/api/users)",
+      "Bash(curl -s http://localhost:3333/api/leaderboard)",
+      "Bash(curl -s http://localhost:3333/api/questions)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"http://localhost:3333/api/leaderboard?bogusParam=xyz\")",
+      "Bash(curl -s \"http://localhost:3333/api/leaderboard?bogusParam=xyz\")"
+    ]
+  }
+}

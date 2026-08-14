@@ -5,6 +5,7 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav.component
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { AuthService } from '../../core/services/auth.service';
+import { LeaderboardService } from '../../core/services/leaderboard.service';
 
 @Component({
   selector: 'app-leaderboard',
@@ -15,9 +16,18 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LeaderboardComponent {
   auth = inject(AuthService);
+  lb = inject(LeaderboardService);
   drawerOpen = signal(false);
   postOpen = signal(false);
   period = 'This week';
-  leaderboard: any[] = [];
   badges: { icon: string; name: string; desc: string }[] = [];
+
+  constructor() {
+    this.lb.load();
+  }
+
+  myRank(): number | null {
+    const mine = this.lb.entries().find(e => e.isCurrentUser);
+    return mine ? mine.rank : null;
+  }
 }

@@ -16,7 +16,11 @@
               <div class="streak-num">{{ auth.currentUser()?.streak }}</div>
               <div class="streak-lbl">streak</div>
             </div>
-            <div style="font-size:13px;color:var(--ink2);">You're ranked <strong style="color:var(--accent);">#8</strong> this week</div>
+            @if (myRank(); as rank) {
+              <div style="font-size:13px;color:var(--ink2);">You're ranked <strong style="color:var(--accent);">#{{ rank }}</strong></div>
+            } @else if (!lb.loading()) {
+              <div style="font-size:13px;color:var(--ink2);">Post questions and earn votes to enter the ranking</div>
+            }
           </div>
 
           <div class="chip-row">
@@ -26,8 +30,13 @@
           </div>
 
           <div class="lmp-card">
-            @if (leaderboard.length) {
-              @for (entry of leaderboard; track entry.rank) {
+            @if (lb.loading()) {
+              <div class="lmp-loading">
+                <div class="lmp-spinner"></div>
+                <div>Loading…</div>
+              </div>
+            } @else if (lb.entries().length) {
+              @for (entry of lb.entries(); track entry.rank) {
                 <div class="lb-item" [class.current]="entry.isCurrentUser">
                   <div class="lb-rank" [class.gold]="entry.rank===1" [class.silver]="entry.rank===2" [class.bronze]="entry.rank===3">
                     @if (entry.rank === 1) { <span class="mi" style="font-size:18px;">workspace_premium</span> }
@@ -35,18 +44,18 @@
                     @else if (entry.rank === 3) { <span class="mi" style="font-size:18px;">emoji_events</span> }
                     @else { {{ entry.rank }} }
                   </div>
-                  <div class="lb-ava" [style.background]="entry.color">
-                    @if (entry.isCurrentUser && auth.currentUser()?.avatar) {
-                      <img [src]="auth.currentUser()!.avatar" alt="avatar" />
+                  <div class="lb-ava">
+                    @if (entry.user.avatar) {
+                      <img [src]="entry.user.avatar" alt="avatar" />
                     } @else {
-                      {{ entry.name.charAt(0) }}
+                      {{ (entry.user.name || '?').charAt(0) }}
                     }
                   </div>
                   <div class="lb-info">
-                    <div class="lb-name">{{ entry.name }} {{ entry.isCurrentUser ? '(you)' : '' }}</div>
-                    <div class="lb-score">{{ entry.questions }} questions · {{ entry.votes }} votes</div>
+                    <div class="lb-name">{{ entry.user.name }} {{ entry.isCurrentUser ? '(you)' : '' }}</div>
+                    <div class="lb-score">{{ entry.questionsCount }} questions · {{ entry.points }} votes</div>
                   </div>
-                  <div class="lb-pts">{{ entry.votes }}</div>
+                  <div class="lb-pts">{{ entry.points }}</div>
                 </div>
               }
             } @else {

@@ -53,8 +53,6 @@ export class ProfileComponent {
     linkedinUrl: '',
     techStackText: '',
   };
-  avatarMenuOpen = signal(false);
-  bannerMenuOpen = signal(false);
   myQuestions = () => {
     const id = this.auth.currentUser()?.id ?? '';
     return this.qs.getByAuthor(id);
@@ -174,6 +172,38 @@ export class ProfileComponent {
     this.form.bannerUrl = '';
   }
 
+  removeAvatarNow(): void {
+    if (this.uploadingAvatar()) return;
+    this.uploadingAvatar.set(true);
+    this.auth.updateProfile(
+      { avatarUrl: '' },
+      {
+        onSuccess: () => {
+          this.removeAvatar();
+          this.uploadingAvatar.set(false);
+          this.closeAvatarUpload();
+        },
+        onError: () => this.uploadingAvatar.set(false),
+      }
+    );
+  }
+
+  removeBannerNow(): void {
+    if (this.uploadingBanner()) return;
+    this.uploadingBanner.set(true);
+    this.auth.updateProfile(
+      { bannerUrl: '' },
+      {
+        onSuccess: () => {
+          this.removeBanner();
+          this.uploadingBanner.set(false);
+          this.closeBannerUpload();
+        },
+        onError: () => this.uploadingBanner.set(false),
+      }
+    );
+  }
+
   handleEscape(): void {
     this.closeAvatarUpload();
     this.closeBannerUpload();
@@ -181,6 +211,7 @@ export class ProfileComponent {
 
   openAvatarUpload(): void {
     if (this.uploadingAvatar()) return;
+    if (!this.editOpen()) this.form.avatarUrl = this.auth.currentUser()?.avatar ?? '';
     this.avatarDragActive.set(false);
     this.avatarUploadOpen.set(true);
   }
@@ -192,6 +223,7 @@ export class ProfileComponent {
 
   openBannerUpload(): void {
     if (this.uploadingBanner()) return;
+    if (!this.editOpen()) this.form.bannerUrl = this.auth.currentUser()?.bannerUrl ?? '';
     this.bannerDragActive.set(false);
     this.bannerUploadOpen.set(true);
   }
@@ -348,28 +380,4 @@ export class ProfileComponent {
     });
   }
 
-  toggleAvatarMenu(e: Event): void {
-    e.stopPropagation();
-    this.avatarMenuOpen.set(!this.avatarMenuOpen());
-  }
-  toggleBannerMenu(e: Event): void {
-    e.stopPropagation();
-    this.bannerMenuOpen.set(!this.bannerMenuOpen());
-  }
-  chooseAvatar(action: 'default' | 'custom' | 'remove'): void {
-    if (action === 'default' || action === 'remove') {
-      this.form.avatarUrl = '';
-      this.avatarMenuOpen.set(false);
-    } else if (action === 'custom') {
-      this.avatarMenuOpen.set(false);
-    }
-  }
-  chooseBanner(action: 'default' | 'custom' | 'remove'): void {
-    if (action === 'default' || action === 'remove') {
-      this.form.bannerUrl = '';
-      this.bannerMenuOpen.set(false);
-    } else if (action === 'custom') {
-      this.bannerMenuOpen.set(false);
-    }
-  }
 }

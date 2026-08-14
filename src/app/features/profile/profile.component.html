@@ -15,6 +15,11 @@
                   <div class="banner-gradient"></div>
                   <div class="banner-dots"></div>
                   <div class="banner-line"></div>
+                  <button class="banner-edit-btn" type="button" [disabled]="uploadingBanner()"
+                    (click)="openBannerUpload()" aria-label="Change banner image">
+                    <span class="mi" style="font-size:16px;">photo_camera</span>
+                    <span>Edit cover</span>
+                  </button>
                 </div>
 
                 <div class="profile-body">
@@ -29,6 +34,10 @@
                         {{ auth.currentUser()?.name?.charAt(0) }}
                         }
                       </div>
+                      <button class="avatar-edit-btn" type="button" [disabled]="uploadingAvatar()"
+                        (click)="openAvatarUpload()" aria-label="Change avatar image">
+                        <span class="mi" style="font-size:14px;">photo_camera</span>
+                      </button>
                     </div>
 
                     <button class="edit-btn" type="button" (click)="toggleEdit()">
@@ -196,42 +205,6 @@
 
                     <div class="form-row full">
                       <div class="form-field">
-                        <label>Avatar</label>
-                        <div class="avatar-upload-row">
-                          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingAvatar()"
-                            (click)="openAvatarUpload()">Upload image</button>
-                          @if (form.avatarUrl.trim()) {
-                          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingAvatar()"
-                            (click)="removeAvatar()">Remove</button>
-                          }
-                          @if (uploadingAvatar()) {
-                          <span class="avatar-upload-hint">Uploading…</span>
-                          }
-                        </div>
-                        <div class="avatar-upload-sub">PNG/JPG up to 5MB</div>
-                      </div>
-                    </div>
-
-                    <div class="form-row full">
-                      <div class="form-field">
-                        <label>Banner</label>
-                        <div class="avatar-upload-row">
-                          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingBanner()"
-                            (click)="openBannerUpload()">Upload image</button>
-                          @if (form.bannerUrl.trim()) {
-                          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingBanner()"
-                            (click)="removeBanner()">Remove</button>
-                          }
-                          @if (uploadingBanner()) {
-                          <span class="avatar-upload-hint">Uploading…</span>
-                          }
-                        </div>
-                        <div class="avatar-upload-sub">PNG/JPG up to 5MB</div>
-                      </div>
-                    </div>
-
-                    <div class="form-row full">
-                      <div class="form-field">
                         <label>Tech stack (comma separated)</label>
                         <input type="text" [(ngModel)]="form.techStackText"
                           placeholder="Angular, TypeScript, NestJS, PostgreSQL" />
@@ -277,8 +250,14 @@
                     <div class="ava-drop-sub">or choose a file from your device</div>
                     <input #avatarFileInput type="file" accept="image/*" (change)="onAvatarFileChange($event)"
                       style="display:none;" />
-                    <button class="btn-lmp btn-primary btn-sm" type="button" [disabled]="uploadingAvatar()"
-                      (click)="avatarFileInput.click()">Choose file</button>
+                    <div style="display:flex;gap:8px;">
+                      <button class="btn-lmp btn-primary btn-sm" type="button" [disabled]="uploadingAvatar()"
+                        (click)="avatarFileInput.click()">Choose file</button>
+                      @if (form.avatarUrl.trim()) {
+                      <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingAvatar()"
+                        (click)="removeAvatarNow()">Remove</button>
+                      }
+                    </div>
                     <div class="ava-drop-hint">PNG/JPG up to 5MB</div>
                   </div>
                 </div>
@@ -310,8 +289,14 @@
                     <div class="ava-drop-sub">or choose a file from your device</div>
                     <input #bannerFileInput type="file" accept="image/*" (change)="onBannerFileChange($event)"
                       style="display:none;" />
-                    <button class="btn-lmp btn-primary btn-sm" type="button" [disabled]="uploadingBanner()"
-                      (click)="bannerFileInput.click()">Choose file</button>
+                    <div style="display:flex;gap:8px;">
+                      <button class="btn-lmp btn-primary btn-sm" type="button" [disabled]="uploadingBanner()"
+                        (click)="bannerFileInput.click()">Choose file</button>
+                      @if (form.bannerUrl.trim()) {
+                      <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="uploadingBanner()"
+                        (click)="removeBannerNow()">Remove</button>
+                      }
+                    </div>
                     <div class="ava-drop-hint">PNG/JPG up to 5MB</div>
                   </div>
                 </div>
