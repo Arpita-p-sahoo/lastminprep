@@ -19,7 +19,10 @@
     .linkedin-note { display:flex;align-items:flex-start;gap:8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;margin-bottom:12px; }
     .linkedin-note-txt { font-size:12px;color:#1d4ed8;line-height:1.5; }
     .form-error { background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:8px;padding:10px 12px;font-size:12px;margin:10px 0 12px; }
-    .submit-btn { width:100%;background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:700;padding:12px;border-radius:8px;cursor:pointer;margin-top:4px; }
+    .submit-btn { width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:700;padding:12px;border-radius:8px;cursor:pointer;margin-top:4px; }
+    .submit-btn:disabled { opacity:0.7;cursor:not-allowed; }
+    .submit-btn .lmp-spinner { width:16px;height:16px;border-width:2px;border-color:rgba(255,255,255,0.35);border-top-color:#fff; }
+    .google-btn:disabled { opacity:0.6;cursor:not-allowed; }
     .auth-foot { text-align:center;font-size:12px;color:var(--ink3);margin-top:1rem; }
     .auth-foot a { color:var(--accent);font-weight:600;text-decoration:none; }
     @media(max-width:480px) { .field-row { grid-template-columns:1fr; } }

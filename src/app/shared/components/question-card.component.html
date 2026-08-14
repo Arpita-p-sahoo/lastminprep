@@ -56,7 +56,12 @@
   @if (showComments) {
   <div class="comments">
     <div class="comments-title">Comments ({{ question().commentCount }})</div>
-    @if (question().thread?.length) {
+    @if (loadingComments()) {
+    <div class="lmp-loading">
+      <div class="lmp-spinner sm"></div>
+      <div>Loading comments…</div>
+    </div>
+    } @else if (question().thread?.length) {
     <ng-container [ngTemplateOutlet]="commentTpl"
       [ngTemplateOutletContext]="{ items: question().thread }"></ng-container>
     } @else {

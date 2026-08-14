@@ -13,7 +13,7 @@
       </div>
       <div class="auth-title">Create your account</div>
       <div class="auth-sub">Join 4,000+ developers preparing smarter</div>
-      <button class="google-btn" (click)="auth.signupWithGoogle()">
+      <button class="google-btn" [disabled]="auth.authenticating()" (click)="auth.signupWithGoogle()">
         <svg width="16" height="16" viewBox="0 0 24 24">
           <path fill="#4285F4"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -106,7 +106,10 @@
 
         @if (error) { <div class="form-error">{{ error }}</div> }
 
-        <button class="submit-btn" (click)="signup()">Create account →</button>
+        <button class="submit-btn" [disabled]="auth.authenticating()" (click)="signup()">
+          @if (auth.authenticating()) { <span class="lmp-spinner sm"></span> }
+          Create account →
+        </button>
         <div class="auth-foot">Already have an account? <a routerLink="/login">Log in</a></div>
       </div>
     </div>

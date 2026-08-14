@@ -1,2 +1,16 @@
+@if (auth.restoringSession()) {
+  <div class="session-restore-overlay" role="status" aria-live="polite">
+    <div class="session-restore-card">
+      <div class="session-restore-wave" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="session-restore-text">
+        Logging in as {{ auth.currentUser()?.email || 'you' }}&hellip;
+      </div>
+    </div>
+  </div>
+}
 <app-toast-container />
 <router-outlet />

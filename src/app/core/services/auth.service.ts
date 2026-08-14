@@ -15,10 +15,12 @@ export class AuthService {
 
   currentUser = signal<User | null>(this.loadUser());
   isLoggedIn = signal<boolean>(!!this.loadUser() || !!this.loadToken());
+  restoringSession = signal<boolean>(false);
+  authenticating = signal<boolean>(false);
 
   constructor(private router: Router, private http: HttpClient, private toast: ToastService) {
     const token = this.loadToken();
-    if (!this.currentUser() && token) this.restoreSessionFromToken(token);
+    if (token) this.restoreSessionFromToken(token);
   }
 
   private normalizeGender(value: any): 'male' | 'female' | '' {
@@ -118,20 +120,24 @@ export class AuthService {
   private restoreSessionFromToken(token: string): void {
     if (this.restoring) return;
     this.restoring = true;
+    this.restoringSession.set(true);
 
     this.http.get<any>(`${this.API}/users/me`, { headers: this.getAuthHeaders() }).subscribe({
       next: res => {
         const normalized = this.normalizeUser(res?.data ?? res?.item ?? res?.user ?? res);
         this.saveSession(normalized, token);
         this.restoring = false;
+        this.restoringSession.set(false);
       },
       error: err => {
         if (err?.status === 401 || err?.status === 403) {
           localStorage.removeItem(this.TOKEN_KEY);
+          localStorage.removeItem(this.STORAGE_KEY);
           this.currentUser.set(null);
           this.isLoggedIn.set(false);
         }
         this.restoring = false;
+        this.restoringSession.set(false);
       },
     });
   }
@@ -149,16 +155,19 @@ export class AuthService {
   }
 
   login(email: string, password: string): void {
+    this.authenticating.set(true);
     this.http.post<any>(`${this.API}/auth/login`, { email, password }).subscribe({
       next: res => {
         const token = res?.accessToken ?? res?.access_token ?? res?.token ?? '';
         const user = this.normalizeUser(res?.user ?? res);
         this.saveSession(user, token);
         this.toast.success(`Welcome, ${user.name || 'back'}`);
+        this.authenticating.set(false);
         this.router.navigate(['/dashboard']);
       },
       error: err => {
         this.toast.error(this.getErrorMessage(err, 'Login failed'));
+        this.authenticating.set(false);
       },
     });
   }
@@ -315,6 +324,7 @@ export class AuthService {
       techStack: userData.techStack,
     };
 
+    this.authenticating.set(true);
     const req = this.http.post<any>(`${this.API}/auth/signup`, payload);
     req.subscribe({
       next: res => {
@@ -322,6 +332,7 @@ export class AuthService {
         const user = this.normalizeUser(res?.user ?? res);
         this.saveSession(user, token);
         this.toast.success('Account created');
+        this.authenticating.set(false);
         this.router.navigate(['/dashboard']);
       },
       error: err => {
@@ -332,14 +343,17 @@ export class AuthService {
               const user = this.normalizeUser(res2?.user ?? res2);
               this.saveSession(user, token);
               this.toast.success('Account created');
+              this.authenticating.set(false);
               this.router.navigate(['/dashboard']);
             },
             error: err2 => {
               this.toast.error(this.getErrorMessage(err2, 'Signup failed'));
+              this.authenticating.set(false);
             },
           });
         } else {
           this.toast.error(this.getErrorMessage(err, 'Signup failed'));
+          this.authenticating.set(false);
         }
       },
     });

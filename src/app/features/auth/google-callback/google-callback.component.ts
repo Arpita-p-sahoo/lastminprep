@@ -39,7 +39,10 @@ import { AuthService } from '../../../core/services/auth.service';
           }
         </div>
       } @else {
-        <div style="color:var(--ink2);font-size:13px;">Signing you in…</div>
+        <div class="lmp-loading" role="status" aria-live="polite">
+          <div class="lmp-spinner"></div>
+          <div>Signing you in…</div>
+        </div>
       }
     </div>
   `,

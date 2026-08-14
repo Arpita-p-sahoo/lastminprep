@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -23,7 +23,27 @@ export class QuestionCardComponent {
   newComment = '';
   deleteTarget: { kind: 'question' | 'comment'; id: string } | null = null;
   deleting = false;
-  toggleComments(): void { this.showComments = !this.showComments; }
+  loadingComments = signal(false);
+  private commentsLoaded = false;
+
+  toggleComments(): void {
+    this.showComments = !this.showComments;
+    if (this.showComments && !this.commentsLoaded) this.loadComments();
+  }
+
+  private loadComments(): void {
+    const id = this.question()?.id;
+    if (!id) return;
+    this.loadingComments.set(true);
+    this.qs.fetchById(id).subscribe({
+      next: () => {
+        this.commentsLoaded = true;
+        this.loadingComments.set(false);
+      },
+      error: () => this.loadingComments.set(false),
+    });
+  }
+
   addComment(): void {
     const t = this.newComment.trim();
     if (!t) return;

@@ -1,0 +1,59 @@
+.session-restore-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  background: rgba(15, 14, 23, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+:host-context(.dark) .session-restore-overlay {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.session-restore-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 28px;
+  border-radius: 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.session-restore-wave {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 26px;
+}
+
+.session-restore-wave span {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: lmpWave 0.9s ease-in-out infinite;
+}
+
+.session-restore-wave span:nth-child(2) {
+  animation-delay: 0.1s;
+  opacity: 0.85;
+}
+
+.session-restore-wave span:nth-child(3) {
+  animation-delay: 0.2s;
+  opacity: 0.7;
+}
+
+.session-restore-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink2);
+  text-align: center;
+}
