@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { User } from '../models';
 import { environment } from '../../../environments/environment';
 import { ToastService } from './toast.service';
+import { toFriendlyErrorMessage } from '../utils/error-message';
 import { Observable, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -148,10 +149,7 @@ export class AuthService {
   }
 
   private getErrorMessage(err: any, fallback: string): string {
-    const msg = err?.error?.message ?? err?.message;
-    if (Array.isArray(msg)) return msg.filter(Boolean).join(', ') || fallback;
-    if (typeof msg === 'string' && msg.trim()) return msg;
-    return fallback;
+    return toFriendlyErrorMessage(err, fallback);
   }
 
   login(email: string, password: string): void {

@@ -172,7 +172,3 @@ See [PRD.md](file:///d:/project/lastminprep/lastminprep/PRD.md).
 - [ ] Angular Universal SSR for full SEO
 
 ---
-
-## Built by
-
-Arpita Sahoo — Angular developer from Bhubaneswar, Odisha 🇮🇳

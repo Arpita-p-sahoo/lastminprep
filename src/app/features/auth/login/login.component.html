@@ -19,7 +19,7 @@
             Continue with Google
           </button>
           <div class="divider"><div class="divider-line"></div><div class="divider-txt">or with email</div><div class="divider-line"></div></div>
-          <div class="field"><label>Email</label><input class="lmp-input" [(ngModel)]="email" placeholder="arpita@email.com" [disabled]="auth.authenticating()" /></div>
+          <div class="field"><label>Email</label><input class="lmp-input" [(ngModel)]="email" placeholder="you@email.com" [disabled]="auth.authenticating()" /></div>
           <div class="field"><label>Password</label><input class="lmp-input" type="password" [(ngModel)]="password" placeholder="••••••••" [disabled]="auth.authenticating()" /></div>
           <button class="submit-btn" [disabled]="auth.authenticating()" (click)="login()">
             @if (auth.authenticating()) { <span class="lmp-spinner sm"></span> }

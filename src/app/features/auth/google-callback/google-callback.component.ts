@@ -21,10 +21,7 @@ import { AuthService } from '../../../core/services/auth.service';
           } @else {
             <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;">Sign-in failed</div>
             <div style="font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:14px;">
-              Something went wrong while signing you in.
-            </div>
-            <div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:14px;word-break:break-word;">
-              {{ error() }}
+              Something went wrong while signing you in. Please try again.
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
               <button (click)="goToLogin()"

@@ -11,6 +11,7 @@ import { QuestionService } from '../../core/services/question.service';
 import { ToastService } from '../../core/services/toast.service';
 import { UserService } from '../../core/services/user.service';
 import { Router } from '@angular/router';
+import { toFriendlyErrorMessage } from '../../core/utils/error-message';
 
 @Component({
   selector: 'app-profile',
@@ -322,8 +323,7 @@ export class ProfileComponent {
         if (this.avatarPreviewObjectUrl) URL.revokeObjectURL(this.avatarPreviewObjectUrl);
         this.avatarPreviewObjectUrl = '';
         this.form.avatarUrl = previous;
-        const msg = err?.error?.message ?? err?.message;
-        this.toast.error(typeof msg === 'string' && msg.trim() ? msg : 'Avatar upload failed');
+        this.toast.error(toFriendlyErrorMessage(err, 'Avatar upload failed'));
       },
       complete: () => {
         this.uploadingAvatar.set(false);
@@ -370,8 +370,7 @@ export class ProfileComponent {
         if (this.bannerPreviewObjectUrl) URL.revokeObjectURL(this.bannerPreviewObjectUrl);
         this.bannerPreviewObjectUrl = '';
         this.form.bannerUrl = previous;
-        const msg = err?.error?.message ?? err?.message;
-        this.toast.error(typeof msg === 'string' && msg.trim() ? msg : 'Banner upload failed');
+        this.toast.error(toFriendlyErrorMessage(err, 'Banner upload failed'));
       },
       complete: () => {
         this.uploadingBanner.set(false);
