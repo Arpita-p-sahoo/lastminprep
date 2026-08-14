@@ -23,6 +23,7 @@ export class FeedComponent {
   active = 'Top rated';
 
   constructor() {
+    this.qs.loadFollowingFeed();
     this.qs.markFeedSeen();
     effect(
       () => {
@@ -66,6 +67,9 @@ export class FeedComponent {
           return stack.includes(tag) || hashes.some(h => stack.includes(h));
         })
         .sort(byVotes);
+    }
+    if (sel === 'Following') {
+      return [...this.qs.followingQuestions()].sort(byNewest);
     }
     return items;
   }

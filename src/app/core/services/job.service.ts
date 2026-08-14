@@ -25,6 +25,8 @@ export class JobService {
   }
   jobs = signal<Job[]>([]);
   loading = signal(true);
+  followingJobs = signal<Job[]>([]);
+  loadingFollowing = signal(false);
   private jobsLastSeen = signal<number>(0);
   savedJobs = signal<Job[]>([]);
   private savedJobIdSet = computed(() => {
@@ -180,6 +182,26 @@ export class JobService {
       error: () => {
         this.jobs.set([]);
         this.loading.set(false);
+      },
+    });
+  }
+
+  loadFollowingFeed(): void {
+    if (!this.auth.isLoggedIn()) {
+      this.followingJobs.set([]);
+      this.loadingFollowing.set(false);
+      return;
+    }
+    this.loadingFollowing.set(true);
+    this.http.get<any>(`${this.API}/jobs/following`).subscribe({
+      next: data => {
+        const list = this.normalizeList(data);
+        this.followingJobs.set(list);
+        this.loadingFollowing.set(false);
+      },
+      error: () => {
+        this.followingJobs.set([]);
+        this.loadingFollowing.set(false);
       },
     });
   }

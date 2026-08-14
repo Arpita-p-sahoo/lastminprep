@@ -32,7 +32,7 @@ export class JobsComponent {
 
   sourceOptions: Array<'All' | 'LinkedIn' | 'Naukri' | 'Community'> = ['All', 'LinkedIn', 'Naukri', 'Community'];
   typeOptions: Array<'All' | Job['type']> = ['All', 'Remote', 'Hybrid', 'Onsite'];
-  quickFilters = ['All', 'Remote', 'Angular', 'Full-stack', 'Fresher'];
+  quickFilters = ['All', 'Following', 'Remote', 'Angular', 'Full-stack', 'Fresher'];
 
   jobForm = {
     title: '',
@@ -57,16 +57,16 @@ export class JobsComponent {
   });
 
   filteredJobs = computed(() => {
-    const jobs = this.jobService.jobs();
+    const quick = this.activeFilter();
+    const jobs = quick === 'Following' ? this.jobService.followingJobs() : this.jobService.jobs();
     const q = this.searchQuery().trim().toLowerCase();
     const source = this.sourceFilter();
-    const quick = this.activeFilter();
     const type = this.typeFilter();
     const exp = this.experienceFilter();
 
     const filtered = jobs.filter(job => {
       if (source !== 'All' && this.jobSource(job) !== source) return false;
-      if (quick !== 'All' && !this.matchesQuickFilter(job, quick)) return false;
+      if (quick !== 'All' && quick !== 'Following' && !this.matchesQuickFilter(job, quick)) return false;
       if (type !== 'All' && job.type !== type) return false;
       if (exp !== 'All' && String(job.experience ?? '').trim() !== exp) return false;
       if (q && !this.matchesSearch(job, q)) return false;
@@ -81,6 +81,7 @@ export class JobsComponent {
   });
 
   constructor() {
+    this.jobService.loadFollowingFeed();
     this.jobService.markJobsSeen();
     effect(
       () => {

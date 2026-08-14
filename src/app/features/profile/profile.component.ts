@@ -9,6 +9,8 @@ import { QuestionCardComponent } from '../../shared/components/question-card.com
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { ToastService } from '../../core/services/toast.service';
+import { UserService } from '../../core/services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -22,6 +24,8 @@ export class ProfileComponent {
   auth = inject(AuthService);
   qs = inject(QuestionService);
   toast = inject(ToastService);
+  userService = inject(UserService);
+  router = inject(Router);
   drawerOpen = signal(false);
   postOpen = signal(false);
   editOpen = signal(false);
@@ -55,6 +59,17 @@ export class ProfileComponent {
     const id = this.auth.currentUser()?.id ?? '';
     return this.qs.getByAuthor(id);
   };
+  activeTab = signal<'Questions' | 'Following' | 'Followers'>('Questions');
+
+  constructor() {
+    this.userService.loadMyFollowing();
+    this.userService.loadMyFollowers();
+  }
+
+  goToUser(id: string): void {
+    if (!id) return;
+    this.router.navigate(['/user', id]);
+  }
 
   toggleEdit(): void {
     if (this.editOpen()) {

@@ -15,37 +15,47 @@
         <div class="lmp-card" style="padding:1rem;margin-bottom:1rem;text-align:center;color:var(--ink3);">{{
           userError() }}</div>
         } @else {
-        <div class="lmp-card" style="padding:1rem;margin-bottom:1rem;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div class="profile-ava-img">
-              @if (user()?.avatar) {
-              <img [src]="user()!.avatar" alt="avatar" />
-              } @else {
-              {{ userName.charAt(0) }}
-              }
+        <div class="user-header-card">
+          <div class="uh-row">
+            <div class="uh-left">
+              <div class="profile-ava-img">
+                @if (user()?.avatar) {
+                <img [src]="user()!.avatar" alt="avatar" />
+                } @else {
+                {{ (userName || 'U').charAt(0) }}
+                }
+              </div>
+
+              <div class="uh-main">
+                <div class="profile-name">{{ userName }}</div>
+                @if (user()?.designation || user()?.organisation) {
+                <div class="profile-subtitle">
+                  {{ user()?.designation || '' }}@if (user()?.designation && user()?.organisation) { · }{{
+                  user()?.organisation || '' }}
+                </div>
+                }
+
+                <div class="profile-title-txt">{{ questionsCount }} questions · {{ totalVotes }} votes</div>
+                @if (joinedLabel()) { <div class="profile-title-txt">{{ joinedLabel() }}</div> }
+
+                @if (user()?.email || user()?.linkedinUrl) {
+                <div class="profile-links">
+                  @if (user()?.email) {
+                  <a [href]="'mailto:' + user()!.email">{{ user()!.email }}</a>
+                  }
+                  @if (user()?.linkedinUrl) {
+                  <a [href]="user()!.linkedinUrl" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                  }
+                </div>
+                }
+              </div>
             </div>
-            <div style="min-width:0;">
-              <div class="profile-name">{{ userName }}</div>
-              @if (user()?.designation || user()?.organisation) {
-              <div class="profile-subtitle">
-                {{ user()?.designation || '' }}@if (user()?.designation && user()?.organisation) { · }{{
-                user()?.organisation || '' }}
-              </div>
-              }
-              <div class="profile-title-txt">{{ questionsCount }} questions · {{ totalVotes }} votes</div>
-              @if (joinedLabel()) {
-              <div class="profile-title-txt">{{ joinedLabel() }}</div>
-              }
-              @if (user()?.email || user()?.linkedinUrl) {
-              <div class="profile-links">
-                @if (user()?.email) {
-                <a [href]="'mailto:' + user()!.email">{{ user()!.email }}</a>
-                }
-                @if (user()?.linkedinUrl) {
-                <a [href]="user()!.linkedinUrl" target="_blank" rel="noopener">LinkedIn</a>
-                }
-              </div>
-              }
+
+            <div class="uh-actions">
+              <button class="btn-lmp btn-sm" [class.btn-primary]="!isFollowing()" [class.btn-secondary]="isFollowing()"
+                (click)="toggleFollow()">
+                {{ isFollowing() ? 'Unfollow' : 'Follow' }}
+              </button>
             </div>
           </div>
 
@@ -58,14 +68,85 @@
           }
         </div>
         }
-        <div class="feed-head">
-          <h2>Posts by {{ userName }}</h2>
+        
+        <div class="profile-tabs" role="tablist" aria-label="Profile sections">
+          <button class="chip" type="button" role="tab" [attr.aria-selected]="activeTab() === 'Questions'"
+            [class.active]="activeTab() === 'Questions'" (click)="activeTab.set('Questions')">Questions ({{
+            questions().length }})</button>
+          <button class="chip" type="button" role="tab" [attr.aria-selected]="activeTab() === 'Following'"
+            [class.active]="activeTab() === 'Following'" (click)="activeTab.set('Following')">Following ({{
+            userFollowing().length }})</button>
+          <button class="chip" type="button" role="tab" [attr.aria-selected]="activeTab() === 'Followers'"
+            [class.active]="activeTab() === 'Followers'" (click)="activeTab.set('Followers')">Followers ({{
+            userFollowers().length }})</button>
         </div>
-        @for (q of questions(); track q.id) {
-        <app-question-card [question]="q" />
+
+        @if (activeTab() === 'Questions') {
+          <div class="feed-head">
+            <h2>Posts by {{ userName }}</h2>
+          </div>
+          @for (q of questions(); track q.id) {
+          <app-question-card [question]="q" />
+          }
+          @if (!questions().length) {
+          <div style="text-align:center;padding:2rem;color:var(--ink3);">No posts yet</div>
+          }
         }
-        @if (!questions().length) {
-        <div style="text-align:center;padding:2rem;color:var(--ink3);">No posts yet</div>
+
+        @if (activeTab() === 'Following') {
+          <div class="feed-head">
+            <h2>Following</h2>
+          </div>
+          @if (!userFollowing().length) {
+            <div style="text-align:center;padding:2rem;color:var(--ink3);">Not following anyone</div>
+          } @else {
+            <div class="user-grid">
+              @for (u of userFollowing(); track u.id) {
+                <button class="user-card" type="button" (click)="goToUser(u.id)">
+                  <div class="user-ava">
+                    @if (u.avatar) {
+                    <img [src]="u.avatar" alt="avatar" />
+                    } @else {
+                    <div class="user-ava-fallback">{{ (u.name || 'U').charAt(0) }}</div>
+                    }
+                  </div>
+                  <div class="user-meta">
+                    <div class="user-name">{{ u.name }}</div>
+                    <div class="user-sub">{{ u.designation || 'Member' }}</div>
+                  </div>
+                  <span class="mi user-arrow">chevron_right</span>
+                </button>
+              }
+            </div>
+          }
+        }
+
+        @if (activeTab() === 'Followers') {
+          <div class="feed-head">
+            <h2>Followers</h2>
+          </div>
+          @if (!userFollowers().length) {
+            <div style="text-align:center;padding:2rem;color:var(--ink3);">No followers yet</div>
+          } @else {
+            <div class="user-grid">
+              @for (u of userFollowers(); track u.id) {
+                <button class="user-card" type="button" (click)="goToUser(u.id)">
+                  <div class="user-ava">
+                    @if (u.avatar) {
+                    <img [src]="u.avatar" alt="avatar" />
+                    } @else {
+                    <div class="user-ava-fallback">{{ (u.name || 'U').charAt(0) }}</div>
+                    }
+                  </div>
+                  <div class="user-meta">
+                    <div class="user-name">{{ u.name }}</div>
+                    <div class="user-sub">{{ u.designation || 'Member' }}</div>
+                  </div>
+                  <span class="mi user-arrow">chevron_right</span>
+                </button>
+              }
+            </div>
+          }
         }
       </div>
     </div>

@@ -9,6 +9,8 @@ import { QuestionCardComponent } from '../../shared/components/question-card.com
 import { QuestionService } from '../../core/services/question.service';
 import { User } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
+import { UserService } from '../../core/services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
@@ -21,33 +23,89 @@ export class UserProfileComponent {
   route = inject(ActivatedRoute);
   qs = inject(QuestionService);
   auth = inject(AuthService);
+  userService = inject(UserService);
+  router = inject(Router);
   drawerOpen = signal(false);
   postOpen = signal(false);
-  userId = this.route.snapshot.paramMap.get('id') ?? '';
+  userId = signal<string>('');
   user = signal<User | null>(null);
   loadingUser = signal(false);
   userError = signal('');
-  questions = computed(() => this.qs.getByAuthor(this.userId));
+  questions = computed(() => this.qs.getByAuthor(this.userId()));
+  
+  userFollowing = signal<User[]>([]);
+  userFollowers = signal<User[]>([]);
+  activeTab = signal<'Questions' | 'Following' | 'Followers'>('Questions');
+
+  isFollowing = computed(() => {
+    return this.userService.myFollowing().some(u => String(u.id) === String(this.userId()));
+  });
+
   constructor() {
-    const id = this.userId;
-    if (id) {
-      this.loadingUser.set(true);
-      this.auth.fetchUserById(id).subscribe({
-        next: u => {
-          this.user.set(u);
-          this.userError.set('');
-          this.loadingUser.set(false);
-        },
-        error: () => {
-          this.user.set(null);
-          this.userError.set('User not found');
-          this.loadingUser.set(false);
-        },
+    this.userService.loadMyFollowing();
+    this.route.paramMap.subscribe(pm => {
+      const id = pm.get('id') ?? '';
+      this.userId.set(id);
+      this.activeTab.set('Questions');
+      this.loadUser(id);
+      this.loadFollows(id);
+    });
+  }
+
+  loadFollows(id?: string) {
+    const userId = String(id ?? this.userId()).trim();
+    if (!userId) return;
+    this.userService.getUserFollowing(userId).subscribe(users => this.userFollowing.set(users));
+    this.userService.getUserFollowers(userId).subscribe(users => this.userFollowers.set(users));
+  }
+
+  private loadUser(id: string): void {
+    const userId = String(id ?? '').trim();
+    if (!userId) {
+      this.user.set(null);
+      this.userError.set('User not found');
+      this.loadingUser.set(false);
+      return;
+    }
+
+    this.loadingUser.set(true);
+    this.auth.fetchUserById(userId).subscribe({
+      next: u => {
+        this.user.set(u);
+        this.userError.set('');
+        this.loadingUser.set(false);
+      },
+      error: () => {
+        this.user.set(null);
+        this.userError.set('User not found');
+        this.loadingUser.set(false);
+      },
+    });
+  }
+
+  toggleFollow() {
+    if (!this.auth.isLoggedIn()) {
+      // should redirect or show toast
+      return;
+    }
+    const id = this.userId();
+    if (!id) return;
+    if (this.isFollowing()) {
+      this.userService.unfollowUser(id).subscribe(() => {
+        this.loadFollows(id);
       });
     } else {
-      this.userError.set('User not found');
+      this.userService.followUser(id).subscribe(() => {
+        this.loadFollows(id);
+      });
     }
   }
+
+  goToUser(id: string): void {
+    if (!id) return;
+    this.router.navigate(['/user', id]);
+  }
+
   get userName(): string {
     return this.user()?.name ?? this.questions()[0]?.author.name ?? 'User';
   }
