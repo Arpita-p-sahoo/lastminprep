@@ -1,8 +1,8 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3333/api',
-  googleAuthUrl: 'http://localhost:3333/api/auth/google',
-  googleAuthSignupUrl: 'http://localhost:3333/api/auth/google/signup',
+  apiUrl: 'https://lmp-backend-1.onrender.com/api',
+  googleAuthUrl: 'https://lmp-backend-1.onrender.com/api/auth/google',
+  googleAuthSignupUrl: 'https://lmp-backend-1.onrender.com/api/auth/google/signup',
   appName: 'LastMinPrep',
   version: '0.1.0',
   debugAuth: true,
