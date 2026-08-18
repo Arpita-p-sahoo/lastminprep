@@ -6,6 +6,7 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav.component
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { DomainConfig } from '../../core/models';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-explore',
@@ -16,6 +17,7 @@ import { DomainConfig } from '../../core/models';
 })
 export class ExploreComponent {
   router = inject(Router);
+  auth = inject(AuthService);
   drawerOpen = signal(false);
   postOpen = signal(false);
   selectedDomain: DomainConfig | null = null;

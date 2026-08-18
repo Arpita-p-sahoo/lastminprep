@@ -19,9 +19,24 @@ export class AuthService {
   restoringSession = signal<boolean>(false);
   authenticating = signal<boolean>(false);
 
+  /**
+   * The Render free-tier backend spins down after ~15 min idle and takes 30-50s to wake,
+   * during which a hard navigation to it (Google OAuth) shows Render's bare splash page.
+   * These track whether we've confirmed the backend is awake yet, so login/signup can hold
+   * off on that navigation and show our own "waking up" state instead.
+   */
+  backendReady = signal<boolean>(false);
+  backendSlow = signal<boolean>(false);
+  private backendSlowTimer?: ReturnType<typeof setTimeout>;
+  private backendSafetyTimer?: ReturnType<typeof setTimeout>;
+
   constructor(private router: Router, private http: HttpClient, private toast: ToastService) {
     const token = this.loadToken();
-    if (token) this.restoreSessionFromToken(token);
+    if (token) {
+      this.restoreSessionFromToken(token);
+    } else {
+      this.warmUpBackend();
+    }
   }
 
   private normalizeGender(value: any): 'male' | 'female' | '' {
@@ -122,6 +137,7 @@ export class AuthService {
     if (this.restoring) return;
     this.restoring = true;
     this.restoringSession.set(true);
+    this.startBackendReadyTimers();
 
     this.http.get<any>(`${this.API}/users/me`, { headers: this.getAuthHeaders() }).subscribe({
       next: res => {
@@ -129,6 +145,7 @@ export class AuthService {
         this.saveSession(normalized, token);
         this.restoring = false;
         this.restoringSession.set(false);
+        this.markBackendReady();
       },
       error: err => {
         if (err?.status === 401 || err?.status === 403) {
@@ -139,8 +156,38 @@ export class AuthService {
         }
         this.restoring = false;
         this.restoringSession.set(false);
+        this.markBackendReady();
       },
     });
+  }
+
+  /** Fires a harmless request as early as possible to start waking a sleeping Render dyno,
+   *  well before the user reaches the Google-OAuth button that would otherwise be the first
+   *  thing to touch the backend. */
+  private warmUpBackend(): void {
+    this.startBackendReadyTimers();
+    this.http.get(this.API, { observe: 'response', responseType: 'text' }).subscribe({
+      next: () => this.markBackendReady(),
+      error: () => this.markBackendReady(),
+    });
+  }
+
+  private startBackendReadyTimers(): void {
+    if (this.backendReady()) return;
+    clearTimeout(this.backendSlowTimer);
+    clearTimeout(this.backendSafetyTimer);
+    this.backendSlowTimer = setTimeout(() => {
+      if (!this.backendReady()) this.backendSlow.set(true);
+    }, 4000);
+    // Never leave the UI blocked forever if the wake-up ping itself hangs or is dropped.
+    this.backendSafetyTimer = setTimeout(() => this.markBackendReady(), 45000);
+  }
+
+  private markBackendReady(): void {
+    this.backendReady.set(true);
+    this.backendSlow.set(false);
+    clearTimeout(this.backendSlowTimer);
+    clearTimeout(this.backendSafetyTimer);
   }
 
   private getAuthHeaders(): HttpHeaders {

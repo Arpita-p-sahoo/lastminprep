@@ -21,6 +21,7 @@
     .submit-btn:disabled { opacity:0.7;cursor:not-allowed; }
     .submit-btn .lmp-spinner { width:16px;height:16px;border-width:2px;border-color:rgba(255,255,255,0.35);border-top-color:#fff; }
     .google-btn:disabled { opacity:0.6;cursor:not-allowed; }
+    .server-wake-note { display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:12px; }
     .auth-foot { text-align:center;font-size:12px;color:var(--ink3);margin-top:1rem; }
     .auth-foot a { color:var(--accent);cursor:pointer;font-weight:600;text-decoration:none; }
   

@@ -74,7 +74,7 @@
   </div>
 
   <div class="main-layout">
-    <app-sidebar />
+    @if (auth.isLoggedIn()) { <app-sidebar /> }
     <div class="content">
       <div class="content-inner">
         <div class="feed-head">

@@ -4,7 +4,7 @@
       <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
       <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
       <div class="main-layout">
-        <app-sidebar />
+        @if (auth.isLoggedIn()) { <app-sidebar /> }
         <div class="content"><div class="content-inner">
           <div style="margin-bottom:1.5rem;">
             <div style="font-size:20px;font-weight:800;">Leaderboard</div>

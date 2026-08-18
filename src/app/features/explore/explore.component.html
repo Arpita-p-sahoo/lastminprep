@@ -3,7 +3,7 @@
   <app-navbar (drawerOpen)="drawerOpen.set(true)" />
   <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
   <div class="main-layout">
-    <app-sidebar />
+    @if (auth.isLoggedIn()) { <app-sidebar /> }
     <div class="content">
       <div class="content-inner">
         <div class="step-label">Step 1 — Domain</div>
