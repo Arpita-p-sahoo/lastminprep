@@ -249,6 +249,7 @@ export class AuthService {
         const normalized = this.normalizeUser(res?.data ?? res?.item ?? res?.user ?? res);
         const storedToken = token || localStorage.getItem(this.TOKEN_KEY) || '';
         this.saveSession(normalized, storedToken);
+        this.toast.success(`Welcome, ${normalized.name || 'back'}`);
         this.router.navigate([returnTo]);
       },
       error: err => {

@@ -2,13 +2,14 @@ import { Injectable, computed, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Job } from '../models';
 import { AuthService } from './auth.service';
+import { ToastService } from './toast.service';
 import { environment } from '../../../environments/environment';
 import { Observable, map, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class JobService {
   private readonly API = environment.apiUrl;
-  constructor(private auth: AuthService, private http: HttpClient) {
+  constructor(private auth: AuthService, private http: HttpClient, private toast: ToastService) {
     this.load();
     effect(
       () => {
@@ -112,7 +113,9 @@ export class JobService {
         } else {
           this.savedJobs.update(items => items.filter(x => String(x.id) !== jobId));
         }
+        this.toast.success(saved ? 'Job saved' : 'Removed from saved');
       },
+      error: () => this.toast.error('Failed to save job'),
     });
   }
 
@@ -156,7 +159,9 @@ export class JobService {
         if (job.postedBy) normalized.postedBy = { ...(normalized.postedBy ?? {}), ...(job.postedBy ?? {}) };
         if (job.postedAt) normalized.postedAt = job.postedAt instanceof Date ? job.postedAt : new Date(job.postedAt as any);
         this.jobs.update(j => [normalized, ...j]);
+        this.toast.success('Job posted');
       },
+      error: () => this.toast.error('Failed to post job'),
     });
   }
 
@@ -170,6 +175,11 @@ export class JobService {
         callbacks?.onError?.();
       },
     });
+  }
+
+  /** Re-fetches the job list from the server; used to refresh on demand (e.g. clicking the Jobs nav link). */
+  refresh(): void {
+    this.load();
   }
 
   private load(): void {

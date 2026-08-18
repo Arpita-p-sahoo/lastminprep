@@ -2,13 +2,14 @@ import { Injectable, computed, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Comment, Question } from '../models';
 import { AuthService } from './auth.service';
+import { ToastService } from './toast.service';
 import { environment } from '../../../environments/environment';
 import { Observable, map, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
   private readonly API = environment.apiUrl;
-  constructor(private auth: AuthService, private http: HttpClient) {
+  constructor(private auth: AuthService, private http: HttpClient, private toast: ToastService) {
     this.loadAll();
     effect(
       () => {
@@ -132,33 +133,45 @@ export class QuestionService {
   vote(id: string): void {
     this.http.post<{ votes?: number; voteCount?: number; isVoted?: boolean }>(`${this.API}/questions/${id}/vote`, {}).subscribe({
       next: res => {
+        let voted = false;
         this.questions.update(qs =>
-          qs.map(q =>
-            q.id === id
-              ? {
-                ...q,
-                votes:
-                  typeof res.votes === 'number'
-                    ? res.votes
-                    : typeof res.voteCount === 'number'
-                      ? res.voteCount
-                      : (q.isVoted ? q.votes - 1 : q.votes + 1),
-                isVoted: typeof res.isVoted === 'boolean' ? res.isVoted : !q.isVoted,
-              }
-              : q
-          )
+          qs.map(q => {
+            if (q.id !== id) return q;
+            const updated = {
+              ...q,
+              votes:
+                typeof res.votes === 'number'
+                  ? res.votes
+                  : typeof res.voteCount === 'number'
+                    ? res.voteCount
+                    : (q.isVoted ? q.votes - 1 : q.votes + 1),
+              isVoted: typeof res.isVoted === 'boolean' ? res.isVoted : !q.isVoted,
+            };
+            voted = updated.isVoted;
+            return updated;
+          })
         );
+        this.toast.success(voted ? 'Vote added' : 'Vote removed');
       },
+      error: () => this.toast.error('Failed to vote'),
     });
   }
 
   save(id: string): void {
     this.http.post<{ isSaved?: boolean }>(`${this.API}/questions/${id}/save`, {}).subscribe({
       next: res => {
+        let saved = false;
         this.questions.update(qs =>
-          qs.map(q => (q.id === id ? { ...q, isSaved: typeof res.isSaved === 'boolean' ? res.isSaved : !q.isSaved } : q))
+          qs.map(q => {
+            if (q.id !== id) return q;
+            const isSaved = typeof res.isSaved === 'boolean' ? res.isSaved : !q.isSaved;
+            saved = isSaved;
+            return { ...q, isSaved };
+          })
         );
+        this.toast.success(saved ? 'Question saved' : 'Removed from saved');
       },
+      error: () => this.toast.error('Failed to save question'),
     });
   }
 
@@ -194,7 +207,9 @@ export class QuestionService {
         if (user?.id && normalized.author?.id && String(user.id) === String(normalized.author.id)) {
           this.auth.updateLocalUser({ questionsPosted: (user.questionsPosted ?? 0) + 1 });
         }
+        this.toast.success('Question posted');
       },
+      error: () => this.toast.error('Failed to post question'),
     });
   }
 
@@ -265,7 +280,9 @@ export class QuestionService {
         if (author?.id && comment.author?.id && String(author.id) === String(comment.author.id)) {
           this.auth.updateLocalUser({ answeredCount: (author.answeredCount ?? 0) + 1 });
         }
+        this.toast.success('Comment posted');
       },
+      error: () => this.toast.error('Failed to post comment'),
     });
   }
 

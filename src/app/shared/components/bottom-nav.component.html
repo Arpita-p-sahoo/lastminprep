@@ -9,7 +9,7 @@
     <span class="bn-post"><span class="mi" style="font-size:22px;">add</span></span>
     <span class="bn-label">Post</span>
   </button>
-  <a class="bn-item" routerLink="/jobs" routerLinkActive="active">
+  <a class="bn-item" routerLink="/jobs" routerLinkActive="active" (click)="jobs.refresh()">
     <span class="bn-icon"><span class="mi">work</span></span><span class="bn-label">Jobs</span>
   </a>
   <a class="bn-item" routerLink="/profile" routerLinkActive="active">
