@@ -9,7 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { RouterLink } from '@angular/router';
 import { JobService } from '../../core/services/job.service';
-import { Comment } from '../../core/models';
+import { Comment, Question } from '../../core/models';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,7 +28,6 @@ export class DashboardComponent {
   now = signal(Date.now());
   activeChip = 'All';
   chips = ['All', 'Angular', 'Node.js', 'React', 'System Design', 'DevOps'];
-  trending: { name: string; count: number }[] = [];
 
   constructor() {
     const intervalId = window.setInterval(() => this.now.set(Date.now()), 60_000);
@@ -36,6 +35,33 @@ export class DashboardComponent {
   }
   get latestJobs() {
     return this.jobs.jobs().slice(0, 3).map(j => ({ title: j.title, company: j.company, loc: j.location, stack: j.techStack }));
+  }
+
+  filteredQuestions(): Question[] {
+    const chip = this.activeChip;
+    if (chip === 'All') return this.qs.questions();
+    const skill = chip.toLowerCase();
+    return this.qs.questions().filter(q => {
+      const tag = String(q.techTag ?? '').toLowerCase();
+      const hashes = (q.hashtags ?? []).map(h => String(h).toLowerCase());
+      return tag === skill || tag.includes(skill) || hashes.some(h => h === skill || h.includes(skill));
+    });
+  }
+
+  trending(): { name: string; count: number }[] {
+    const counts = new Map<string, number>();
+    for (const q of this.qs.questions()) {
+      const tags = [q.techTag, ...(q.hashtags ?? [])].map(t => String(t ?? '').trim()).filter(Boolean);
+      for (const t of tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name, count]) => ({ name, count }));
+  }
+
+  selectTopic(name: string): void {
+    this.activeChip = name;
   }
 
   get postedCount(): number {

@@ -306,7 +306,7 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  deleteAccount(callbacks?: { onSuccess?: () => void; onError?: (message: string) => void }): void {
+  deleteAccount(password: string, callbacks?: { onSuccess?: () => void; onError?: (message: string) => void }): void {
     const existing = this.currentUser();
     if (!existing) {
       const msg = 'Please login to delete your account';
@@ -314,6 +314,16 @@ export class AuthService {
       callbacks?.onError?.(msg);
       return;
     }
+
+    const pwd = String(password ?? '').trim();
+    if (!pwd) {
+      const msg = 'Enter your password to confirm';
+      this.toast.error(msg);
+      callbacks?.onError?.(msg);
+      return;
+    }
+
+    const body = { password: pwd };
 
     const done = () => {
       this.toast.success('Account deleted');
@@ -327,15 +337,15 @@ export class AuthService {
       callbacks?.onError?.(msg);
     };
 
-    this.http.delete<any>(`${this.API}/users/me`).subscribe({
+    this.http.delete<any>(`${this.API}/users/me`, { body }).subscribe({
       next: done,
       error: err => {
         if (err?.status === 404) {
-          this.http.delete<any>(`${this.API}/users/profile`).subscribe({
+          this.http.delete<any>(`${this.API}/users/profile`, { body }).subscribe({
             next: done,
             error: err2 => {
               if (err2?.status === 404) {
-                this.http.delete<any>(`${this.API}/users/${existing.id}`).subscribe({
+                this.http.delete<any>(`${this.API}/users/${existing.id}`, { body }).subscribe({
                   next: done,
                   error: fail,
                 });

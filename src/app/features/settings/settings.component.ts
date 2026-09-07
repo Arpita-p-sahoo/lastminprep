@@ -29,8 +29,9 @@ export class SettingsComponent {
   compact = signal(false);
   pushEnabled = signal(true);
   deleteOpen = signal(false);
-  deleteText = signal('');
+  deletePassword = signal('');
   deleting = signal(false);
+  showDeletePassword = signal(false);
 
   notifPrefs = signal<Record<string, boolean>>({});
   notifStorageKey = computed(() => {
@@ -80,26 +81,36 @@ export class SettingsComponent {
   }
 
   openDeleteAccount(): void {
-    this.deleteText.set('');
+    this.deletePassword.set('');
+    this.showDeletePassword.set(false);
     this.deleteOpen.set(true);
   }
 
   closeDeleteAccount(): void {
+    if (this.deleting()) return;
     this.deleteOpen.set(false);
-    this.deleting.set(false);
+    this.deletePassword.set('');
+    this.showDeletePassword.set(false);
   }
 
   confirmDeleteAccount(): void {
     if (this.deleting()) return;
-    if (this.deleteText().trim().toUpperCase() !== 'DELETE') return;
+    const password = this.deletePassword().trim();
+    if (!password) return;
     this.deleting.set(true);
-    this.auth.deleteAccount({
+    this.auth.deleteAccount(password, {
       onSuccess: () => {
         this.deleting.set(false);
         this.deleteOpen.set(false);
+        this.deletePassword.set('');
+        this.showDeletePassword.set(false);
       },
+      // Wrong password or a network hiccup — keep the modal open (the service
+      // already toasts the reason) and clear the field so they can retry.
       onError: () => {
         this.deleting.set(false);
+        this.deletePassword.set('');
+        this.showDeletePassword.set(false);
       },
     });
   }

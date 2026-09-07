@@ -3,12 +3,12 @@
     <div class="modal-handle"></div>
     <div class="modal-head">
       <div class="modal-title">Post a question</div>
-      <button class="modal-close" (click)="close.emit()"><span class="mi">close</span></button>
+      <button class="modal-close" [disabled]="posting()" (click)="close.emit()"><span class="mi">close</span></button>
     </div>
     <div class="field">
       <label>Your question *</label>
       <textarea class="lmp-input" rows="4" [(ngModel)]="questionText" (ngModelChange)="onQuestionInput()"
-        placeholder="Write your interview question here... Be specific and clear."></textarea>
+        [disabled]="posting()" placeholder="Write your interview question here... Be specific and clear."></textarea>
     </div>
     <div class="field">
       <label>Tech stack</label>
@@ -57,7 +57,14 @@
     </div>
     <div class="modal-footer">
       <span class="modal-hint">Highly rated questions appear at top</span>
-      <button class="btn-lmp btn-primary btn-sm" (click)="submit()">Post →</button>
+      <button class="btn-lmp btn-primary btn-sm" type="button" [disabled]="posting() || !questionText.trim()"
+        (click)="submit()">
+        @if (posting()) {
+        <span class="lmp-spinner sm"></span> Posting…
+        } @else {
+        Post →
+        }
+      </button>
     </div>
   </div>
 </div>

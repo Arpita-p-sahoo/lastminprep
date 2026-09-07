@@ -14,5 +14,6 @@ export class LoginComponent {
   auth = inject(AuthService);
   email = '';
   password = '';
+  showPassword = false;
   login(): void { this.auth.login(this.email, this.password); }
 }

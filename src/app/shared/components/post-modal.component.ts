@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, effect, inject, input, output } from '@angular/core';
+import { Component, ElementRef, ViewChild, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { QuestionService } from '../../core/services/question.service';
 import { TagOptionsService } from '../../core/services/tag-options.service';
@@ -28,6 +28,7 @@ export class PostModalComponent {
   hashtagQuery = '';
   hashtagOpen = false;
   selectedHashtags = [] as string[];
+  posting = signal(false);
 
   constructor() {
     effect(() => {
@@ -44,6 +45,7 @@ export class PostModalComponent {
   }
 
   onOverlayClick(e: MouseEvent): void {
+    if (this.posting()) return;
     if ((e.target as HTMLElement).classList.contains('modal-overlay')) this.close.emit();
   }
 
@@ -62,7 +64,7 @@ export class PostModalComponent {
   }
 
   submit(): void {
-    if (!this.questionText.trim()) return;
+    if (!this.questionText.trim() || this.posting()) return;
 
     const selectedTech = this.selectedTech.map(t => t.trim()).filter(Boolean);
     const techTag = selectedTech[0] ?? 'General';
@@ -71,19 +73,30 @@ export class PostModalComponent {
     const extraTechHashtags = selectedTech.slice(1).map(t => this.normalizeHashtag(t)).filter(Boolean);
     const uniqueHashtags = Array.from(new Set([techHashtag, ...selectedHashtags, ...extraTechHashtags].filter(Boolean)));
 
-    this.qs.post({
-      title: this.questionText,
-      techTag,
-      hashtags: uniqueHashtags,
-    });
-    this.questionText = '';
-    this.selectedTech = [];
-    this.suggestedTech = [];
-    this.techMoreOpen = false;
-    this.techTouched = false;
-    this.hashtagQuery = '';
-    this.selectedHashtags = [];
-    this.close.emit();
+    this.posting.set(true);
+    this.qs
+      .post({
+        title: this.questionText,
+        techTag,
+        hashtags: uniqueHashtags,
+      })
+      .subscribe({
+        next: () => {
+          this.posting.set(false);
+          this.questionText = '';
+          this.selectedTech = [];
+          this.suggestedTech = [];
+          this.techMoreOpen = false;
+          this.techTouched = false;
+          this.hashtagQuery = '';
+          this.selectedHashtags = [];
+          this.close.emit();
+        },
+        // Keep the modal open with the user's input intact on failure — the
+        // service already surfaces a toast, so just stop the loader and let
+        // them retry instead of silently discarding what they wrote.
+        error: () => this.posting.set(false),
+      });
   }
 
   filteredHashtags(): string[] {

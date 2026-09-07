@@ -1,5 +1,5 @@
 <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-<div class="flex flex-col min-h-screen animate-fade-up">
+<div class="flex flex-col h-screen overflow-hidden animate-fade-up">
   <app-navbar (drawerOpen)="drawerOpen.set(true)" />
   <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
   <div class="main-layout">

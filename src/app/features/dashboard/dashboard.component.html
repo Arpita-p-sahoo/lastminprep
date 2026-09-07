@@ -1,5 +1,5 @@
 <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-<div class="flex flex-col min-h-screen animate-fade-up">
+<div class="flex flex-col h-screen overflow-hidden animate-fade-up">
   <app-navbar (drawerOpen)="drawerOpen.set(true)" />
   <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
 
@@ -42,12 +42,26 @@
           }
         </div>
 
-        @if (qs.questions().length) {
-        @for (q of qs.questions(); track q.id) {
+        @if (filteredQuestions().length) {
+        @for (q of filteredQuestions(); track q.id) {
         <app-question-card [question]="q" />
         }
         } @else {
-        <div style="text-align:center;padding:2rem;color:var(--ink3);">No questions yet</div>
+        <div class="empty-state">
+          <div class="empty-icon"><span class="mi" style="font-size:48px;">quiz</span></div>
+          @if (activeChip !== 'All') {
+          <div class="empty-title">No questions yet for {{ activeChip }}</div>
+          <div class="empty-sub">Be the first to ask one, or clear the filter to see everything.</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:1rem;">
+            <button class="btn-lmp btn-primary" (click)="postOpen.set(true)">Post your first question →</button>
+            <button class="btn-lmp btn-secondary" (click)="activeChip='All'">Clear filter</button>
+          </div>
+          } @else {
+          <div class="empty-title">No questions yet</div>
+          <div class="empty-sub">Be the first to contribute — your question might help thousands!</div>
+          <button class="btn-lmp btn-primary" style="margin-top:1rem;" (click)="postOpen.set(true)">Post your first question →</button>
+          }
+        </div>
         }
       </div>
     </div>
@@ -56,9 +70,9 @@
       <div class="rp-card">
         <div class="rp-title"><span class="mi"
             style="font-size:18px;vertical-align:middle;">local_fire_department</span> Trending topics</div>
-        @if (trending.length) {
-        @for (t of trending; track t.name) {
-        <div class="trend-item">
+        @if (trending().length) {
+        @for (t of trending(); track t.name) {
+        <div class="trend-item" (click)="selectTopic(t.name)">
           <div class="trend-num">{{ $index + 1 }}</div>
           <div>
             <div class="trend-name">{{ t.name }}</div>

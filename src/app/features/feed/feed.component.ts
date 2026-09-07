@@ -1,4 +1,5 @@
 import { Component, effect, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
@@ -18,11 +19,15 @@ import { AuthService } from '../../core/services/auth.service';
 export class FeedComponent {
   qs = inject(QuestionService);
   auth = inject(AuthService);
+  route = inject(ActivatedRoute);
+  router = inject(Router);
   drawerOpen = signal(false);
   postOpen = signal(false);
   active = 'Top rated';
+  techFilter = signal<string | null>(null);
 
   constructor() {
+    this.techFilter.set(this.route.snapshot.queryParamMap.get('tech'));
     this.qs.loadFollowingFeed();
     this.qs.markFeedSeen();
     effect(
@@ -35,8 +40,21 @@ export class FeedComponent {
     );
   }
 
+  clearTechFilter(): void {
+    this.techFilter.set(null);
+    this.router.navigate(['/feed']);
+  }
+
+  private matchesSkill(q: { techTag?: string; hashtags?: string[] }, skill: string): boolean {
+    const tag = String(q.techTag ?? '').toLowerCase();
+    const hashes = (q.hashtags ?? []).map(h => String(h).toLowerCase());
+    return tag === skill || tag.includes(skill) || hashes.some(h => h === skill || h.includes(skill));
+  }
+
   list() {
-    const items = [...this.qs.questions()];
+    const skill = this.techFilter()?.toLowerCase().trim() || null;
+    let items = [...this.qs.questions()];
+    if (skill) items = items.filter(q => this.matchesSkill(q, skill));
     const sel = this.active;
     const byVotes = (a: any, b: any) => {
       const dv = (b.votes ?? 0) - (a.votes ?? 0);
@@ -69,7 +87,9 @@ export class FeedComponent {
         .sort(byVotes);
     }
     if (sel === 'Following') {
-      return [...this.qs.followingQuestions()].sort(byNewest);
+      let following = [...this.qs.followingQuestions()];
+      if (skill) following = following.filter(q => this.matchesSkill(q, skill));
+      return following.sort(byNewest);
     }
     return items;
   }

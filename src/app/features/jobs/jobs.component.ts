@@ -1,12 +1,13 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { Job } from '../../core/models';
+import { TECH_DOMAINS } from '../../core/data/tech-domains';
 import { AuthService } from '../../core/services/auth.service';
 import { JobService } from '../../core/services/job.service';
 
@@ -16,23 +17,34 @@ import { JobService } from '../../core/services/job.service';
   imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, FormsModule],
   templateUrl: './jobs.component.html',
   styleUrls: ['./jobs.component.css'],
+  host: { '(document:click)': 'handleDocClick($event)' },
 })
 export class JobsComponent {
   jobService = inject(JobService);
   auth = inject(AuthService);
   router = inject(Router);
+  route = inject(ActivatedRoute);
   drawerOpen = signal(false);
   postOpen = signal(false);
   jobModalOpen = signal(false);
+  filterPanelOpen = signal(false);
+  @ViewChild('filterWrap') filterWrap?: ElementRef<HTMLElement>;
   searchQuery = signal('');
   activeFilter = signal('All');
   sourceFilter = signal<'All' | 'LinkedIn' | 'Naukri' | 'Community'>('All');
   typeFilter = signal<'All' | Job['type']>('All');
   experienceFilter = signal<string>('All');
+  skillFilter = signal<string | null>(null);
 
   sourceOptions: Array<'All' | 'LinkedIn' | 'Naukri' | 'Community'> = ['All', 'LinkedIn', 'Naukri', 'Community'];
   typeOptions: Array<'All' | Job['type']> = ['All', 'Remote', 'Hybrid', 'Onsite'];
-  quickFilters = ['All', 'Following', 'Remote', 'Angular', 'Full-stack', 'Fresher'];
+  quickFilters = ['All', 'Following', 'Remote', 'Full-stack', 'Fresher'];
+
+  /** Popular skills from the same domain/framework catalog used on the Explore page. */
+  skillOptions: string[] = Array.from(new Set(TECH_DOMAINS.flatMap(d => d.frameworks)
+    .sort((a, b) => b.count - a.count)
+    .map(fw => fw.name)))
+    .slice(0, 12);
 
   jobForm = {
     title: '',
@@ -63,12 +75,14 @@ export class JobsComponent {
     const source = this.sourceFilter();
     const type = this.typeFilter();
     const exp = this.experienceFilter();
+    const skill = this.skillFilter()?.trim().toLowerCase() || null;
 
     const filtered = jobs.filter(job => {
       if (source !== 'All' && this.jobSource(job) !== source) return false;
       if (quick !== 'All' && quick !== 'Following' && !this.matchesQuickFilter(job, quick)) return false;
       if (type !== 'All' && job.type !== type) return false;
       if (exp !== 'All' && String(job.experience ?? '').trim() !== exp) return false;
+      if (skill && !this.matchesSearch(job, skill)) return false;
       if (q && !this.matchesSearch(job, q)) return false;
       return true;
     });
@@ -81,6 +95,7 @@ export class JobsComponent {
   });
 
   constructor() {
+    this.skillFilter.set(this.route.snapshot.queryParamMap.get('tech'));
     this.jobService.loadFollowingFeed();
     this.jobService.markJobsSeen();
     effect(
@@ -115,6 +130,54 @@ export class JobsComponent {
       return;
     }
     this.openJob(job);
+  }
+
+  hasActiveFilters(): boolean {
+    return (
+      this.activeFilter() !== 'All' ||
+      this.sourceFilter() !== 'All' ||
+      this.typeFilter() !== 'All' ||
+      this.experienceFilter() !== 'All' ||
+      !!this.skillFilter() ||
+      this.searchQuery().trim().length > 0
+    );
+  }
+
+  /** Count of filters set from the Filters form dropdown (search box isn't included — it has its own field). */
+  activeFilterCount(): number {
+    let n = 0;
+    if (this.activeFilter() !== 'All') n += 1;
+    if (this.sourceFilter() !== 'All') n += 1;
+    if (this.typeFilter() !== 'All') n += 1;
+    if (this.experienceFilter() !== 'All') n += 1;
+    if (this.skillFilter()) n += 1;
+    return n;
+  }
+
+  clearFilters(): void {
+    this.activeFilter.set('All');
+    this.sourceFilter.set('All');
+    this.typeFilter.set('All');
+    this.experienceFilter.set('All');
+    this.skillFilter.set(null);
+    this.searchQuery.set('');
+  }
+
+  toggleSkill(skill: string): void {
+    this.skillFilter.set(this.skillFilter() === skill ? null : skill);
+  }
+
+  toggleFilterPanel(event: Event): void {
+    event.stopPropagation();
+    this.filterPanelOpen.set(!this.filterPanelOpen());
+  }
+
+  handleDocClick(event: Event): void {
+    if (!this.filterPanelOpen()) return;
+    const wrap = this.filterWrap?.nativeElement;
+    const target = event.target as Node | null;
+    if (wrap && target && wrap.contains(target)) return;
+    this.filterPanelOpen.set(false);
   }
 
   jobSource(job: Job): 'LinkedIn' | 'Naukri' | 'Community' {

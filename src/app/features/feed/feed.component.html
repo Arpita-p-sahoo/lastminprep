@@ -1,5 +1,5 @@
 <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-<div class="flex flex-col min-h-screen animate-fade-up">
+<div class="flex flex-col h-screen overflow-hidden animate-fade-up">
   <app-navbar (drawerOpen)="drawerOpen.set(true)" />
   <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
   <div class="main-layout">
@@ -11,6 +11,13 @@
           <button class="btn-lmp btn-primary btn-sm" (click)="postOpen.set(true)"><span class="mi"
               style="font-size:16px;">add</span> Post question</button>
         </div>
+        @if (techFilter()) {
+        <div class="active-filter">
+          <span class="mi" style="font-size:15px;vertical-align:middle;">filter_alt</span>
+          Filtering by <strong>{{ techFilter() }}</strong>
+          <button type="button" (click)="clearTechFilter()"><span class="mi" style="font-size:15px;">close</span></button>
+        </div>
+        }
         <div class="chip-row" style="">
           @for (c of ['Top rated','Newest','Unanswered','My stack','Following']; track c) {
           <div class="chip" [class.active]="active===c" (click)="active=c">{{ c }}</div>
@@ -26,7 +33,21 @@
         <app-question-card [question]="q" />
         }
         @if (!list().length) {
-        <div style="text-align:center;padding:2rem;color:var(--ink3);">No questions found</div>
+        <div class="empty-state">
+          <div class="empty-icon"><span class="mi" style="font-size:48px;">quiz</span></div>
+          @if (techFilter()) {
+          <div class="empty-title">No questions yet for {{ techFilter() }}</div>
+          <div class="empty-sub">Be the first to ask one, or clear the filter to see everything.</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:1rem;">
+            <button class="btn-lmp btn-primary" (click)="postOpen.set(true)">Post your first question →</button>
+            <button class="btn-lmp btn-secondary" (click)="clearTechFilter()">Clear filter</button>
+          </div>
+          } @else {
+          <div class="empty-title">No questions yet</div>
+          <div class="empty-sub">Be the first to contribute — your question might help thousands!</div>
+          <button class="btn-lmp btn-primary" style="margin-top:1rem;" (click)="postOpen.set(true)">Post your first question →</button>
+          }
+        </div>
         }
         }
       </div>

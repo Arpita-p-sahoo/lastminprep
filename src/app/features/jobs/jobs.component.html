@@ -1,5 +1,5 @@
 <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-<div class="flex flex-col min-h-screen animate-fade-up">
+<div class="flex flex-col h-screen overflow-hidden animate-fade-up">
   <app-navbar (drawerOpen)="drawerOpen.set(true)" />
   <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
 
@@ -88,26 +88,68 @@
             <input [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
               placeholder="Search jobs by title, company, location, stack..." />
           </div>
-          <div class="job-filters">
-            <select class="lmp-input" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
-              @for (t of typeOptions; track t) { <option [ngValue]="t">{{ t }}</option> }
-            </select>
-            <select class="lmp-input" [ngModel]="experienceFilter()" (ngModelChange)="experienceFilter.set($event)">
-              @for (e of experienceOptions(); track e) { <option [ngValue]="e">{{ e }}</option> }
-            </select>
+          <div class="filter-wrap" #filterWrap>
+            <button type="button" class="filter-btn" [class.active]="filterPanelOpen()" (click)="toggleFilterPanel($event)">
+              <span class="mi" style="font-size:18px;">tune</span> Filters
+              @if (activeFilterCount() > 0) { <span class="filter-badge">{{ activeFilterCount() }}</span> }
+            </button>
+            @if (filterPanelOpen()) {
+            <div class="filter-panel">
+              <div class="filter-panel-head">
+                <div class="filter-panel-title">Filter jobs</div>
+                <button type="button" class="filter-panel-close" (click)="filterPanelOpen.set(false)">
+                  <span class="mi">close</span>
+                </button>
+              </div>
+
+              <div class="field">
+                <label>Job type</label>
+                <select class="lmp-input" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
+                  @for (t of typeOptions; track t) { <option [ngValue]="t">{{ t }}</option> }
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Experience</label>
+                <select class="lmp-input" [ngModel]="experienceFilter()" (ngModelChange)="experienceFilter.set($event)">
+                  @for (e of experienceOptions(); track e) { <option [ngValue]="e">{{ e }}</option> }
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Source</label>
+                <div class="chip-row">
+                  @for (s of sourceOptions; track s) {
+                  <div class="chip" [class.active]="sourceFilter()===s" (click)="sourceFilter.set(s)">{{ s }}</div>
+                  }
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Quick filters</label>
+                <div class="chip-row">
+                  @for (c of quickFilters; track c) {
+                  <div class="chip" [class.active]="activeFilter()===c" (click)="activeFilter.set(c)">{{ c }}</div>
+                  }
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Skill</label>
+                <div class="chip-row">
+                  @for (s of skillOptions; track s) {
+                  <div class="chip" [class.active]="skillFilter()===s" (click)="toggleSkill(s)">{{ s }}</div>
+                  }
+                </div>
+              </div>
+
+              <div class="filter-panel-actions">
+                <button type="button" class="btn-lmp btn-secondary btn-sm" (click)="clearFilters()">Clear all</button>
+                <button type="button" class="btn-lmp btn-primary btn-sm" (click)="filterPanelOpen.set(false)">Apply</button>
+              </div>
+            </div>
+            }
           </div>
-        </div>
-
-        <div class="chip-row">
-          @for (s of sourceOptions; track s) {
-          <div class="chip" [class.active]="sourceFilter()===s" (click)="sourceFilter.set(s)">{{ s }}</div>
-          }
-        </div>
-
-        <div class="chip-row">
-          @for (c of quickFilters; track c) {
-          <div class="chip" [class.active]="activeFilter()===c" (click)="activeFilter.set(c)">{{ c }}</div>
-          }
         </div>
 
         @if (jobService.loading()) {
@@ -148,7 +190,18 @@
         }
 
         @if (!filteredJobs().length) {
-        <div style="text-align:center;padding:2rem;color:var(--ink3);">No jobs found</div>
+        <div class="empty-state">
+          <div class="empty-icon"><span class="mi" style="font-size:48px;">work</span></div>
+          @if (hasActiveFilters()) {
+          <div class="empty-title">No jobs match your filters</div>
+          <div class="empty-sub">Try a different search or clear your filters.</div>
+          <button class="btn-lmp btn-secondary" style="margin-top:1rem;" (click)="clearFilters()">Clear filters</button>
+          } @else {
+          <div class="empty-title">No jobs yet</div>
+          <div class="empty-sub">Be the first to share an opening with the community!</div>
+          <button class="btn-lmp btn-primary" style="margin-top:1rem;" (click)="jobModalOpen.set(true)">Post a job →</button>
+          }
+        </div>
         }
         }
       </div>

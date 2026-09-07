@@ -33,6 +33,7 @@ export class SignupComponent {
   error = '';
   techQuery = '';
   techOpen = false;
+  showPassword = false;
 
   constructor() {
     this.tagOptions.ensureLoaded();

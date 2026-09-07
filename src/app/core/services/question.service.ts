@@ -4,7 +4,7 @@ import { Comment, Question } from '../models';
 import { AuthService } from './auth.service';
 import { ToastService } from './toast.service';
 import { environment } from '../../../environments/environment';
-import { Observable, map, tap } from 'rxjs';
+import { Observable, catchError, map, tap, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
@@ -193,24 +193,27 @@ export class QuestionService {
     });
   }
 
-  post(q: Partial<Question>): void {
+  post(q: Partial<Question>): Observable<Question> {
     const body = {
       title: q.title || '',
       techTag: q.techTag || 'General',
       hashtags: q.hashtags || [],
     };
-    this.http.post<Question>(`${this.API}/questions`, body).subscribe({
-      next: created => {
-        const normalized = this.normalize(created);
+    return this.http.post<Question>(`${this.API}/questions`, body).pipe(
+      map(created => this.normalize(created)),
+      tap(normalized => {
         this.questions.update(qs => [normalized, ...qs.filter(x => String(x.id) !== String(normalized.id))]);
         const user = this.auth.currentUser();
         if (user?.id && normalized.author?.id && String(user.id) === String(normalized.author.id)) {
           this.auth.updateLocalUser({ questionsPosted: (user.questionsPosted ?? 0) + 1 });
         }
         this.toast.success('Question posted');
-      },
-      error: () => this.toast.error('Failed to post question'),
-    });
+      }),
+      catchError(err => {
+        this.toast.error('Failed to post question');
+        return throwError(() => err);
+      })
+    );
   }
 
   update(

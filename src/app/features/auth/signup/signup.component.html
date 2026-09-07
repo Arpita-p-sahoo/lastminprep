@@ -46,8 +46,17 @@
           placeholder="Rahul Dubey" /></div>
       <div class="field"><label>Email *</label><input class="lmp-input" [(ngModel)]="form.email" type="email"
           placeholder="rahuld@test.com" /></div>
-      <div class="field"><label>Password *</label><input class="lmp-input" type="password" [(ngModel)]="form.password"
-          placeholder="Enter 6+ characters" /></div>
+      <div class="field">
+        <label>Password *</label>
+        <div class="password-field">
+          <input class="lmp-input" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="form.password"
+            placeholder="Enter 6+ characters" />
+          <button type="button" class="password-toggle" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            (click)="showPassword = !showPassword">
+            <span class="mi" style="font-size:18px;">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
 
       <div class="field-row">
         <div class="field"><label>Organisation</label><input class="lmp-input" [(ngModel)]="form.organisation"

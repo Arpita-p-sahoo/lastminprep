@@ -1,5 +1,5 @@
 
-    <div class="flex flex-col min-h-screen animate-fade-up">
+    <div class="flex flex-col h-screen overflow-hidden animate-fade-up">
       <app-navbar (drawerOpen)="drawerOpen.set(true)" />
       <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
       <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
@@ -75,31 +75,41 @@
         <div class="modal-handle"></div>
         <div class="modal-head">
           <div class="modal-title" style="color:var(--accent2);">Delete account</div>
-          <button class="modal-close" type="button" (click)="closeDeleteAccount()">×</button>
+          <button class="modal-close" type="button" [disabled]="deleting()" (click)="closeDeleteAccount()">×</button>
         </div>
         <div class="lmp-modal-text">
-          This will permanently delete your profile and all your data. Type DELETE to confirm.
+          This will permanently delete your profile and all your data. Enter your password to confirm.
         </div>
         <div class="field" style="margin-top:12px;">
-          <label>Confirmation</label>
-          <input
-            class="lmp-input"
-            [ngModel]="deleteText()"
-            (ngModelChange)="deleteText.set($event)"
-            placeholder="Type DELETE"
-          />
+          <label>Password</label>
+          <div class="password-field">
+            <input
+              class="lmp-input"
+              [type]="showDeletePassword() ? 'text' : 'password'"
+              autocomplete="current-password"
+              [disabled]="deleting()"
+              [ngModel]="deletePassword()"
+              (ngModelChange)="deletePassword.set($event)"
+              (keyup.enter)="confirmDeleteAccount()"
+              placeholder="Enter your password"
+            />
+            <button type="button" class="password-toggle" [attr.aria-label]="showDeletePassword() ? 'Hide password' : 'Show password'"
+              (click)="showDeletePassword.set(!showDeletePassword())">
+              <span class="mi" style="font-size:18px;">{{ showDeletePassword() ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
         </div>
         <div class="lmp-modal-actions">
-          <button class="btn-lmp btn-secondary btn-sm" type="button" (click)="closeDeleteAccount()">Cancel</button>
+          <button class="btn-lmp btn-secondary btn-sm" type="button" [disabled]="deleting()" (click)="closeDeleteAccount()">Cancel</button>
           <button
             class="btn-lmp btn-sm danger-btn"
             type="button"
-            [disabled]="deleteText().trim().toUpperCase() !== 'DELETE' || deleting()"
+            [disabled]="!deletePassword().trim() || deleting()"
             (click)="confirmDeleteAccount()"
           >
-            @if (deleting()) { Deleting… } @else { Delete }
+            @if (deleting()) { <span class="lmp-spinner sm"></span> Deleting… } @else { Delete }
           </button>
         </div>
       </div>
     </div>
-  
+

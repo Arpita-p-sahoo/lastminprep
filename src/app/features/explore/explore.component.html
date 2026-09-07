@@ -1,15 +1,26 @@
 <app-post-modal [open]="postOpen()" (close)="postOpen.set(false)" />
-<div class="flex flex-col min-h-screen animate-fade-up">
+<div class="flex flex-col h-screen overflow-hidden animate-fade-up">
   <app-navbar (drawerOpen)="drawerOpen.set(true)" />
   <app-drawer [open]="drawerOpen()" (close)="drawerOpen.set(false)" />
   <div class="main-layout">
     @if (auth.isLoggedIn()) { <app-sidebar /> }
     <div class="content">
       <div class="content-inner">
+        <div class="explore-search">
+          <span class="mi" style="font-size:18px;">search</span>
+          <input [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+            placeholder="Search domains or frameworks (e.g. Angular, Docker)..." />
+          @if (searchQuery()) {
+          <button type="button" class="explore-search-clear" (click)="clearSearch()">
+            <span class="mi" style="font-size:16px;">close</span>
+          </button>
+          }
+        </div>
+
         <div class="step-label">Step 1 — Domain</div>
-        @if (domains.length) {
+        @if (filteredDomains().length) {
         <div class="ts-grid">
-          @for (d of domains; track d.id) {
+          @for (d of filteredDomains(); track d.id) {
           <div class="ts-card" [class.sel]="selectedDomain?.id === d.id" (click)="selectDomain(d)">
             <div class="ts-icon">
               @if (d.icon) {
@@ -23,14 +34,19 @@
           }
         </div>
         } @else {
-        <div style="text-align:center;padding:2rem;color:var(--ink3);">No domains available</div>
+        <div class="empty-state">
+          <div class="empty-icon"><span class="mi" style="font-size:40px;">search_off</span></div>
+          <div class="empty-title">No domains match "{{ searchQuery() }}"</div>
+          <div class="empty-sub">Try a different search term.</div>
+          <button class="btn-lmp btn-secondary" style="margin-top:1rem;" (click)="clearSearch()">Clear search</button>
+        </div>
         }
         @if (selectedDomain) {
         <div class="mt-8">
           <div class="step-label">Step 2 — {{ selectedDomain.name }} technologies</div>
-          @if (selectedDomain.frameworks.length) {
+          @if (filteredFrameworks().length) {
           <div class="ts-grid">
-            @for (fw of selectedDomain.frameworks; track fw.name) {
+            @for (fw of filteredFrameworks(); track fw.name) {
             <div class="ts-card" [class.sel]="selectedFw === fw.name" (click)="selectFw(fw.name)">
               <div class="ts-icon">
                 @if (fw.icon) {
@@ -44,7 +60,12 @@
             }
           </div>
           } @else {
-          <div style="text-align:center;padding:2rem;color:var(--ink3);">No technologies available</div>
+          <div class="empty-state">
+            <div class="empty-icon"><span class="mi" style="font-size:40px;">search_off</span></div>
+            <div class="empty-title">No technologies match "{{ searchQuery() }}"</div>
+            <div class="empty-sub">Try a different search term.</div>
+            <button class="btn-lmp btn-secondary" style="margin-top:1rem;" (click)="clearSearch()">Clear search</button>
+          </div>
           }
         </div>
         }
