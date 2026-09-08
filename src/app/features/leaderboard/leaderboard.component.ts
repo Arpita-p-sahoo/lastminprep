@@ -4,13 +4,14 @@ import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
+import { ScrollFabComponent } from '../../shared/components/scroll-fab.component';
 import { AuthService } from '../../core/services/auth.service';
 import { LeaderboardService } from '../../core/services/leaderboard.service';
 
 @Component({
   selector: 'app-leaderboard',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent],
+  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, ScrollFabComponent],
   templateUrl: './leaderboard.component.html',
   styleUrls: ['./leaderboard.component.css'],
 })

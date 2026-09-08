@@ -6,6 +6,7 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav.component
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { QuestionCardComponent } from '../../shared/components/question-card.component';
+import { ScrollFabComponent } from '../../shared/components/scroll-fab.component';
 import { QuestionService } from '../../core/services/question.service';
 import { User } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
@@ -15,7 +16,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent],
+  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent, ScrollFabComponent],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })

@@ -6,6 +6,7 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav.component
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { QuestionCardComponent } from '../../shared/components/question-card.component';
+import { ScrollFabComponent } from '../../shared/components/scroll-fab.component';
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -16,7 +17,7 @@ import { toFriendlyErrorMessage } from '../../core/utils/error-message';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent],
+  imports: [FormsModule, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent, ScrollFabComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
   host: { '(document:keydown.escape)': 'handleEscape()' },

@@ -5,6 +5,7 @@ import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
+import { ScrollFabComponent } from '../../shared/components/scroll-fab.component';
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { RouterLink } from '@angular/router';
@@ -24,7 +25,7 @@ type NotifEvent = {
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent],
+  imports: [CommonModule, RouterLink, NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, ScrollFabComponent],
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css'],
 })

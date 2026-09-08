@@ -6,6 +6,7 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav.component
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { QuestionCardComponent } from '../../shared/components/question-card.component';
+import { ScrollFabComponent } from '../../shared/components/scroll-fab.component';
 import { QuestionService } from '../../core/services/question.service';
 import { JobService } from '../../core/services/job.service';
 import { Job } from '../../core/models';
@@ -13,7 +14,7 @@ import { Job } from '../../core/models';
 @Component({
   selector: 'app-saved',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent],
+  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent, ScrollFabComponent],
   templateUrl: './saved.component.html',
   styles: [
     `

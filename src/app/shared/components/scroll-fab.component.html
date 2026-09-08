@@ -1,0 +1,13 @@
+<div class="scroll-fab-stack">
+  @if (showTop()) {
+  <button type="button" class="fab fab-top" aria-label="Scroll to top" (click)="scrollToTop()">
+    <span class="mi">arrow_upward</span>
+  </button>
+  }
+  @if (showAction()) {
+  <button type="button" class="fab fab-action" [class.hide-on-mobile]="hideActionOnMobile()"
+    [attr.aria-label]="actionLabel()" (click)="action.emit()">
+    <span class="mi">{{ actionIcon() }}</span>
+  </button>
+  }
+</div>

@@ -5,6 +5,7 @@ import { BottomNavComponent } from '../../shared/components/bottom-nav.component
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
 import { QuestionCardComponent } from '../../shared/components/question-card.component';
+import { ScrollFabComponent } from '../../shared/components/scroll-fab.component';
 import { AuthService } from '../../core/services/auth.service';
 import { QuestionService } from '../../core/services/question.service';
 import { RouterLink } from '@angular/router';
@@ -14,7 +15,7 @@ import { Comment, Question } from '../../core/models';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent, RouterLink],
+  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, QuestionCardComponent, ScrollFabComponent, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })

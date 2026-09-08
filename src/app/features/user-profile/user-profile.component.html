@@ -150,6 +150,9 @@
         }
       </div>
     </div>
+
+    <app-scroll-fab [showAction]="true" [actionIcon]="isFollowing() ? 'person_remove' : 'person_add'"
+      [actionLabel]="isFollowing() ? 'Unfollow' : 'Follow'" (action)="toggleFollow()" />
   </div>
   <app-bottom-nav (postClick)="postOpen.set(true)" />
 </div>

@@ -1,0 +1,57 @@
+.scroll-fab-stack {
+  position: fixed;
+  right: var(--fab-right, 1.5rem);
+  bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 45;
+}
+
+.fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.18s, opacity 0.18s;
+}
+
+.fab:hover {
+  transform: translateY(-2px);
+}
+
+.fab-top {
+  width: 38px;
+  height: 38px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  color: var(--ink2);
+}
+
+.fab-top:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.fab-action {
+  background: var(--accent);
+  color: #fff;
+  font-size: 22px;
+}
+
+@media (max-width: 768px) {
+  .scroll-fab-stack {
+    bottom: calc(var(--bottom-h) + 1rem);
+  }
+
+  /* Only for actions the bottom nav's own Post button already covers there. */
+  .fab-action.hide-on-mobile {
+    display: none;
+  }
+}

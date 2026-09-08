@@ -6,13 +6,14 @@ import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
+import { ScrollFabComponent } from '../../shared/components/scroll-fab.component';
 import { QuestionService } from '../../core/services/question.service';
 import { Question } from '../../core/models';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, FormsModule, RouterLink],
+  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, ScrollFabComponent, FormsModule, RouterLink],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css'],
 })

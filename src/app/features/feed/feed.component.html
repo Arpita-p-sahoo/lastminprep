@@ -52,6 +52,9 @@
         }
       </div>
     </div>
+
+    <app-scroll-fab [showAction]="true" actionLabel="Post a question" [hideActionOnMobile]="true"
+      (action)="postOpen.set(true)" />
     <div class="rpanel">
       <div class="rp-card">
         <div class="rp-title"><span class="mi"

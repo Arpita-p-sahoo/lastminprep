@@ -6,6 +6,7 @@ import { SidebarComponent } from '../../shared/components/sidebar.component';
 import { BottomNavComponent } from '../../shared/components/bottom-nav.component';
 import { DrawerComponent } from '../../shared/components/drawer.component';
 import { PostModalComponent } from '../../shared/components/post-modal.component';
+import { ScrollFabComponent } from '../../shared/components/scroll-fab.component';
 import { Job } from '../../core/models';
 import { TECH_DOMAINS } from '../../core/data/tech-domains';
 import { AuthService } from '../../core/services/auth.service';
@@ -14,7 +15,7 @@ import { JobService } from '../../core/services/job.service';
 @Component({
   selector: 'app-jobs',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, FormsModule],
+  imports: [NavbarComponent, SidebarComponent, BottomNavComponent, DrawerComponent, PostModalComponent, ScrollFabComponent, FormsModule],
   templateUrl: './jobs.component.html',
   styleUrls: ['./jobs.component.css'],
   host: { '(document:click)': 'handleDocClick($event)' },

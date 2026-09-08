@@ -437,6 +437,9 @@
         </div>
       </div>
     </div>
+
+    <app-scroll-fab [showAction]="true" [actionIcon]="editOpen() ? 'close' : 'edit'"
+      [actionLabel]="editOpen() ? 'Close edit' : 'Edit profile'" (action)="toggleEdit()" />
   </div>
   <app-bottom-nav (postClick)="postOpen.set(true)" />
 </div>

@@ -48,7 +48,11 @@
             </div>
           }
           }
-        </div></div>
+        </div>
+        </div>
+
+        <app-scroll-fab [showAction]="true" actionLabel="Post a question" [hideActionOnMobile]="true"
+          (action)="postOpen.set(true)" />
       </div>
       <app-bottom-nav (postClick)="postOpen.set(true)" />
     </div>
